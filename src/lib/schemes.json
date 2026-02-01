@@ -1,0 +1,44 @@
+{
+  "schemes": [
+    {
+      "id": "PM-JAY",
+      "name": "Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+      "description": "Provides health insurance coverage to low-income families.",
+      "eligibility": {
+        "maxIncome": 250000,
+        "castes": ["sc", "st", "obc"]
+      },
+      "benefits": "Health coverage up to ₹5 lakh per family per year for secondary and tertiary care hospitalization.",
+      "documentsRequired": ["Aadhar Card", "Ration Card", "Income Certificate"],
+      "applicationProcess": "Beneficiaries are identified based on the Socio-Economic Caste Census (SECC) 2011 data. Eligible families can get an e-card from a designated hospital or Common Service Center (CSC). No formal application is needed if you are on the list."
+    },
+    {
+      "id": "PMAY-U",
+      "name": "Pradhan Mantri Awas Yojana - Urban (PMAY-U)",
+      "description": "Aims to provide affordable housing to the urban poor.",
+      "eligibility": {
+        "maxIncome": 1800000,
+        "states": [
+          "Delhi", "Maharashtra", "Uttar Pradesh", "Gujarat", "Tamil Nadu", "Karnataka",
+          "Madhya Pradesh", "Rajasthan", "West Bengal", "Andhra Pradesh", "Telangana"
+        ]
+      },
+      "benefits": "Credit-linked subsidy on home loans for different income groups (EWS, LIG, MIG-I, MIG-II).",
+      "documentsRequired": ["Aadhar Card", "Bank Passbook", "Income Certificate"],
+      "applicationProcess": "Apply online through the official PMAY-U website or through Common Service Centers (CSCs). Fill in personal and income details, and upload required documents. The application is then verified by urban local bodies."
+    },
+    {
+      "id": "Digital India Internship",
+      "name": "Digital India Internship Scheme",
+      "description": "Offers internship opportunities to students in the field of technology and e-governance.",
+      "eligibility": {
+        "minAge": 18,
+        "maxAge": 30,
+        "isStudent": true
+      },
+      "benefits": "A stipend of ₹10,000 per month and a certificate upon successful completion.",
+      "documentsRequired": ["Aadhar Card", "Proof of Identity", "Bank Passbook"],
+      "applicationProcess": "Applications are invited online through the National Informatics Centre (NIC) website, usually twice a year. Students need to fill out an online form and upload their resume and a letter from their institution. Shortlisted candidates are called for an interview."
+    }
+  ]
+}
