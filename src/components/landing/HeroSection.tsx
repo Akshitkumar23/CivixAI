@@ -10,7 +10,7 @@ export function HeroSection() {
     const heroImage = {
       "id": "landing-hero",
       "description": "An AI bot assisting a family with civic services in front of government buildings.",
-      "imageUrl": "https://storage.googleapis.com/gcp-kms-production-903522a1f496/12589578-8255-442b-8a75-7c093a207923",
+      "imageUrl": "/images/hero-image.png",
       "imageHint": "empowered individual rural technology"
     };
 
@@ -27,7 +27,7 @@ export function HeroSection() {
                         </p>
                         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                             <Magnetic>
-                                <Button size="lg" asChild>
+                                <Button className="h-12 px-8" asChild>
                                     <Link href="/check-eligibility">
                                         Check My Eligibility
                                         <ArrowRight className="ml-2" />
@@ -35,7 +35,7 @@ export function HeroSection() {
                                 </Button>
                             </Magnetic>
                              <Magnetic>
-                                <Button size="lg" variant="outline" asChild>
+                                <Button className="h-12 px-8 border border-input bg-background hover:bg-primary/10" asChild>
                                     <Link href="/features">
                                         <PlayCircle className="mr-2" />
                                         Explore Benefits
@@ -44,7 +44,7 @@ export function HeroSection() {
                             </Magnetic>
                         </div>
                     </div>
-                    <div className="flex justify-center">
+                        <div className="flex justify-center">
                         {heroImage && (
                             <Image
                                 src={heroImage.imageUrl}
@@ -53,6 +53,7 @@ export function HeroSection() {
                                 height={400}
                                 className="rounded-lg shadow-xl"
                                 data-ai-hint={heroImage.imageHint}
+                                unoptimized
                             />
                         )}
                     </div>
