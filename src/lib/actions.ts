@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { generateSchemeDetails } from '@/ai/flows/generate-scheme-details';
 import { provideChatbotAssistance } from '@/ai/flows/provide-chatbot-assistance';
 import type { UserProfile, Scheme } from '@/lib/types';
-import schemesData from '@/lib/schemes.json';
 
 export async function findSchemes(profile: UserProfile) {
   const params = new URLSearchParams();
@@ -33,15 +32,9 @@ export async function getApplicationSummary(scheme: Scheme) {
 }
 
 export async function getChatbotResponse(query: string) {
-  const schemeDetailsForContext = schemesData.schemes.map(s => ({ 
-    name: s.name, 
-    description: s.description,
-    eligibility: s.eligibility 
-  }));
-
   const result = await provideChatbotAssistance({
     query,
-    schemeDetails: JSON.stringify(schemeDetailsForContext),
+    schemeDetails: JSON.stringify([]),
   });
 
   return result.answer;
