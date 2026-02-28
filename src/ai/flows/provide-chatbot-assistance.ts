@@ -8,8 +8,8 @@
  * - ProvideChatbotAssistanceOutput - The return type for the provideChatbotAssistance function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const ProvideChatbotAssistanceInputSchema = z.object({
   query: z.string().describe('The user query in Hinglish.'),
@@ -34,8 +34,8 @@ export async function provideChatbotAssistance(
 
 const prompt = ai.definePrompt({
   name: 'provideChatbotAssistancePrompt',
-  input: {schema: ProvideChatbotAssistanceInputSchema},
-  output: {schema: ProvideChatbotAssistanceOutputSchema},
+  input: { schema: ProvideChatbotAssistanceInputSchema },
+  output: { schema: ProvideChatbotAssistanceOutputSchema },
   prompt: `You are a helpful chatbot assistant that answers questions about government schemes in Hinglish.
 
   You should provide clear, concise and easy to understand answers. Use simple language. Your goal is to help the user understand the schemes.
@@ -52,7 +52,20 @@ const provideChatbotAssistanceFlow = ai.defineFlow(
     outputSchema: ProvideChatbotAssistanceOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      // Truncate context if it's too large to prevent token limit errors
+      const truncatedInput = {
+        ...input,
+        schemeDetails: input.schemeDetails ? input.schemeDetails.slice(0, 10000) : ''
+      };
+
+      const { output } = await prompt(truncatedInput);
+      return output!;
+    } catch (error) {
+      console.error('Chatbot AI Error:', error);
+      return {
+        answer: "Maaf kijiye, abhi hamare AI servers par bahut load hai. Main aapki query thodi der mein process kar paunga. Tab tak aap hamari recommendation list check kar sakte hain!"
+      };
+    }
   }
 );

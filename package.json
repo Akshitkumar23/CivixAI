@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 127.0.0.1",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "NODE_ENV=production next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint .",
     "typecheck": "tsc --noEmit"
   },
   "overrides": {
@@ -61,6 +61,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/caseless": "^0.12.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

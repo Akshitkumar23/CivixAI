@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { ArrowRight, User, Hand, IndianRupee, Briefcase, GraduationCap, Accessibility, Users, CheckCircle, XCircle, Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowRight, User, Hand, IndianRupee, Briefcase, GraduationCap, Accessibility, Users, CheckCircle, XCircle, Plus, ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
 import { type UserProfile } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -188,34 +188,46 @@ export default function CheckEligibilityPage() {
         body: JSON.stringify(apiData),
       });
 
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `API Error: ${response.status}`);
+      }
+
       const result = await response.json();
 
-      if (result.success) {
-        // Handle both ML and rule-based responses
-        let schemes = [];
-        
-        if (result.eligibleSchemes && Array.isArray(result.eligibleSchemes)) {
-          schemes = result.eligibleSchemes;
-        } else if (result.schemeDetails && Array.isArray(result.schemeDetails)) {
-          schemes = result.schemeDetails.map(s => s.name);
-        } else if (result.topSchemes && Array.isArray(result.topSchemes)) {
-          schemes = result.topSchemes.map(s => s.scheme);
-        }
+      // Handle both ML and rule-based responses
+      let schemes: string[] = [];
 
-        setEligibleSchemes(schemes);
-        setHasSubmitted(true);
-        toast({
-          title: "Success!",
-          description: `Found ${schemes.length} eligible schemes.`,
-        });
-      } else {
+      if (result.eligibleSchemes && Array.isArray(result.eligibleSchemes)) {
+        schemes = result.eligibleSchemes;
+      } else if (result.schemeDetails && Array.isArray(result.schemeDetails)) {
+        schemes = result.schemeDetails.map((s: { name?: string; id?: string }) => s.name || s.id || 'Unknown Scheme');
+      } else if (result.topSchemes && Array.isArray(result.topSchemes)) {
+        schemes = result.topSchemes.map((s: { scheme: string }) => s.scheme);
+      } else if (result.eligible_schemes && Array.isArray(result.eligible_schemes)) {
+        schemes = result.eligible_schemes.map((s: { scheme_name?: string; scheme_id?: string }) => s.scheme_name || s.scheme_id || 'Unknown Scheme');
+      }
+
+      if (result.success === false && schemes.length === 0) {
         throw new Error(result.error || 'Failed to get predictions');
       }
+
+      setEligibleSchemes(schemes);
+      setHasSubmitted(true);
+
+      // Store the exact result schemas to pass forward to the next screen if needed
+      setInitialResults(schemes);
+
+      toast({
+        title: "Success! Found Matches",
+        description: `We've identified ${schemes.length} schemes you may be eligible for.`,
+      });
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Could not process your request. Please try again.';
       toast({
         variant: 'destructive',
         title: 'An error occurred',
-        description: 'Could not process your request. Please try again.',
+        description: message,
       });
     } finally {
       setIsSubmitting(false);
@@ -227,124 +239,98 @@ export default function CheckEligibilityPage() {
       <Header />
       <main className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-2xl mx-auto bg-card/60 backdrop-blur-md shadow-xl my-12">
-            <CardHeader>
-                <div className="text-center">
-                    <h1 className="font-headline text-3xl font-bold text-primary">Check Your Eligibility</h1>
-                    <p className="text-muted-foreground mt-2">Fill out the form below to discover schemes, loans, and benefits you qualify for.</p>
-                </div>
-            </CardHeader>
-            <CardHeader>
-              <CardTitle className="font-headline text-2xl">Check Eligibility</CardTitle>
-              <CardDescription>Fill in the required fields to get started</CardDescription>
-            </CardHeader>
-            {!hasSubmitted ? (
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                  <CardContent className="space-y-6">
-                    {/* CORE INPUTS - Always visible and required */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <User className="h-5 w-5 text-primary" />
-                        <h3 className="font-semibold text-lg">Core Information</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Required fields to check your basic eligibility</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="age"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Age</FormLabel>
-                              <FormControl>
-                                <Input type="number" placeholder="Enter your age" {...field} value={field.value ?? ''} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="annualIncome"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Annual Income (₹)</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                  <Input type="number" placeholder="e.g., 250000" {...field} className="pl-8"/>
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+          <CardHeader>
+            <div className="text-center">
+              <h1 className="font-headline text-3xl font-bold text-primary">Check Your Eligibility</h1>
+              <p className="text-muted-foreground mt-2">Fill out the form below to discover schemes, loans, and benefits you qualify for.</p>
+            </div>
+          </CardHeader>
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl">Check Eligibility</CardTitle>
+            <CardDescription>Fill in the required fields to get started</CardDescription>
+          </CardHeader>
+          {!hasSubmitted ? (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <CardContent className="space-y-6">
+                  {/* CORE INPUTS - Always visible and required */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <User className="h-5 w-5 text-primary" />
+                      <h3 className="font-semibold text-lg">Core Information</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Required fields to check your basic eligibility</p>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="state"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>State/Union Territory</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select your state" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="caste"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Caste Category</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select category" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="general">General</SelectItem>
-                                  <SelectItem value="obc">OBC</SelectItem>
-                                  <SelectItem value="sc">SC</SelectItem>
-                                  <SelectItem value="st">ST</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
-                        name="occupation"
+                        name="age"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Occupation</FormLabel>
+                            <FormLabel>Age</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="Enter your age" {...field} value={field.value ?? ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="annualIncome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Annual Income (₹)</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input type="number" placeholder="e.g., 250000" {...field} className="pl-8" />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>State/Union Territory</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select your occupation" />
+                                  <SelectValue placeholder="Select your state" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="student">Student</SelectItem>
-                                <SelectItem value="employed">Employed</SelectItem>
-                                <SelectItem value="farmer">Farmer</SelectItem>
-                                <SelectItem value="unemployed">Unemployed</SelectItem>
-                                <SelectItem value="retired">Retired</SelectItem>
+                                {states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="caste"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Caste Category</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="general">General</SelectItem>
+                                <SelectItem value="obc">OBC</SelectItem>
+                                <SelectItem value="sc">SC</SelectItem>
+                                <SelectItem value="st">ST</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -353,36 +339,954 @@ export default function CheckEligibilityPage() {
                       />
                     </div>
 
-                    {/* INTELLIGENT FOLLOW-UP QUESTIONS */}
-                    <div className="space-y-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowFollowUp(!showFollowUp)}
-                        className="w-full justify-between"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          Get personalized questions (recommended)
-                        </span>
-                        {showFollowUp ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
+                    <FormField
+                      control={form.control}
+                      name="occupation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Occupation</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select your occupation" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="student">Student</SelectItem>
+                              <SelectItem value="employed">Employed</SelectItem>
+                              <SelectItem value="farmer">Farmer</SelectItem>
+                              <SelectItem value="unemployed">Unemployed</SelectItem>
+                              <SelectItem value="retired">Retired</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                      {showFollowUp && (
-                        <div className="space-y-4 border-t pt-4">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-5 w-5 text-primary" />
-                            <h3 className="font-semibold text-lg">Additional Questions</h3>
+                  {/* INTELLIGENT FOLLOW-UP QUESTIONS */}
+                  <div className="space-y-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowFollowUp(!showFollowUp)}
+                      className="w-full justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Get personalized questions (recommended)
+                      </span>
+                      {showFollowUp ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+
+                    {showFollowUp && (
+                      <div className="space-y-4 border-t pt-4">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-5 w-5 text-primary" />
+                          <h3 className="font-semibold text-lg">Additional Questions</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Based on your profile, we need some additional information to find the best schemes for you</p>
+
+                        {/* Smart follow-up based on occupation */}
+                        {currentOccupation === 'student' && (
+                          <div className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="educationLevel"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Current Education Level</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select education level" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="illiterate">Illiterate</SelectItem>
+                                      <SelectItem value="primary">Primary (1-5)</SelectItem>
+                                      <SelectItem value="secondary">Secondary (6-10)</SelectItem>
+                                      <SelectItem value="higher_secondary">Higher Secondary (11-12)</SelectItem>
+                                      <SelectItem value="graduate">Graduate</SelectItem>
+                                      <SelectItem value="postgraduate">Post Graduate</SelectItem>
+                                      <SelectItem value="phd">PhD</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription>Required for education schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="loanRequirement"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Education Loan Required</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select loan requirement" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">No Loan Required</SelectItem>
+                                      <SelectItem value="education">Education Loan</SelectItem>
+                                      <SelectItem value="business">Business Loan</SelectItem>
+                                      <SelectItem value="housing">Housing Loan</SelectItem>
+                                      <SelectItem value="agriculture">Agriculture Loan</SelectItem>
+                                      <SelectItem value="emergency">Emergency Loan</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription>Required for education assistance</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
-                          <p className="text-sm text-muted-foreground">Based on your profile, we need some additional information to find the best schemes for you</p>
-                          
-                          {/* Smart follow-up based on occupation */}
+                        )}
+
+                        {/* Smart follow-up based on land ownership */}
+                        {hasLand && (
+                          <FormField
+                            control={form.control}
+                            name="landSize"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Land size (in acres)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="e.g., 2.5" {...field} />
+                                </FormControl>
+                                <FormDescription>Required for agriculture schemes</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        {/* Smart follow-up based on income level */}
+                        {form.watch('annualIncome') > 500000 && (
+                          <FormField
+                            control={form.control}
+                            name="isTaxPayer"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Income tax payer</FormLabel>
+                                  <FormDescription>Do you pay income tax?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        {/* Smart follow-up based on age and occupation */}
+                        {(currentAge >= 60 || currentOccupation === 'retired') && (
+                          <FormField
+                            control={form.control}
+                            name="isWidowOrSenior"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Senior citizen</FormLabel>
+                                  <FormDescription>Are you a senior citizen (60+)?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        {/* Smart follow-up based on technology access */}
+                        {(form.watch('hasSmartphone') || form.watch('hasInternet')) && (
+                          <FormField
+                            control={form.control}
+                            name="digitalLiteracy"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Digital Literacy Level</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select digital literacy" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value="basic">Basic (Can use phone)</SelectItem>
+                                    <SelectItem value="intermediate">Intermediate (Can use apps)</SelectItem>
+                                    <SelectItem value="advanced">Advanced (Can use computers)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormDescription>Required for digital India schemes</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        {/* Smart follow-up based on loan requirement */}
+                        {form.watch('loanRequirement') !== 'none' && form.watch('loanRequirement') !== undefined && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="monthlyExpenses"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Monthly Expenses (₹)</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                      <Input type="number" placeholder="e.g., 15000" {...field} className="pl-8" />
+                                    </div>
+                                  </FormControl>
+                                  <FormDescription>Required for loan eligibility</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="monthlySavings"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Monthly Savings (₹)</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                      <Input type="number" placeholder="e.g., 5000" {...field} className="pl-8" />
+                                    </div>
+                                  </FormControl>
+                                  <FormDescription>Required for loan eligibility</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* OPTIONAL LEVEL 1 - Hidden by default */}
+                  <div className="space-y-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowOptionalLevel1(!showOptionalLevel1)}
+                      className="w-full justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add more details (improves accuracy)
+                      </span>
+                      {showOptionalLevel1 ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+
+                    {showOptionalLevel1 && (
+                      <div className="space-y-4 border-t pt-4">
+                        <div className="flex items-center gap-2">
+                          <Hand className="h-5 w-5 text-primary" />
+                          <h3 className="font-semibold text-lg">Additional Information</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Optional fields that help improve eligibility accuracy</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="gender"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Gender</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select gender" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="male">Male</SelectItem>
+                                    <SelectItem value="female">Female</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="familyIncome"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Family Income (₹)</FormLabel>
+                                <FormControl>
+                                  <div className="relative">
+                                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input type="number" placeholder="e.g., 400000" {...field} className="pl-8" />
+                                  </div>
+                                </FormControl>
+                                <FormDescription>Optional: Total family income</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="hasLand"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Land ownership</FormLabel>
+                                  <FormDescription>Do you own agricultural land?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="hasDisability"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Disability status</FormLabel>
+                                  <FormDescription>Do you have any disability?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="hasAvailedSimilarScheme"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Previous scheme</FormLabel>
+                                  <FormDescription>Have you availed similar scheme before?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* OPTIONAL LEVEL 2 - Hidden by default */}
+                  <div className="space-y-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowOptionalLevel2(!showOptionalLevel2)}
+                      className="w-full justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Advanced inputs (optional)
+                      </span>
+                      {showOptionalLevel2 ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+
+                    {showOptionalLevel2 && (
+                      <div className="space-y-4 border-t pt-4">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-5 w-5 text-primary" />
+                          <h3 className="font-semibold text-lg">Advanced Details</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground">Additional information for more precise eligibility matching</p>
+
+                        {form.watch('hasLand') && (
+                          <FormField
+                            control={form.control}
+                            name="landSize"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Land size (in acres)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="e.g., 2.5" {...field} />
+                                </FormControl>
+                                <FormDescription>Required if you own land</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="familySize"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Family size</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="e.g., 4" {...field} />
+                                </FormControl>
+                                <FormDescription>Number of family members</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          {/* Smart logic: Single girl child only relevant for certain occupations */}
+                          {currentOccupation !== 'student' && (
+                            <FormField
+                              control={form.control}
+                              name="isSingleGirlChild"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Single girl child</FormLabel>
+                                    <FormDescription>Are you a single girl child in family?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Smart logic: Widow/Senior citizen only relevant for certain occupations */}
+                          {currentOccupation !== 'student' && (
+                            <FormField
+                              control={form.control}
+                              name="isWidowOrSenior"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Widow/Senior citizen</FormLabel>
+                                    <FormDescription>Are you a widow or senior citizen (60+)?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          )}
+                          {/* Smart logic: Income tax payer only relevant for employed/retired */}
+                          {(currentOccupation === 'employed' || currentOccupation === 'retired') && (
+                            <FormField
+                              control={form.control}
+                              name="isTaxPayer"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Income tax payer</FormLabel>
+                                    <FormDescription>Do you pay income tax?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="isBankLinked"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Bank/DBT linked</FormLabel>
+                                  <FormDescription>
+                                    {currentOccupation === 'student'
+                                      ? 'Is your bank account linked for scholarships/stipends?'
+                                      : 'Is your bank account linked for DBT?'
+                                    }
+                                  </FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* MODERN INTELLIGENT FIELDS - Smart Logic Section */}
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <GraduationCap className="h-5 w-5 text-primary" />
+                            <h3 className="font-semibold text-lg">Modern Intelligence</h3>
+                          </div>
+                          <p className="text-sm text-muted-foreground">Smart fields that adapt based on your profile</p>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="educationLevel"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Education Level</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select education level" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="illiterate">Illiterate</SelectItem>
+                                      <SelectItem value="primary">Primary (1-5)</SelectItem>
+                                      <SelectItem value="secondary">Secondary (6-10)</SelectItem>
+                                      <SelectItem value="higher_secondary">Higher Secondary (11-12)</SelectItem>
+                                      <SelectItem value="graduate">Graduate</SelectItem>
+                                      <SelectItem value="postgraduate">Post Graduate</SelectItem>
+                                      <SelectItem value="phd">PhD</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription>Required for education-based schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="urbanRural"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Location Type</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select location" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="urban">Urban</SelectItem>
+                                      <SelectItem value="rural">Rural</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription>Required for location-specific schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="digitalLiteracy"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Digital Literacy</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select digital literacy" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">None</SelectItem>
+                                      <SelectItem value="basic">Basic (Can use phone)</SelectItem>
+                                      <SelectItem value="intermediate">Intermediate (Can use apps)</SelectItem>
+                                      <SelectItem value="advanced">Advanced (Can use computers)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription>Required for digital India schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            {/* Show employment type only for adults (18+) */}
+                            {currentAge >= 18 && (
+                              <FormField
+                                control={form.control}
+                                name="employmentType"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Employment Type</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select employment type" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="government">Government</SelectItem>
+                                        <SelectItem value="private">Private</SelectItem>
+                                        <SelectItem value="self_employed">Self Employed</SelectItem>
+                                        <SelectItem value="daily_wage">Daily Wage</SelectItem>
+                                        <SelectItem value="not_applicable">Not Applicable</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormDescription>Required for employment schemes</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Show skill certification only for adults (18+) */}
+                            {currentAge >= 18 && (
+                              <FormField
+                                control={form.control}
+                                name="skillCertification"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Skill Certification</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select skill type" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="it">IT Skills</SelectItem>
+                                        <SelectItem value="technical">Technical Skills</SelectItem>
+                                        <SelectItem value="agriculture">Agriculture Skills</SelectItem>
+                                        <SelectItem value="handicraft">Handicraft Skills</SelectItem>
+                                        <SelectItem value="other">Other Skills</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormDescription>Required for skill development schemes</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            )}
+                            <FormField
+                              control={form.control}
+                              name="loanRequirement"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Loan Requirement</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select loan type" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">None</SelectItem>
+                                      <SelectItem value="education">Education Loan</SelectItem>
+                                      <SelectItem value="business">Business Loan</SelectItem>
+                                      <SelectItem value="housing">Housing Loan</SelectItem>
+                                      <SelectItem value="agriculture">Agriculture Loan</SelectItem>
+                                      <SelectItem value="emergency">Emergency Loan</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription>Required for loan assistance schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="monthlyExpenses"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Monthly Expenses (₹)</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                      <Input type="number" placeholder="e.g., 15000" {...field} className="pl-8" />
+                                    </div>
+                                  </FormControl>
+                                  <FormDescription>Required for financial assistance schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="monthlySavings"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Monthly Savings (₹)</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                      <Input type="number" placeholder="e.g., 5000" {...field} className="pl-8" />
+                                    </div>
+                                  </FormControl>
+                                  <FormDescription>Required for savings-based schemes</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="hasSmartphone"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Smartphone ownership</FormLabel>
+                                    <FormDescription>Do you own a smartphone?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="hasInternet"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Internet access</FormLabel>
+                                    <FormDescription>Do you have regular internet access?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="hasInsurance"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Health insurance</FormLabel>
+                                    <FormDescription>Do you have health insurance?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="hasPension"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Pension scheme</FormLabel>
+                                    <FormDescription>Are you enrolled in any pension scheme?</FormDescription>
+                                  </div>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          {/* Smart Logic: Show additional fields based on combinations */}
+                          {(form.watch('hasSmartphone') && form.watch('hasInternet')) && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="digitalLiteracy"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Digital Literacy Level</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select digital literacy" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="basic">Basic (Can use phone)</SelectItem>
+                                        <SelectItem value="intermediate">Intermediate (Can use apps)</SelectItem>
+                                        <SelectItem value="advanced">Advanced (Can use computers)</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormDescription>Required for digital India schemes</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          )}
+
+                          {/* Smart Logic: Show employment details for employed/farmer (only for adults 18+) */}
+                          {(currentOccupation === 'employed' || currentOccupation === 'farmer') && (currentAge >= 18) && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="employmentType"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Employment Type</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select employment type" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="government">Government</SelectItem>
+                                        <SelectItem value="private">Private</SelectItem>
+                                        <SelectItem value="self_employed">Self Employed</SelectItem>
+                                        <SelectItem value="daily_wage">Daily Wage</SelectItem>
+                                        <SelectItem value="not_applicable">Not Applicable</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormDescription>Required for employment schemes</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="skillCertification"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Skill Certification</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select skill type" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="none">None</SelectItem>
+                                        <SelectItem value="it">IT Skills</SelectItem>
+                                        <SelectItem value="technical">Technical Skills</SelectItem>
+                                        <SelectItem value="agriculture">Agriculture Skills</SelectItem>
+                                        <SelectItem value="handicraft">Handicraft Skills</SelectItem>
+                                        <SelectItem value="other">Other Skills</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <FormDescription>Required for skill development schemes</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          )}
+
+                          {/* Smart Logic: Show financial fields for loan requirements (only when loan is needed) */}
+                          {form.watch('loanRequirement') !== 'none' && form.watch('loanRequirement') !== undefined && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="monthlyExpenses"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Monthly Expenses (₹)</FormLabel>
+                                    <FormControl>
+                                      <div className="relative">
+                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input type="number" placeholder="e.g., 15000" {...field} className="pl-8" />
+                                      </div>
+                                    </FormControl>
+                                    <FormDescription>Required for loan eligibility</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="monthlySavings"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Monthly Savings (₹)</FormLabel>
+                                    <FormControl>
+                                      <div className="relative">
+                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input type="number" placeholder="e.g., 5000" {...field} className="pl-8" />
+                                      </div>
+                                    </FormControl>
+                                    <FormDescription>Required for loan eligibility</FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          )}
+
+                          {/* Smart Logic: Show education fields for students */}
                           {currentOccupation === 'student' && (
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <FormField
                                 control={form.control}
                                 name="educationLevel"
@@ -438,999 +1342,102 @@ export default function CheckEligibilityPage() {
                               />
                             </div>
                           )}
-
-                          {/* Smart follow-up based on land ownership */}
-                          {hasLand && (
-                            <FormField
-                              control={form.control}
-                              name="landSize"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Land size (in acres)</FormLabel>
-                                  <FormControl>
-                                    <Input type="number" placeholder="e.g., 2.5" {...field} />
-                                  </FormControl>
-                                  <FormDescription>Required for agriculture schemes</FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )}
-
-                          {/* Smart follow-up based on income level */}
-                          {form.watch('annualIncome') > 500000 && (
-                            <FormField
-                              control={form.control}
-                              name="isTaxPayer"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                  <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Income tax payer</FormLabel>
-                                    <FormDescription>Do you pay income tax?</FormDescription>
-                                  </div>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          )}
-
-                          {/* Smart follow-up based on age and occupation */}
-                          {(currentAge >= 60 || currentOccupation === 'retired') && (
-                            <FormField
-                              control={form.control}
-                              name="isWidowOrSenior"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                  <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Senior citizen</FormLabel>
-                                    <FormDescription>Are you a senior citizen (60+)?</FormDescription>
-                                  </div>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          )}
-
-                          {/* Smart follow-up based on technology access */}
-                          {(form.watch('hasSmartphone') || form.watch('hasInternet')) && (
-                            <FormField
-                              control={form.control}
-                              name="digitalLiteracy"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Digital Literacy Level</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select digital literacy" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="none">None</SelectItem>
-                                      <SelectItem value="basic">Basic (Can use phone)</SelectItem>
-                                      <SelectItem value="intermediate">Intermediate (Can use apps)</SelectItem>
-                                      <SelectItem value="advanced">Advanced (Can use computers)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormDescription>Required for digital India schemes</FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )}
-
-                          {/* Smart follow-up based on loan requirement */}
-                          {form.watch('loanRequirement') !== 'none' && form.watch('loanRequirement') !== undefined && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="monthlyExpenses"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Monthly Expenses (₹)</FormLabel>
-                                    <FormControl>
-                                      <div className="relative">
-                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input type="number" placeholder="e.g., 15000" {...field} className="pl-8"/>
-                                      </div>
-                                    </FormControl>
-                                    <FormDescription>Required for loan eligibility</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="monthlySavings"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Monthly Savings (₹)</FormLabel>
-                                    <FormControl>
-                                      <div className="relative">
-                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input type="number" placeholder="e.g., 5000" {...field} className="pl-8"/>
-                                      </div>
-                                    </FormControl>
-                                    <FormDescription>Required for loan eligibility</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          )}
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button
+                    type="submit"
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Finding Schemes...' : 'Find My Schemes'}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Form>
+          ) : (
+            <div className="flex flex-col h-full w-full">
+              <CardContent className="space-y-6 pt-6">
+                <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
+                  <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-4 ring-8 ring-green-500/5">
+                    <CheckCircle className="h-10 w-10 text-green-500" />
+                  </div>
+                  <h2 className="text-3xl font-black text-primary">Analysis Complete</h2>
+                  <p className="text-muted-foreground text-lg">
+                    Our AI has successfully analyzed your profile against active government schemes.
+                  </p>
 
-                    {/* OPTIONAL LEVEL 1 - Hidden by default */}
-                    <div className="space-y-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowOptionalLevel1(!showOptionalLevel1)}
-                        className="w-full justify-between"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Plus className="h-4 w-4" />
-                          Add more details (improves accuracy)
-                        </span>
-                        {showOptionalLevel1 ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
-
-                      {showOptionalLevel1 && (
-                        <div className="space-y-4 border-t pt-4">
-                          <div className="flex items-center gap-2">
-                            <Hand className="h-5 w-5 text-primary" />
-                            <h3 className="font-semibold text-lg">Additional Information</h3>
-                          </div>
-                          <p className="text-sm text-muted-foreground">Optional fields that help improve eligibility accuracy</p>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="gender"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Gender</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select gender" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="male">Male</SelectItem>
-                                      <SelectItem value="female">Female</SelectItem>
-                                      <SelectItem value="other">Other</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="familyIncome"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Family Income (₹)</FormLabel>
-                                  <FormControl>
-                                    <div className="relative">
-                                      <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                      <Input type="number" placeholder="e.g., 400000" {...field} className="pl-8"/>
-                                    </div>
-                                  </FormControl>
-                                  <FormDescription>Optional: Total family income</FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="hasLand"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                  <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Land ownership</FormLabel>
-                                    <FormDescription>Do you own agricultural land?</FormDescription>
-                                  </div>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="hasDisability"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                  <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Disability status</FormLabel>
-                                    <FormDescription>Do you have any disability?</FormDescription>
-                                  </div>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="hasAvailedSimilarScheme"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                  <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Previous scheme</FormLabel>
-                                    <FormDescription>Have you availed similar scheme before?</FormDescription>
-                                  </div>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* OPTIONAL LEVEL 2 - Hidden by default */}
-                    <div className="space-y-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowOptionalLevel2(!showOptionalLevel2)}
-                        className="w-full justify-between"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Plus className="h-4 w-4" />
-                          Advanced inputs (optional)
-                        </span>
-                        {showOptionalLevel2 ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
-
-                      {showOptionalLevel2 && (
-                        <div className="space-y-4 border-t pt-4">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-5 w-5 text-primary" />
-                            <h3 className="font-semibold text-lg">Advanced Details</h3>
-                          </div>
-                          <p className="text-sm text-muted-foreground">Additional information for more precise eligibility matching</p>
-                          
-                          {form.watch('hasLand') && (
-                            <FormField
-                              control={form.control}
-                              name="landSize"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Land size (in acres)</FormLabel>
-                                  <FormControl>
-                                    <Input type="number" placeholder="e.g., 2.5" {...field} />
-                                  </FormControl>
-                                  <FormDescription>Required if you own land</FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )}
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="familySize"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Family size</FormLabel>
-                                  <FormControl>
-                                    <Input type="number" placeholder="e.g., 4" {...field} />
-                                  </FormControl>
-                                  <FormDescription>Number of family members</FormDescription>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            {/* Smart logic: Single girl child only relevant for certain occupations */}
-                            {currentOccupation !== 'student' && (
-                              <FormField
-                                control={form.control}
-                                name="isSingleGirlChild"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Single girl child</FormLabel>
-                                      <FormDescription>Are you a single girl child in family?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Smart logic: Widow/Senior citizen only relevant for certain occupations */}
-                            {currentOccupation !== 'student' && (
-                              <FormField
-                                control={form.control}
-                                name="isWidowOrSenior"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Widow/Senior citizen</FormLabel>
-                                      <FormDescription>Are you a widow or senior citizen (60+)?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            )}
-                            {/* Smart logic: Income tax payer only relevant for employed/retired */}
-                            {(currentOccupation === 'employed' || currentOccupation === 'retired') && (
-                              <FormField
-                                control={form.control}
-                                name="isTaxPayer"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Income tax payer</FormLabel>
-                                      <FormDescription>Do you pay income tax?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="isBankLinked"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                  <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Bank/DBT linked</FormLabel>
-                                    <FormDescription>
-                                      {currentOccupation === 'student' 
-                                        ? 'Is your bank account linked for scholarships/stipends?' 
-                                        : 'Is your bank account linked for DBT?'
-                                      }
-                                    </FormDescription>
-                                  </div>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          {/* MODERN INTELLIGENT FIELDS - Smart Logic Section */}
-                          <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                              <GraduationCap className="h-5 w-5 text-primary" />
-                              <h3 className="font-semibold text-lg">Modern Intelligence</h3>
-                            </div>
-                            <p className="text-sm text-muted-foreground">Smart fields that adapt based on your profile</p>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="educationLevel"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Education Level</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select education level" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="illiterate">Illiterate</SelectItem>
-                                        <SelectItem value="primary">Primary (1-5)</SelectItem>
-                                        <SelectItem value="secondary">Secondary (6-10)</SelectItem>
-                                        <SelectItem value="higher_secondary">Higher Secondary (11-12)</SelectItem>
-                                        <SelectItem value="graduate">Graduate</SelectItem>
-                                        <SelectItem value="postgraduate">Post Graduate</SelectItem>
-                                        <SelectItem value="phd">PhD</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormDescription>Required for education-based schemes</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="urbanRural"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Location Type</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select location" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="urban">Urban</SelectItem>
-                                        <SelectItem value="rural">Rural</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormDescription>Required for location-specific schemes</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="digitalLiteracy"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Digital Literacy</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select digital literacy" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="none">None</SelectItem>
-                                        <SelectItem value="basic">Basic (Can use phone)</SelectItem>
-                                        <SelectItem value="intermediate">Intermediate (Can use apps)</SelectItem>
-                                        <SelectItem value="advanced">Advanced (Can use computers)</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormDescription>Required for digital India schemes</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              {/* Show employment type only for adults (18+) */}
-                              {currentAge >= 18 && (
-                                <FormField
-                                  control={form.control}
-                                  name="employmentType"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Employment Type</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select employment type" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="government">Government</SelectItem>
-                                          <SelectItem value="private">Private</SelectItem>
-                                          <SelectItem value="self_employed">Self Employed</SelectItem>
-                                          <SelectItem value="daily_wage">Daily Wage</SelectItem>
-                                          <SelectItem value="not_applicable">Not Applicable</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for employment schemes</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {/* Show skill certification only for adults (18+) */}
-                              {currentAge >= 18 && (
-                                <FormField
-                                  control={form.control}
-                                  name="skillCertification"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Skill Certification</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select skill type" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="none">None</SelectItem>
-                                          <SelectItem value="it">IT Skills</SelectItem>
-                                          <SelectItem value="technical">Technical Skills</SelectItem>
-                                          <SelectItem value="agriculture">Agriculture Skills</SelectItem>
-                                          <SelectItem value="handicraft">Handicraft Skills</SelectItem>
-                                          <SelectItem value="other">Other Skills</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for skill development schemes</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              )}
-                              <FormField
-                                control={form.control}
-                                name="loanRequirement"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Loan Requirement</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select loan type" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="none">None</SelectItem>
-                                        <SelectItem value="education">Education Loan</SelectItem>
-                                        <SelectItem value="business">Business Loan</SelectItem>
-                                        <SelectItem value="housing">Housing Loan</SelectItem>
-                                        <SelectItem value="agriculture">Agriculture Loan</SelectItem>
-                                        <SelectItem value="emergency">Emergency Loan</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <FormDescription>Required for loan assistance schemes</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="monthlyExpenses"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Monthly Expenses (₹)</FormLabel>
-                                    <FormControl>
-                                      <div className="relative">
-                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input type="number" placeholder="e.g., 15000" {...field} className="pl-8"/>
-                                      </div>
-                                    </FormControl>
-                                    <FormDescription>Required for financial assistance schemes</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="monthlySavings"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Monthly Savings (₹)</FormLabel>
-                                    <FormControl>
-                                      <div className="relative">
-                                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input type="number" placeholder="e.g., 5000" {...field} className="pl-8"/>
-                                      </div>
-                                    </FormControl>
-                                    <FormDescription>Required for savings-based schemes</FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="hasSmartphone"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Smartphone ownership</FormLabel>
-                                      <FormDescription>Do you own a smartphone?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="hasInternet"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Internet access</FormLabel>
-                                      <FormDescription>Do you have regular internet access?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="hasInsurance"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Health insurance</FormLabel>
-                                      <FormDescription>Do you have health insurance?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="hasPension"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                      <FormLabel className="text-base">Pension scheme</FormLabel>
-                                      <FormDescription>Are you enrolled in any pension scheme?</FormDescription>
-                                    </div>
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            {/* Smart Logic: Show additional fields based on combinations */}
-                            {(form.watch('hasSmartphone') && form.watch('hasInternet')) && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="digitalLiteracy"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Digital Literacy Level</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select digital literacy" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="none">None</SelectItem>
-                                          <SelectItem value="basic">Basic (Can use phone)</SelectItem>
-                                          <SelectItem value="intermediate">Intermediate (Can use apps)</SelectItem>
-                                          <SelectItem value="advanced">Advanced (Can use computers)</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for digital India schemes</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
-
-                            {/* Smart Logic: Show employment details for employed/farmer (only for adults 18+) */}
-                            {(currentOccupation === 'employed' || currentOccupation === 'farmer') && (currentAge >= 18) && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="employmentType"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Employment Type</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select employment type" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="government">Government</SelectItem>
-                                          <SelectItem value="private">Private</SelectItem>
-                                          <SelectItem value="self_employed">Self Employed</SelectItem>
-                                          <SelectItem value="daily_wage">Daily Wage</SelectItem>
-                                          <SelectItem value="not_applicable">Not Applicable</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for employment schemes</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="skillCertification"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Skill Certification</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select skill type" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="none">None</SelectItem>
-                                          <SelectItem value="it">IT Skills</SelectItem>
-                                          <SelectItem value="technical">Technical Skills</SelectItem>
-                                          <SelectItem value="agriculture">Agriculture Skills</SelectItem>
-                                          <SelectItem value="handicraft">Handicraft Skills</SelectItem>
-                                          <SelectItem value="other">Other Skills</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for skill development schemes</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
-
-                            {/* Smart Logic: Show financial fields for loan requirements (only when loan is needed) */}
-                            {form.watch('loanRequirement') !== 'none' && form.watch('loanRequirement') !== undefined && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="monthlyExpenses"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Monthly Expenses (₹)</FormLabel>
-                                      <FormControl>
-                                        <div className="relative">
-                                          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                          <Input type="number" placeholder="e.g., 15000" {...field} className="pl-8"/>
-                                        </div>
-                                      </FormControl>
-                                      <FormDescription>Required for loan eligibility</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="monthlySavings"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Monthly Savings (₹)</FormLabel>
-                                      <FormControl>
-                                        <div className="relative">
-                                          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                          <Input type="number" placeholder="e.g., 5000" {...field} className="pl-8"/>
-                                        </div>
-                                      </FormControl>
-                                      <FormDescription>Required for loan eligibility</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
-
-                            {/* Smart Logic: Show education fields for students */}
-                            {currentOccupation === 'student' && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="educationLevel"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Current Education Level</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select education level" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="illiterate">Illiterate</SelectItem>
-                                          <SelectItem value="primary">Primary (1-5)</SelectItem>
-                                          <SelectItem value="secondary">Secondary (6-10)</SelectItem>
-                                          <SelectItem value="higher_secondary">Higher Secondary (11-12)</SelectItem>
-                                          <SelectItem value="graduate">Graduate</SelectItem>
-                                          <SelectItem value="postgraduate">Post Graduate</SelectItem>
-                                          <SelectItem value="phd">PhD</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for education schemes</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="loanRequirement"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Education Loan Required</FormLabel>
-                                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select loan requirement" />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="none">No Loan Required</SelectItem>
-                                          <SelectItem value="education">Education Loan</SelectItem>
-                                          <SelectItem value="business">Business Loan</SelectItem>
-                                          <SelectItem value="housing">Housing Loan</SelectItem>
-                                          <SelectItem value="agriculture">Agriculture Loan</SelectItem>
-                                          <SelectItem value="emergency">Emergency Loan</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormDescription>Required for education assistance</FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-end">
-                    <Button 
-                      type="submit" 
-                      className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Finding Schemes...' : 'Find My Schemes'}
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Form>
-            ) : (
-              <CardContent className="space-y-6">
-                <div className="text-center">
-                  <h2 className="font-headline text-2xl font-bold text-primary mb-4">Eligible Schemes</h2>
                   {eligibleSchemes.length > 0 ? (
-                    <div className="space-y-3">
-                      {eligibleSchemes.map((scheme, index) => (
-                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-green-50/50">
-                          <div className="flex items-center gap-3">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <span className="font-medium">{scheme}</span>
-                          </div>
+                    <div className="w-full mt-8">
+                      <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10">
+                        <div className="flex items-center justify-center gap-2 mb-6">
+                          <Sparkles className="h-5 w-5 text-primary" />
+                          <h3 className="text-xl font-bold text-primary tracking-tight">Top AI Matches Detected</h3>
                         </div>
-                      ))}
+
+                        <div className="space-y-3 mb-6">
+                          {eligibleSchemes.slice(0, 5).map((scheme, index) => (
+                            <div key={index} className="bg-white px-5 py-4 rounded-xl flex items-center shadow-sm border border-slate-100">
+                              <div className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0">
+                                <span className="text-primary font-black text-xs">{index + 1}</span>
+                              </div>
+                              <span className="font-bold text-slate-700 text-left line-clamp-1">{scheme}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <p className="text-sm font-semibold text-slate-500 flex items-center justify-center gap-1.5 bg-white/50 py-2 rounded-lg">
+                          <Zap className="h-4 w-4 text-yellow-500" />
+                          Found a total of <span className="text-primary font-black mx-1">{eligibleSchemes.length}</span> potential matches.
+                        </p>
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center p-8 border-2 border-dashed rounded-lg">
-                      <div className="text-center">
-                        <XCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600">No eligible schemes found based on your profile.</p>
-                        <p className="text-sm text-gray-500 mt-2">Please check your information or try adjusting some criteria.</p>
-                      </div>
+                    <div className="bg-orange-50/50 border border-orange-100 p-6 rounded-2xl w-full mt-6">
+                      <p className="text-orange-800 font-medium">
+                        No direct matches found. Please adjust your profile or try adding more details.
+                      </p>
                     </div>
                   )}
                 </div>
-                  <div className="flex justify-center space-x-4">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setHasSubmitted(false);
-                      setEligibleSchemes([]);
-                      setShowOptionalLevel1(false);
-                      setShowOptionalLevel2(false);
-                      form.reset();
-                    }}
-                  >
-                    Try Again
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      // Build search parameters from form data
-                      const formData = form.getValues();
-                      const searchParams = new URLSearchParams();
-                      
-                      // Core required fields
-                      if (formData.age) searchParams.set('age', formData.age.toString());
-                      if (formData.annualIncome) searchParams.set('income', formData.annualIncome.toString());
-                      if (formData.state) searchParams.set('state', formData.state);
-                      if (formData.caste) searchParams.set('category', formData.caste);
-                      if (formData.occupation) searchParams.set('occupation', formData.occupation);
-                      if (formData.gender) searchParams.set('gender', formData.gender);
-                      
-                      // Optional fields
-                      if (formData.hasDisability) searchParams.set('hasDisability', 'true');
-                      if (formData.hasLand) searchParams.set('hasLand', 'true');
-                      if (formData.familyIncome) searchParams.set('familyIncome', formData.familyIncome.toString());
-                      if (formData.landSize) searchParams.set('landSize', formData.landSize.toString());
-                      if (formData.familySize) searchParams.set('familySize', formData.familySize.toString());
-                      if (formData.isSingleGirlChild) searchParams.set('isSingleGirlChild', 'true');
-                      if (formData.isWidowOrSenior) searchParams.set('isWidowOrSenior', 'true');
-                      if (formData.isTaxPayer) searchParams.set('isTaxPayer', 'true');
-                      if (formData.isBankLinked) searchParams.set('isBankLinked', 'true');
-                      if (formData.educationLevel) searchParams.set('educationLevel', formData.educationLevel);
-                      if (formData.digitalLiteracy) searchParams.set('digitalLiteracy', formData.digitalLiteracy);
-                      if (formData.urbanRural) searchParams.set('urbanRural', formData.urbanRural);
-                      if (formData.monthlyExpenses) searchParams.set('monthlyExpenses', formData.monthlyExpenses.toString());
-                      if (formData.hasSmartphone) searchParams.set('hasSmartphone', 'true');
-                      if (formData.hasInternet) searchParams.set('hasInternet', 'true');
-                      if (formData.employmentType) searchParams.set('employmentType', formData.employmentType);
-                      if (formData.skillCertification) searchParams.set('skillCertification', formData.skillCertification);
-                      if (formData.loanRequirement) searchParams.set('loanRequirement', formData.loanRequirement);
-                      if (formData.monthlySavings) searchParams.set('monthlySavings', formData.monthlySavings.toString());
-                      if (formData.hasInsurance) searchParams.set('hasInsurance', 'true');
-                      if (formData.hasPension) searchParams.set('hasPension', 'true');
-                      
-                      router.push(`/recommendations?${searchParams.toString()}`);
-                    }}
-                    className="bg-primary text-primary-foreground"
-                  >
-                    View Detailed Results
-                  </Button>
-                </div>
               </CardContent>
-            )}
-          </Card>
+              <CardFooter className="flex justify-center flex-wrap gap-4 border-t pt-6 bg-muted/20">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setHasSubmitted(false);
+                  }}
+                  className="px-8 h-12"
+                >
+                  Refine Profile
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    const params = new URLSearchParams();
+
+                    // Pass along all form data to the recommendations page for ML re-processing
+                    const formData = form.getValues();
+                    Object.entries(formData).forEach(([key, value]) => {
+                      if (value !== undefined && value !== null && value !== '') {
+                        params.append(key, String(value));
+                      }
+                    });
+
+                    router.push(`/recommendations?${params.toString()}`);
+                  }}
+                  className="px-8 h-12 gap-2 shadow-lg shadow-primary/20"
+                >
+                  View Detailed Interactive Results <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </div>
+          )}
+        </Card>
       </main>
       <Chatbot />
     </div>

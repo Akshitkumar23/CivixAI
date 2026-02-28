@@ -31,10 +31,10 @@ export async function getApplicationSummary(scheme: Scheme) {
   return result.summary;
 }
 
-export async function getChatbotResponse(query: string) {
+export async function getChatbotResponse(query: string, context: string = '[]') {
   const result = await provideChatbotAssistance({
     query,
-    schemeDetails: JSON.stringify([]),
+    schemeDetails: context,
   });
 
   return result.answer;

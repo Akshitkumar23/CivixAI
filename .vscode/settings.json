@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "c:\\Users\\akshi\\Desktop\\CivixAI\\.venv\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "./services/ml",
+        "./services/ml_api"
+    ]
+}

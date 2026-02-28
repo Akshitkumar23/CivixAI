@@ -23,7 +23,7 @@ type Message = {
   text: string;
 };
 
-export default function Chatbot() {
+export default function Chatbot({ context }: { context?: any[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -51,7 +51,8 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      const botResponse = await getChatbotResponse(input);
+      const contextStr = context ? JSON.stringify(context) : '[]';
+      const botResponse = await getChatbotResponse(input, contextStr);
       const botMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponse };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -95,9 +96,8 @@ export default function Chatbot() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    className={`flex items-end gap-2 ${
-                      message.role === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
+                    className={`flex items-end gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'
+                      }`}
                   >
                     {message.role === 'bot' && (
                       <Avatar className="h-8 w-8">
@@ -105,15 +105,14 @@ export default function Chatbot() {
                       </Avatar>
                     )}
                     <div
-                      className={`max-w-xs rounded-lg px-4 py-2 sm:max-w-sm md:max-w-md ${
-                        message.role === 'user'
+                      className={`max-w-xs rounded-lg px-4 py-2 sm:max-w-sm md:max-w-md ${message.role === 'user'
                           ? 'bg-accent text-accent-foreground'
                           : 'bg-muted'
-                      }`}
+                        }`}
                     >
                       {message.text}
                     </div>
-                     {message.role === 'user' && (
+                    {message.role === 'user' && (
                       <Avatar className="h-8 w-8">
                         <AvatarFallback><User /></AvatarFallback>
                       </Avatar>
@@ -121,19 +120,19 @@ export default function Chatbot() {
                   </motion.div>
                 ))}
                 {isLoading && (
-                   <motion.div
+                  <motion.div
                     layout
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                     className="flex items-end gap-2 justify-start"
                   >
-                     <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground"><Bot /></AvatarFallback>
-                      </Avatar>
-                      <div className="bg-muted rounded-lg px-4 py-2">
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      </div>
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary text-primary-foreground"><Bot /></AvatarFallback>
+                    </Avatar>
+                    <div className="bg-muted rounded-lg px-4 py-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

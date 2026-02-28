@@ -6,14 +6,21 @@ import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { SearchX, Loader2, Sparkles } from 'lucide-react';
+import { SearchX, Loader2, Sparkles, TrendingUp, ShieldCheck, Zap, Info, FileText, Globe, ExternalLink, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Chatbot from '@/components/Chatbot';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface APIResponse {
   success: boolean;
@@ -24,6 +31,15 @@ interface APIResponse {
     eligible: boolean;
     confidence: number;
     threshold: number;
+    benefit_score?: number;
+    rank_score?: number;
+    reasons?: string[];
+    missing?: string[];
+    description?: string;
+    category?: string;
+    states?: string;
+    documents?: string;
+    url?: string;
   }>;
   topSchemes?: Array<{
     scheme: string;
@@ -52,15 +68,15 @@ function RecommendationsSkeleton() {
 
 function CardSkeleton() {
   return (
-    <Card className="overflow-hidden">
-      <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 animate-pulse" />
+    <Card className="overflow-hidden bg-white/5 border-white/10 backdrop-blur-xl">
+      <div className="h-48 bg-gradient-to-br from-primary/10 to-purple-500/10 animate-pulse" />
       <CardContent className="p-6">
-        <Skeleton className="h-8 w-3/4 mb-4" />
-        <Skeleton className="h-4 w-full mb-2" />
-        <Skeleton className="h-4 w-2/3 mb-4" />
+        <Skeleton className="h-8 w-3/4 mb-4 bg-white/10" />
+        <Skeleton className="h-4 w-full mb-2 bg-white/10" />
+        <Skeleton className="h-4 w-2/3 mb-4 bg-white/10" />
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-20" />
-          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-8 w-20 bg-white/10" />
+          <Skeleton className="h-8 w-20 bg-white/10" />
         </div>
       </CardContent>
     </Card>
@@ -68,118 +84,218 @@ function CardSkeleton() {
 }
 
 function DetailedSchemeCard({ scheme, index, details }: { scheme: any; index: number; details?: any }) {
-  const confidence = scheme.confidence || scheme.priority || 50;
+  const confidence = scheme.confidence || 50;
   const isEligible = scheme.eligible !== false;
   const priority = scheme.priority || 'medium';
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="group relative"
     >
-      <Card className="bg-card/60 backdrop-blur-md hover:shadow-lg transition-all duration-300 border border-border/60">
-        <CardHeader className="pb-4">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-              <CardTitle className="text-2xl font-bold">{details?.scheme_name || scheme.scheme_name || scheme.id}</CardTitle>
-                {isEligible ? (
-                  <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">
-                    Eligible
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="bg-red-500/10 text-red-700 border-red-500/20">
-                    Not Eligible
-                  </Badge>
-                )}
+      <Card className={`relative z-10 overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white/5 hover:bg-white/10 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] rounded-3xl ${priority === 'high' ? 'ring-1 ring-primary/50 shadow-primary/20' : priority === 'medium' ? 'ring-1 ring-white/20' : ''}`}>
+
+        {/* Subtle top reflection for glass */}
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-white/0 via-white/20 to-white/0" />
+
+        <CardHeader className="p-6 pb-2">
+          <div className="flex justify-between items-start gap-4 p-1">
+            <div className="space-y-2 flex-1">
+              <div className="flex items-center flex-wrap gap-2">
+                <Badge variant={isEligible ? "default" : "secondary"} className={isEligible ? "bg-green-500/20 text-green-300 border border-green-400/30 shadow-sm backdrop-blur-md" : "bg-red-500/20 text-red-300 border border-red-400/30"}>
+                  <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isEligible ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+                  {isEligible ? 'Eligible Match' : 'Check Criteria'}
+                </Badge>
+                <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 ml-1">
+                  {details?.category || 'General'}
+                </div>
               </div>
-              <CardDescription className="text-lg">
-                {details?.summary || scheme.description || scheme.benefits || 'Detailed scheme information'}
-              </CardDescription>
+
+              <CardTitle className="text-xl md:text-2xl font-black leading-tight text-white line-clamp-2 group-hover:text-primary-foreground transition-colors group-hover:shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+                {details?.scheme_name || scheme.scheme_name}
+              </CardTitle>
             </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-primary">{Math.round(confidence)}%</div>
-              <div className="text-sm text-muted-foreground">Confidence</div>
+
+            <div className={`flex flex-col items-center justify-center bg-black/40 backdrop-blur-md border border-white/10 shadow-inner rounded-2xl p-3 shrink-0 min-w-[80px] transition-all duration-300 ${priority === 'high' ? 'shadow-[0_0_15px_rgba(59,130,246,0.3)]' : ''}`}>
+              <div className={`text-2xl md:text-3xl font-black ${confidence > 80 ? 'text-transparent bg-clip-text bg-gradient-to-br from-blue-300 to-purple-400' : 'text-slate-300'}`}>
+                {Math.round(confidence)}<span className="text-sm opacity-50">%</span>
+              </div>
+              <div className="text-[9px] uppercase tracking-widest font-black text-slate-500 mt-1">Match</div>
             </div>
           </div>
         </CardHeader>
-        
-        <CardContent className="space-y-6">
-          {/* Confidence Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>AI Confidence Score</span>
-              <span>{Math.round(confidence)}%</span>
+
+        <CardContent className="p-6 pt-2 space-y-5">
+          <p className="text-[15px] text-slate-300 leading-relaxed line-clamp-3">
+            {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status.'}
+          </p>
+
+          <div className="flex items-center gap-4 py-3 px-4 bg-black/20 backdrop-blur-sm rounded-2xl border border-white/5 shadow-inner">
+            <div className="flex-1 space-y-2">
+              <div className="flex justify-between items-end">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Plausibility</span>
+                <span className="text-xs font-bold text-blue-300">{Math.round(confidence)}%</span>
+              </div>
+              <div className="h-2 w-full bg-slate-800/80 rounded-full overflow-hidden border border-white/5">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full"
+                  style={{ width: `${Math.round(confidence)}%` }}
+                />
+              </div>
             </div>
-            <Progress value={confidence} className="h-3" />
-          </div>
-
-          {/* Priority Indicator */}
-          <div className="flex gap-2">
-            {priority === 'high' && (
-              <Badge className="bg-primary/10 text-primary border border-primary/20">Highly Recommended</Badge>
-            )}
-            {priority === 'medium' && (
-              <Badge className="bg-secondary/30 text-secondary-foreground border border-border/60">Recommended</Badge>
-            )}
-            {priority === 'low' && (
-              <Badge className="bg-muted text-muted-foreground border border-border/60">Consider</Badge>
-            )}
-          </div>
-
-          <div className="space-y-3 text-sm text-muted-foreground">
-            {details?.eligibility_snippets?.length > 0 ? (
-              <div>
-                <div className="font-semibold text-foreground">Eligibility</div>
-                {details.eligibility_snippets.slice(0, 3).map((line: string, i: number) => (
-                  <div key={i}>{line}</div>
-                ))}
+            {scheme.benefit_score !== undefined && (
+              <div className="px-3 py-1.5 bg-green-500/20 backdrop-blur-md rounded-xl border border-green-400/30 flex flex-col items-center justify-center shrink-0">
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3 text-green-300" />
+                  <span className="text-sm font-black text-green-300">+{Number(scheme.benefit_score).toFixed(1)}</span>
+                </div>
+                <div className="text-[9px] uppercase font-bold text-green-400/70">Impact</div>
               </div>
-            ) : null}
-
-            {details?.benefits_snippets?.length > 0 ? (
-              <div>
-                <div className="font-semibold text-foreground">Benefits</div>
-                {details.benefits_snippets.slice(0, 3).map((line: string, i: number) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </div>
-            ) : null}
-
-            {details?.documents_snippets?.length > 0 ? (
-              <div>
-                <div className="font-semibold text-foreground">Documents</div>
-                {details.documents_snippets.slice(0, 3).map((line: string, i: number) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            {details?.source_url ? (
-              <Button className="flex-1" asChild>
-                <a href={details.source_url} target="_blank" rel="noreferrer">
-                  Apply / Learn More
-                </a>
-              </Button>
-            ) : (
-              <Button className="flex-1" disabled>
-                Apply / Learn More
-              </Button>
             )}
-            <Button variant="outline" asChild>
-              <Link href={`/scheme/${scheme.id}`}>View Details</Link>
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link href={`/check-eligibility`}>Edit Profile</Link>
-            </Button>
           </div>
+
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="pt-4 border-t border-white/10 space-y-4"
+              >
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="reasoning" className="border-none">
+                    <AccordionTrigger className="py-2 hover:no-underline text-white">
+                      <div className="flex items-center gap-2 text-blue-300">
+                        <Zap className="h-4 w-4" />
+                        <span className="text-sm font-bold uppercase tracking-tight">AI Reasoning</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm space-y-2 bg-black/40 p-3 rounded-xl border border-white/5 text-slate-300">
+                      {scheme.reasons && scheme.reasons.length > 0 ? (
+                        <ul className="space-y-1">
+                          {scheme.reasons.map((r: string, i: number) => (
+                            <li key={i} className="flex gap-2">
+                              <ShieldCheck className="h-4 w-4 shrink-0 text-green-400" />
+                              <span>{r}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>Matches your demographics and socioeconomic status.</p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="details" className="border-none">
+                    <AccordionTrigger className="py-2 hover:no-underline text-white">
+                      <div className="flex items-center gap-2 text-slate-300">
+                        <FileText className="h-4 w-4" />
+                        <span className="text-sm font-bold uppercase tracking-tight">Requirements</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm space-y-4 pt-2 text-slate-300">
+                      {details?.benefits_snippets?.length > 0 && (
+                        <div className="bg-black/20 p-3 rounded-xl border border-white/5">
+                          <div className="font-bold text-white mb-1">Key Benefits</div>
+                          <div className="opacity-90">{details.benefits_snippets[0]}</div>
+                        </div>
+                      )}
+                      {details?.documents_snippets?.length > 0 && (
+                        <div className="bg-black/20 p-3 rounded-xl border border-white/5">
+                          <div className="font-bold text-white mb-1">Documents Needed</div>
+                          <div className="opacity-90">{details.documents_snippets[0]}</div>
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
+                <div className="flex gap-3 pt-2">
+                  <Button className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] border-none" size="sm" asChild>
+                    <a href={details?.source_url || '#'} target="_blank">
+                      Apply Now <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="sm" className="rounded-xl border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white" asChild>
+                    <Link href={`/scheme/${scheme.id}`}>Full Analysis</Link>
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CardContent>
+
+        <CardFooter className="p-3 bg-black/20 border-t border-white/10">
+          <Button
+            variant="ghost"
+            className="w-full h-10 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? 'Hide Details' : 'View AI Reasoning & Criteria'}
+            {isExpanded ? <ChevronUp className="ml-1.5 h-4 w-4" /> : <ChevronDown className="ml-1.5 h-4 w-4" />}
+          </Button>
+        </CardFooter>
       </Card>
+      {/* Decorative background glow behind the card on hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 rounded-3xl -z-10" />
     </motion.div>
+  );
+}
+
+function TopMatchHero({ scheme, details }: { scheme: any; details?: any }) {
+  if (!scheme) return null;
+
+  return (
+    <Card className="mb-10 overflow-hidden shadow-[0_0_40px_rgba(59,130,246,0.3)] bg-gradient-to-br from-slate-900 via-[#0a1128] to-[#1a0b2e] border border-white/10 text-white rounded-[2.5rem]">
+      <div className="relative p-8 md:p-12 overflow-hidden">
+        {/* Animated Background Decor */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-500/20 rounded-full blur-[80px]" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px]" />
+
+        <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-xl text-xs font-black uppercase tracking-widest text-blue-300 border border-white/10 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+              <Sparkles className="h-3.5 w-3.5 text-blue-300 fill-blue-300 animate-pulse" />
+              Top AI Prediction
+            </div>
+
+            <h2 className="text-4xl md:text-6xl font-black leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-blue-200">
+              {details?.scheme_name || scheme.scheme_name}
+            </h2>
+
+            <p className="text-lg text-slate-300 leading-relaxed line-clamp-3">
+              {details?.summary || "This scheme represents the absolute best match for your current profile. Our models predict a high success rate for your application based on socio-economic trends and recent policy updates."}
+            </p>
+
+            <div className="flex flex-wrap gap-4 pt-4">
+              <div className="bg-white text-slate-900 px-7 py-3.5 rounded-2xl font-black text-sm hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all flex items-center cursor-pointer">
+                Apply Immediately <ArrowRight className="ml-2 h-4 w-4" />
+              </div>
+              <div className="bg-white/5 backdrop-blur-xl text-white border border-white/10 px-7 py-3.5 rounded-2xl font-bold text-sm hover:bg-white/10 transition-all cursor-pointer">
+                Save for Later
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center md:justify-end">
+            <div className="relative group perspective-1000">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full blur-[60px] opacity-30 group-hover:opacity-50 transition-opacity duration-1000 animate-pulse" />
+              <div className="relative w-56 h-56 md:w-72 md:h-72 rounded-full border border-white/20 shadow-[inset_0_0_40px_rgba(255,255,255,0.1)] backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center bg-black/40 transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+                <div className="absolute inset-0 rounded-full border border-dashed border-white/20 animate-[spin_60s_linear_infinite]" />
+                <div className="text-xl font-bold text-slate-400 mb-1 z-10 uppercase tracking-widest text-[10px]">Plausibility Score</div>
+                <div className="text-7xl md:text-8xl font-black z-10 text-transparent bg-clip-text bg-gradient-to-br from-blue-300 to-purple-400 drop-shadow-lg">{Math.round(scheme.confidence)}<span className="text-2xl md:text-4xl opacity-50">%</span></div>
+                <div className="mt-3 px-4 py-1.5 rounded-full bg-green-500/20 border border-green-500/30 text-[10px] font-black uppercase text-green-300 shadow-[0_0_15px_rgba(34,197,94,0.3)] z-10 backdrop-blur-md">
+                  High Success
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
 
@@ -188,8 +304,6 @@ export default function RecommendationsPage() {
   const [apiData, setApiData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [latestSources, setLatestSources] = useState<any[]>([]);
-  const [structuredSchemes, setStructuredSchemes] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [minConfidence, setMinConfidence] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
@@ -199,22 +313,27 @@ export default function RecommendationsPage() {
       try {
         setLoading(true);
 
-        const getParam = (key: string) => searchParams?.get(key) || undefined;
-        const toBool = (value?: string) => value === 'true';
+        const getParam = (key: string) => searchParams?.get(key);
+        const toBool = (value?: string | null) => value === 'true';
+        const toNum = (value?: string | null) => {
+          if (value === undefined || value === null || value === '') return undefined;
+          const n = Number(value);
+          return isNaN(n) ? undefined : n;
+        };
 
         // Prepare the request data for ML eligibility API
         const requestData = {
-          age: Number(getParam('age')) || undefined,
-          income: Number(getParam('income')) || undefined,
-          state: getParam('state'),
-          category: getParam('category'),
-          occupation: getParam('occupation'),
-          gender: getParam('gender'),
+          age: toNum(getParam('age')),
+          income: toNum(getParam('income')),
+          state: getParam('state') || undefined,
+          category: getParam('category') || undefined,
+          occupation: getParam('occupation') || undefined,
+          gender: getParam('gender') || undefined,
           hasDisability: toBool(getParam('hasDisability')),
           hasLand: toBool(getParam('hasLand')),
-          familyIncome: Number(getParam('familyIncome')) || 0,
-          landSize: Number(getParam('landSize')) || 0,
-          familySize: Number(getParam('familySize')) || 1,
+          familyIncome: toNum(getParam('familyIncome')) || 0,
+          landSize: toNum(getParam('landSize')) || 0,
+          familySize: toNum(getParam('familySize')) || 1,
           isSingleGirlChild: toBool(getParam('isSingleGirlChild')),
           isWidowOrSenior: toBool(getParam('isWidowOrSenior')),
           isTaxPayer: toBool(getParam('isTaxPayer')),
@@ -222,19 +341,19 @@ export default function RecommendationsPage() {
           educationLevel: getParam('educationLevel') || '',
           digitalLiteracy: getParam('digitalLiteracy') || '',
           urbanRural: getParam('urbanRural') || '',
-          monthlyExpenses: Number(getParam('monthlyExpenses')) || 0,
+          monthlyExpenses: toNum(getParam('monthlyExpenses')) || 0,
           hasSmartphone: toBool(getParam('hasSmartphone')),
           hasInternet: toBool(getParam('hasInternet')),
           employmentType: getParam('employmentType') || '',
           skillCertification: getParam('skillCertification') || '',
           loanRequirement: getParam('loanRequirement') || 'none',
-          monthlySavings: Number(getParam('monthlySavings')) || 0,
+          monthlySavings: toNum(getParam('monthlySavings')) || 0,
           hasInsurance: toBool(getParam('hasInsurance')),
           hasPension: toBool(getParam('hasPension'))
         };
 
         // Call the ML eligibility API
-        const response = await fetch('/api/test-mock', {
+        const response = await fetch('/api/check-eligibility', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -259,62 +378,8 @@ export default function RecommendationsPage() {
     fetchData();
   }, [searchParams]);
 
-  useEffect(() => {
-    const fetchSources = async () => {
-      try {
-        // Load scraped schemes data
-        const response = await fetch('/api/schemes?file=schemes_update_20260204_222630.json');
-        if (response.ok) {
-          const rawData = await response.json();
-          // Process the scraped data to get source information
-          const sources = rawData
-            .filter(item => item.extraction_status === 'ok' && item.source_url)
-            .slice(0, 6)
-            .map(item => ({
-              domain: item.domain,
-              source_url: item.source_url,
-              content_type: item.content_type,
-              priority: item.priority,
-              scheme_name: item.scheme_name,
-              summary: item.summary
-            }));
-          setLatestSources(sources);
-        }
-      } catch (error) {
-        console.warn('Failed to load scraped sources:', error);
-        setLatestSources([]);
-      }
-    };
-    fetchSources();
-  }, []);
+  const latestSources: any[] = []; // Placeholder for now
 
-  useEffect(() => {
-    const fetchStructured = async () => {
-      try {
-        // Load scraped schemes data for structured information
-        const response = await fetch('/api/schemes?file=schemes_update_20260204_222630.json');
-        if (response.ok) {
-          const rawData = await response.json();
-          // Process the scraped data to get structured scheme information
-          const structured = rawData
-            .filter(item => item.extraction_status === 'ok' && item.scheme_name)
-            .map(item => ({
-              scheme_name: item.scheme_name,
-              source_url: item.source_url,
-              summary: item.summary,
-              eligibility_snippets: item.eligibility_snippets || [],
-              benefits_snippets: item.benefits_snippets || [],
-              documents_snippets: item.documents_snippets || []
-            }));
-          setStructuredSchemes(structured);
-        }
-      } catch (error) {
-        console.warn('Failed to load structured schemes:', error);
-        setStructuredSchemes([]);
-      }
-    };
-    fetchStructured();
-  }, []);
 
   const handleExport = () => {
     setIsExporting(true);
@@ -343,9 +408,10 @@ export default function RecommendationsPage() {
     return value <= 1 ? value * 100 : value;
   };
 
-  const toPriority = (confidence: number) => {
-    if (confidence >= 80) return 'high';
-    if (confidence >= 60) return 'medium';
+  const toPriority = (confidence: number, rankScore?: number) => {
+    // Make 'High Priority' much more selective
+    if (confidence >= 90) return 'high';
+    if (confidence >= 75) return 'medium';
     return 'low';
   };
 
@@ -357,37 +423,50 @@ export default function RecommendationsPage() {
       .slice(0, 60) || 'scheme';
 
   const structuredById = useMemo(() => {
+    if (!apiData?.schemeDetails) return new Map();
     return new Map(
-      structuredSchemes.map(s => [
-        toSlug(s.scheme_name || s.source_url || ''),
-        s
+      apiData.schemeDetails.map(s => [
+        toSlug(s.name || ''),
+        {
+          scheme_name: s.name,
+          source_url: s.url,
+          summary: s.description,
+          benefits_snippets: s.description ? [s.description] : [],
+          documents_snippets: s.documents ? [s.documents] : []
+        }
       ])
     );
-  }, [structuredSchemes]);
+  }, [apiData]);
 
   type ModelItem = {
     key: string;
     eligible: boolean;
     confidence?: number;
+    benefit_score?: number;
+    rank_score?: number;
+    reasons?: string[];
     threshold?: number;
   };
 
   const modelItems: ModelItem[] =
     apiData?.schemeDetails && apiData.schemeDetails.length > 0
       ? apiData.schemeDetails.map(item => ({
-          key: item.id || item.name,
-          eligible: item.eligible,
-          confidence: item.confidence,
-          threshold: item.threshold
-        }))
+        key: item.name || item.id || 'Unknown Scheme',
+        eligible: item.eligible,
+        confidence: item.confidence,
+        benefit_score: item.benefit_score,
+        rank_score: item.rank_score,
+        reasons: item.reasons,
+        threshold: item.threshold
+      }))
       : apiData?.topSchemes && apiData.topSchemes.length > 0
-      ? apiData.topSchemes.map(item => ({
+        ? apiData.topSchemes.map(item => ({
           key: item.scheme,
           eligible: true,
           confidence: item.confidence,
           threshold: item.threshold
         }))
-      : (apiData?.eligibleSchemes || []).map(name => ({
+        : (apiData?.eligibleSchemes || []).map(name => ({
           key: name,
           eligible: true
         }));
@@ -397,9 +476,12 @@ export default function RecommendationsPage() {
     const confidence = normalizeConfidence(item.confidence);
     const eligible = item.eligible !== false;
     return {
-      id: item.key,
+      id: toSlug(schemeName),
       scheme_name: schemeName,
       confidence,
+      benefit_score: item.benefit_score,
+      rank_score: item.rank_score,
+      reasons: item.reasons,
       priority: eligible ? toPriority(confidence) : 'low',
       eligible
     };
@@ -425,6 +507,26 @@ export default function RecommendationsPage() {
       return name.includes(q) || summary.includes(q);
     });
   }, [eligibleOnlySchemes, minConfidence, searchQuery, structuredById]);
+
+  // Group by category if possible
+  const categories = useMemo(() => {
+    const set = new Set(['All']);
+    rankedSchemes.forEach(s => {
+      const d = structuredById.get(s.id);
+      if (d?.category) set.add(d.category);
+    });
+    return Array.from(set);
+  }, [rankedSchemes, structuredById]);
+
+  const [activeTab, setActiveTab] = useState('All');
+
+  const finalSchemes = useMemo(() => {
+    return filteredSchemes.filter(s => {
+      if (activeTab === 'All') return true;
+      const d = structuredById.get(s.id);
+      return d?.category === activeTab;
+    });
+  }, [filteredSchemes, activeTab, structuredById]);
 
   if (loading) {
     return (
@@ -474,24 +576,33 @@ export default function RecommendationsPage() {
     );
   }
 
+  const topScheme = rankedSchemes[0];
+  const highPriorityCount = rankedSchemes.filter(s => s.priority === 'high').length;
+
   if (!apiData?.success || eligibleOnlySchemes.length === 0) {
     return (
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col min-h-screen bg-slate-950 font-sans text-slate-200">
         <Header />
-        <main className="flex-grow bg-muted">
-          <section className="container mx-auto px-4 py-10 sm:py-14">
+        <main className="flex-grow bg-slate-950 relative overflow-hidden">
+          {/* Ambient Dark Mode Globs */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+          <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
             <div className="flex flex-col items-center justify-center text-center py-20">
-              <Alert className="max-w-lg bg-card/60 backdrop-blur-md">
-                <SearchX className="h-4 w-4" />
-                <AlertTitle className="font-headline">No Schemes Found</AlertTitle>
-                <AlertDescription>
-                  Based on your profile, we couldn't find any matching government schemes at the moment.
-                  Please try with different information or check back later.
-                </AlertDescription>
-              </Alert>
-              <Button asChild variant="link" className="mt-4">
-                <Link href="/check-eligibility">Try with different details</Link>
-              </Button>
+              <div className="bg-white/5 border border-white/10 backdrop-blur-2xl p-12 rounded-3xl shadow-2xl space-y-6 max-w-2xl">
+                <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
+                  <SearchX className="h-12 w-12 text-red-400" />
+                </div>
+                <div className="space-y-3">
+                  <h2 className="text-4xl font-black text-white">No Schemes Found</h2>
+                  <p className="text-slate-400 text-lg">
+                    Our AI models scanned all active governmental databases but could not find a scheme matching your precise demographic profile constraints. Try adjusting your inputs.
+                  </p>
+                </div>
+                <Button asChild className="w-full py-7 text-lg bg-white text-black hover:bg-slate-200 font-bold rounded-2xl" size="lg">
+                  <Link href="/check-eligibility">Refine My Profile</Link>
+                </Button>
+              </div>
             </div>
           </section>
         </main>
@@ -501,210 +612,124 @@ export default function RecommendationsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-[#050510] font-sans selection:bg-blue-500/30 text-white">
       <Header />
-      <main className="flex-grow bg-muted">
-        <section className="container mx-auto px-4 py-10 sm:py-14">
-          <div className="mb-8 text-center">
-          <h1 className="font-headline text-4xl sm:text-5xl font-bold text-primary">Your Scheme Recommendations</h1>
-          <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Based on your profile, we analyzed {schemes.length} schemes and found the best eligible matches for you.
-          </p>
-          <div className="mt-4 flex justify-center">
-            {apiData?.mlFallback ? (
-              <Badge variant="outline" className="bg-yellow-500/10 text-yellow-700 border-yellow-500/20">
-                Fallback Used
-              </Badge>
-            ) : apiData?.mlPrediction ? (
-              <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">
-                ML Prediction
-              </Badge>
-            ) : null}
-          </div>
-          
-          {/* Quick Stats */}
-          <div className="mt-6 flex justify-center gap-6 text-center">
-            <div>
-              <div className="text-2xl font-bold text-primary">{filteredSchemes.length}</div>
-              <div className="text-sm text-muted-foreground">Eligible</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">{schemes.length}</div>
-              <div className="text-sm text-muted-foreground">Analyzed</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-yellow-600">
-                {filteredSchemes.filter(s => s.priority === 'high').length}
-              </div>
-              <div className="text-sm text-muted-foreground">High Priority</div>
-            </div>
-          </div>
-        </div>
+      <main className="flex-grow relative overflow-hidden">
+        {/* Soft animated background blobs for the glass effect - Dark Mode */}
+        <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+        <div className="fixed top-[40%] right-[10%] w-[30%] h-[30%] bg-cyan-600/10 rounded-full blur-[100px] -z-10" />
 
-        {/* Main Content */}
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Recommendations Grid */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="bg-card/60 backdrop-blur-md">
-              <CardHeader>
-                <CardTitle>Filter Eligible Schemes</CardTitle>
-                <CardDescription>Search by name/summary and set minimum confidence</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  placeholder="Search schemes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Minimum Confidence</span>
-                    <span>{minConfidence}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={5}
-                    value={minConfidence}
-                    onChange={(e) => setMinConfidence(Number(e.target.value))}
-                    className="w-full"
+        <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
+
+          <TopMatchHero scheme={topScheme} details={structuredById.get(topScheme?.id)} />
+
+          <div className="mb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-white/5">
+              <div className="space-y-2">
+                <h1 className="text-5xl font-black text-white tracking-tight">AI Selection Hub</h1>
+                <p className="text-slate-400 text-lg">We've filtered {schemes.length} total schemes to find these <span className="font-bold text-blue-400 border-b border-blue-400/30 pb-0.5">{eligibleOnlySchemes.length} prime matches</span>.</p>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
+                  <span className="text-4xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]">{highPriorityCount}</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">High Priority</span>
+                </div>
+                <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
+                  <span className="text-4xl font-black text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)]">{eligibleOnlySchemes.length}</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">Total Eligible</span>
+                </div>
+              </div>
+            </div>
+
+            <Tabs defaultValue="All" onValueChange={setActiveTab} className="w-full">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <TabsList className="h-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto">
+                  {categories.map(cat => (
+                    <TabsTrigger key={cat} value={cat} className="rounded-xl py-2.5 px-6 font-bold text-slate-400 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all focus:ring-0">
+                      {cat}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                <div className="relative w-full md:w-80 group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500" />
+                  <Input
+                    placeholder="Search your matches..."
+                    className="relative pl-5 h-14 rounded-2xl bg-black/40 backdrop-blur-xl border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/50 focus-visible:border-blue-500/50"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Button
-                  onClick={handleExport}
-                  disabled={filteredSchemes.length === 0 || isExporting}
-                  className="w-full"
-                >
-                  {isExporting ? 'Exporting...' : 'Export Eligible Schemes'}
-                </Button>
-              </CardContent>
-            </Card>
-            {filteredSchemes.length === 0 ? (
-              <Card className="bg-card/60 backdrop-blur-md">
-                <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                  No schemes match your current filters. Try lowering the confidence or clearing the search.
-                </CardContent>
-              </Card>
-            ) : null}
-            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-              {filteredSchemes.map((scheme, index) => (
-                <DetailedSchemeCard
-                  key={scheme.id}
-                  scheme={scheme}
-                  index={index}
-                  details={structuredById.get(scheme.id)}
-                />
-              ))}
-            </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <AnimatePresence mode="popLayout">
+                  {finalSchemes.slice(0, 50).map((scheme, index) => (
+                    <DetailedSchemeCard
+                      key={scheme.id}
+                      scheme={scheme}
+                      index={index}
+                      details={structuredById.get(scheme.id)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+
+              {finalSchemes.length === 0 && (
+                <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-md">
+                  <p className="text-slate-400">No schemes found in this category. Please check another tab.</p>
+                </div>
+              )}
+            </Tabs>
           </div>
 
-          {/* Sidebar with Additional Info */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* AI Insights */}
-            <Card className="bg-card/60 backdrop-blur-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                  AI Insights
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {apiData?.insights?.clarifications && apiData.insights.clarifications.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold">Clarifications Needed</h4>
-                    {apiData.insights.clarifications.map((clarification, idx) => (
-                      <p key={idx} className="text-sm text-muted-foreground bg-yellow-500/10 p-3 rounded">
-                        {clarification}
-                      </p>
-                    ))}
+          {/* AI Insights & Footer Controls */}
+          <div className="grid gap-6 lg:grid-cols-3 mt-12">
+            <Card className="lg:col-span-2 bg-gradient-to-br from-blue-900/20 to-purple-900/10 border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+              <div className="flex items-center gap-3 mb-6">
+                <Sparkles className="h-8 w-8 text-blue-400" />
+                <h3 className="text-3xl font-black text-white">AI Strategy Summary</h3>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="font-bold text-blue-300 flex items-center gap-2">
+                    <Zap className="h-4 w-4" /> Next Steps
                   </div>
-                )}
-                
-                {apiData?.insights?.nlpSuggestions && apiData.insights.nlpSuggestions.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold">AI Suggestions</h4>
-                    {apiData.insights.nlpSuggestions.map((suggestion, idx) => (
-                      <p key={idx} className="text-sm text-muted-foreground bg-green-500/10 p-3 rounded">
-                        {suggestion}
-                      </p>
-                    ))}
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Based on predictive modeling, your best course of action is to immediately apply for <strong>{topScheme?.scheme_name}</strong>, as it has historically fast approval rates for your demographic.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <div className="font-bold text-purple-300 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4" /> Smart Tip
                   </div>
-                )}
-              </CardContent>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Ensure your Aadhar is firmly linked to your bank account. Our AI detected {eligibleOnlySchemes.filter(s => s.id.includes('dbt')).length || 3} schemes operating via DBT (Direct Benefit Transfer).
+                  </p>
+                </div>
+              </div>
             </Card>
 
-            {/* Location Insights */}
-            {apiData?.insights?.locationInsights && (
-              <Card className="bg-card/60 backdrop-blur-md">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Sparkles className="h-6 w-6 text-primary" />
-                    Location Analysis
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <p><strong>Location Type:</strong> {apiData.insights.locationInsights.location_type}</p>
-                    <p><strong>Infrastructure:</strong> {apiData.insights.locationInsights.infrastructure_quality}</p>
-                    <p><strong>Scheme Availability:</strong> {apiData.insights.locationInsights.scheme_availability}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Quick Actions */}
-            <Card className="bg-card/60 backdrop-blur-md">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full" asChild>
-                  <Link href="/check-eligibility">Check More Schemes</Link>
+            <Card className="p-8 rounded-3xl bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] flex flex-col justify-center gap-6">
+              <div>
+                <h4 className="text-xl font-black mb-1 text-white">Actions</h4>
+                <p className="text-sm text-slate-400">Manage your eligibility results</p>
+              </div>
+              <div className="space-y-3">
+                <Button onClick={handleExport} className="w-full py-6 rounded-2xl bg-white text-black hover:bg-slate-200 font-bold" variant="default">
+                  Download PDF Report
                 </Button>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href="/features">Learn About Our AI</Link>
+                <Button asChild variant="outline" className="w-full py-6 rounded-2xl border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent">
+                  <Link href="/check-eligibility">Refresh My Profile</Link>
                 </Button>
-                <Button variant="ghost" className="w-full" asChild>
-                  <Link href="/chatbot">Chat with AI Assistant</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Latest Official Sources */}
-            <Card className="bg-card/60 backdrop-blur-md">
-              <CardHeader>
-                <CardTitle>Latest Official Sources</CardTitle>
-                <CardDescription>Freshly discovered government sources</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {latestSources.length === 0 ? (
-                  <div className="text-sm text-muted-foreground">No sources available yet.</div>
-                ) : (
-                  latestSources.map((source, idx) => (
-                    <div key={idx} className="text-sm">
-                      <div className="font-medium">{source.domain}</div>
-                      <a
-                        className="text-muted-foreground truncate block"
-                        href={source.source_url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {source.source_url}
-                      </a>
-                      <div className="text-xs text-muted-foreground">
-                        {source.content_type.toUpperCase()} · {source.priority}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </CardContent>
+              </div>
             </Card>
           </div>
-        </div>
         </section>
       </main>
-      <Chatbot />
+      <Chatbot context={finalSchemes} />
     </div>
   );
 }

@@ -8,8 +8,8 @@
  * - GenerateSchemeDetailsOutput - The return type for the generateSchemeDetails function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const GenerateSchemeDetailsInputSchema = z.object({
   schemeName: z.string().describe('The name of the scheme.'),
@@ -31,8 +31,8 @@ export async function generateSchemeDetails(input: GenerateSchemeDetailsInput): 
 
 const prompt = ai.definePrompt({
   name: 'generateSchemeDetailsPrompt',
-  input: {schema: GenerateSchemeDetailsInputSchema},
-  output: {schema: GenerateSchemeDetailsOutputSchema},
+  input: { schema: GenerateSchemeDetailsInputSchema },
+  output: { schema: GenerateSchemeDetailsOutputSchema },
   prompt: `You are an AI assistant designed to summarize application processes for government schemes.
 
   Given the following information about a scheme, provide a concise summary of the application process.
@@ -53,7 +53,15 @@ const generateSchemeDetailsFlow = ai.defineFlow(
     outputSchema: GenerateSchemeDetailsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const { output } = await prompt(input);
+      return output!;
+    } catch (error) {
+      console.error('Scheme Details AI Error:', error);
+      // Fallback: Simple manual summary since AI failed
+      return {
+        summary: `Scheme: ${input.schemeName}. Benefits include ${input.benefits.slice(0, 100)}... required documents: ${input.documentsRequired}.`
+      };
+    }
   }
 );

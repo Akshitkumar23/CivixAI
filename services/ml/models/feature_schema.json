@@ -1,0 +1,190 @@
+{
+  "features": [
+    {
+      "name": "age",
+      "dtype": "int64"
+    },
+    {
+      "name": "annualIncome",
+      "dtype": "int64"
+    },
+    {
+      "name": "state",
+      "dtype": "str"
+    },
+    {
+      "name": "caste",
+      "dtype": "str"
+    },
+    {
+      "name": "occupation",
+      "dtype": "str"
+    },
+    {
+      "name": "gender",
+      "dtype": "str"
+    },
+    {
+      "name": "hasLand",
+      "dtype": "bool"
+    },
+    {
+      "name": "hasDisability",
+      "dtype": "bool"
+    },
+    {
+      "name": "familyIncome",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasAvailedSimilarScheme",
+      "dtype": "bool"
+    },
+    {
+      "name": "landSize",
+      "dtype": "float64"
+    },
+    {
+      "name": "familySize",
+      "dtype": "int64"
+    },
+    {
+      "name": "isSingleGirlChild",
+      "dtype": "bool"
+    },
+    {
+      "name": "isWidowOrSenior",
+      "dtype": "bool"
+    },
+    {
+      "name": "isTaxPayer",
+      "dtype": "bool"
+    },
+    {
+      "name": "isBankLinked",
+      "dtype": "bool"
+    },
+    {
+      "name": "educationLevel",
+      "dtype": "str"
+    },
+    {
+      "name": "digitalLiteracy",
+      "dtype": "str"
+    },
+    {
+      "name": "urbanRural",
+      "dtype": "str"
+    },
+    {
+      "name": "monthlyExpenses",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasSmartphone",
+      "dtype": "bool"
+    },
+    {
+      "name": "hasInternet",
+      "dtype": "bool"
+    },
+    {
+      "name": "employmentType",
+      "dtype": "str"
+    },
+    {
+      "name": "skillCertification",
+      "dtype": "str"
+    },
+    {
+      "name": "loanRequirement",
+      "dtype": "str"
+    },
+    {
+      "name": "monthlySavings",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasInsurance",
+      "dtype": "bool"
+    },
+    {
+      "name": "hasPension",
+      "dtype": "bool"
+    },
+    {
+      "name": "prioritySchemes",
+      "dtype": "str"
+    },
+    {
+      "name": "scheme_id",
+      "dtype": "str"
+    },
+    {
+      "name": "scheme_type",
+      "dtype": "str"
+    },
+    {
+      "name": "scheme_category",
+      "dtype": "str"
+    },
+    {
+      "name": "min_age",
+      "dtype": "int64"
+    },
+    {
+      "name": "max_age",
+      "dtype": "int64"
+    },
+    {
+      "name": "income_limit",
+      "dtype": "int64"
+    },
+    {
+      "name": "applicable_states",
+      "dtype": "str"
+    },
+    {
+      "name": "special_conditions_required",
+      "dtype": "str"
+    }
+  ],
+  "categorical": [
+    "state",
+    "caste",
+    "occupation",
+    "gender",
+    "educationLevel",
+    "digitalLiteracy",
+    "urbanRural",
+    "employmentType",
+    "skillCertification",
+    "loanRequirement",
+    "prioritySchemes",
+    "scheme_id",
+    "scheme_type",
+    "scheme_category",
+    "applicable_states",
+    "special_conditions_required"
+  ],
+  "best_model_benefit": "catboost",
+  "best_model_eligibility": "catboost",
+  "cat_features_eligibility": [
+    "state",
+    "caste",
+    "occupation",
+    "gender",
+    "educationLevel",
+    "digitalLiteracy",
+    "urbanRural",
+    "employmentType",
+    "skillCertification",
+    "loanRequirement",
+    "prioritySchemes",
+    "scheme_id",
+    "scheme_type",
+    "scheme_category",
+    "applicable_states",
+    "special_conditions_required"
+  ]
+}

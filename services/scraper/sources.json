@@ -1,0 +1,65 @@
+{
+  "user_agent": "CivixAI-SchemeScraper/1.0",
+  "rate_limit_seconds": 1.5,
+  "sources": [
+    {
+      "id": "dbt_haryana_schemelist",
+      "type": "dbt_haryana_list",
+      "url": "https://www.dbtharyana.gov.in/scheme/schemelist",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Haryana",
+      "notes": "Extracts scheme names grouped by department from DBT Haryana."
+    },
+    {
+      "id": "dbtbharat_central_schemes",
+      "type": "dbtbharat_central_list",
+      "url": "https://dbtbharat.gov.in/central-scheme/list",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "Extracts central DBT schemes grouped by ministry."
+    },
+    {
+      "id": "dge_employment_schemes",
+      "type": "generic_gov_page",
+      "url": "https://dge.gov.in/dge/schemes_programmes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "employment",
+      "applicable_states": "ALL",
+      "notes": "Employment Generation Schemes and Programmes page."
+    },
+    {
+      "id": "puducherry_restructured_css",
+      "type": "generic_gov_page",
+      "url": "https://pandr.py.gov.in/restructured-css-list",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Puducherry",
+      "notes": "Restructured CSS list from Puducherry Planning and Research Department."
+    },
+    {
+      "id": "india_gov_schemes_hub",
+      "type": "generic_gov_page",
+      "url": "https://www.india.gov.in/my-government/schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "India.gov scheme hub and category links."
+    },
+    {
+      "id": "data_gov_in_dataset_example",
+      "type": "data_gov_in_api",
+      "resource_id": "",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "notes": "Fill resource_id and set DATAGOVINDIA_API_KEY env var to enable."
+    }
+  ]
+}

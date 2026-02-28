@@ -1,0 +1,11 @@
+age,annual_income,state,district,gender,category,occupation,education_level,disability,minority,land_holding_acres,urban_rural,scheme_id,scheme_type,scheme_category,min_age,max_age,income_limit,applicable_states,special_conditions_required,eligible,benefit_score,priority_rank
+34,100879,Gujarat,Ahmedabad,female,GEN,government_employee,none,0,1,0.0,rural,dbt_haryana_schemelist_bhed_bakri_sheep_goat_palak_utthan_yojna,state,general,18,65,800000,Haryana,nan,0,0.2082,999
+34,100879,Gujarat,Ahmedabad,female,GEN,government_employee,none,0,1,0.0,rural,dbt_haryana_schemelist_haryana_state_merit_scholarship_scheme_on_the_basis_of_board,state,education,16,30,800000,Haryana,nan,0,0.2804,999
+30,861039,Madhya Pradesh,Jabalpur,female,OBC,unemployed,graduate,0,0,0.0,rural,dbtbharat_central_schemes_national_welfare_fund_for_sportspersons,central,general,18,65,800000,ALL,nan,0,0.1608,999
+30,861039,Madhya Pradesh,Jabalpur,female,OBC,unemployed,graduate,0,0,0.0,rural,dbtbharat_central_schemes_post_doctoral_fellowship_for_women,central,general,18,65,800000,ALL,nan,0,0.1142,999
+32,222546,Karnataka,Belagavi,male,GEN,unemployed,none,0,0,0.0,urban,puducherry_restructured_css_national_mission_on_food_processing,state,general,18,65,800000,Puducherry,nan,0,0.2993,999
+32,222546,Karnataka,Belagavi,male,GEN,unemployed,none,0,0,0.0,urban,dbtbharat_central_schemes_central_sector_scheme_of_national_fellowship_for_providing_s,central,education,16,30,800000,ALL,nan,0,0.2122,999
+51,200157,Bihar,Muzaffarpur,male,GEN,private_employee,graduate,1,0,0.96,urban,dbtbharat_central_schemes_prime_minister_internship_scheme,central,general,18,65,800000,ALL,nan,1,0.8288,1
+51,200157,Bihar,Muzaffarpur,male,GEN,private_employee,graduate,1,0,0.96,urban,dbt_haryana_schemelist_free_bicycle_sc_students_in_class_6th,state,education,16,30,800000,Haryana,nan,0,0.2031,999
+18,101987,Delhi,Central Delhi,female,SC,student,graduate,0,0,0.0,rural,dbtbharat_central_schemes_per_drop_more_crop,central,general,18,65,800000,ALL,nan,1,0.8201,2
+18,101987,Delhi,Central Delhi,female,SC,student,graduate,0,0,0.0,rural,dbtbharat_central_schemes_post_doctoral_fellowship_for_sc_st_candidates,central,general,18,65,800000,ALL,nan,1,0.8812,1
