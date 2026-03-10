@@ -148,68 +148,101 @@ Civic-tech Startups
 
 🗂️ Real-time application tracking
 
-📊 Analytics dashboard for government & NGOs
+# CivixAI – Smart Government Benefits, Powered by AI 🚀
 
-🧪 Project Status
+![CivixAI Homepage Screenshot](./public/assets/hero-screenshot.png)
 
-✅ Concept & architecture finalized
+## Overview 🌟
 
-✅ ML logic designed
+**CivixAI** is a comprehensive, AI-driven platform designed to help citizens seamlessly discover and verify their eligibility for government schemes, loans, insurance, and welfare benefits.
 
-✅ Dataset structure prepared
+Finding the right government assistance usually involves vast amounts of paperwork, navigating highly confusing criteria, and spending hours trying to figure out if you're even eligible. **CivixAI solves this by combining a beautifully immersive front-end Next.js application with a high-performance Machine Learning microservice.**
 
-🚧 UI & model optimization in progress
+## ✨ Key Features
 
-🧑‍💻 Author
+- **🚀 Highly Personalized Eligibility Engine**: Tell us a few things about your profile (Age, State, Caste, Income, Occupation, etc.) and our Python ML microservice will compute exactly which schemes you are most likely eligible for. 
+- **📈 ML-Driven Confidence Scoring**: We use trained `CatBoost` and `XGBoost` ranker models to analyze historical and synthesized demographic data, calculating a precise **Plausibility/Confidence Score** for your scheme approval.
+- **💬 Smart Conversational Chatbot**: Need quick answers or help navigating? Our integrated Gemini-powered chatbot answers scheme-related queries and seamlessly redirects you to the Eligibility portals directly from the chat box!
+- **⚡ Dynamic Scheme Generation**: If a scheme lacks detailed explanations in the official CSV, our internal logic dynamically engineers highly readable, informative summaries based on the scheme's Ministry, Level, and Category so you are never left guessing.
+- **👍 Continuous Feedback Loop**: Improve the machine learning results! Our built-in Feedback mechanics (Thumbs Up/Thumbs Down) continuously capture your interactions to naturally train the inference models.
+- **📱 Responsive & Beautiful UI**: A world-class interface leveraging Framer Motion animations, complex Tailwind properties, customizable UI components, and Glassmorphism design elements.
 
-Akshit
-Applied AI / Data Science + Full-Stack Developer
-Interested in AI for Social Impact & Scalable Products
+## 🛠️ Tech Stack
 
-⭐ Why This Project Matters
+**Frontend (Client & UI)**
+- `Next.js 14` (App Router)
+- `React 18`
+- `Tailwind CSS`
+- `Framer Motion` (Advanced animations)
+- `Lucide React` (Icons)
+- `@google/genkit` (Gemini integration for the Chatbot)
 
-Real-world government + AI problem
+**Backend / Machine Learning Microservice**
+- `FastAPI` (High performance Python API)
+- `CatBoost` (State of the art Gradient Boosting for ranking features)
+- `XGBoost` (Secondary Baseline models)
+- `Scikit-learn` & `Pandas` (Data pre-processing, calibration, synthetic pipelines)
+- `Uvicorn` (ASGI Python Server)
 
-High social impact
+## 📦 Getting Started
 
-Strong resume + hackathon + startup project
+### 1. Requirements
 
-Shows ML + Backend + Frontend + Product thinking
+Before starting, ensure you have installed:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Python](https://www.python.org/downloads/) (3.10 or higher)
 
-⭐ If you like this project, don’t forget to star the repo!# CivixAI
+### 2. Configure Environment Variables
 
-now----------------------------------------------------------------------------------------------------------------------------------------------------
+Create a `.env` file in the root of the project from the provided `.env.example` template and configure your API keys (e.g., your `GEMINI_API_KEY`).
 
-This is a Next.js project for CivixAI, an application to help users find government schemes they are eligible for.
+### 3. Start the Backend ML Server
 
-## Getting Started
-
-First, install the dependencies:
+The AI logic runs on a dedicated FastAPI server.
 ```bash
-npm install
+# Navigate to your project folder
+cd CivixAI
+
+# It is highly recommended to use a virtual environment
+python -m venv venv
+# On Windows
+venv\Scripts\activate      
+# On Mac/Linux
+source venv/bin/activate 
+
+# Install the Python dependencies (Assumes requirement files are setup)
+pip install -r requirements.txt 
+
+# Start the actual FastAPI Service on port 8000/8001
+python -m uvicorn services.ml_api.main:app --port 8000 --reload
 ```
 
-Next, run the development server:
+### 4. Start the Frontend Application
 
+In a new terminal tab (while your Python server is running):
 ```bash
+# Install NPM dependencies
+npm install
+
+# Start the Next.js development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to experience CivixAI.
 
-## Docker (Two Services)
+## 🧠 Under The Hood: The ML Engine
 
-This app runs with a Next.js web service + a FastAPI ML microservice.
+CivixAI relies on a complex pipeline to provide real-time matching. The dataset (master schemes list) is continually evaluated against the `UserProfile` schema:
+1. **Rule-Based Pre-Filtering**: Deterministic checks like minimum age gaps, geographical state restrictions (e.g., UP vs MP), and family income caps.
+2. **Feature Engineering**: Features like `per_capita_income` and `age_income_ratio` are engineered live on inference requests.
+3. **Probability Scoring `CatBoost`**: The ML models execute and generate a blended probability that combines strict rules with contextual logic, outputting detailed `.pkl` model weights.
 
-1. Create `.env` from the template:
-```bash
-copy .env.example .env
-```
+## 🤝 Contributing
 
-2. Start the stack:
-```bash
-docker-compose up --build
-```
+We welcome contributions! Feel free to open an Issue or submit a Pull Request if you'd like to help optimize the models or enrich the UI.
 
-- Web: `http://localhost:3000`
-- ML service: `http://localhost:8001`
+## 👨‍💻 Author
+
+**Akshit**
+*Applied AI / Data Science + Full-Stack Developer*
+*Interested in AI for Social Impact & Scalable Products*
