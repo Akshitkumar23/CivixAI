@@ -1,0 +1,200 @@
+[
+  {
+    "scheme_id": "dbtbharat_central_schemes_livestock_health_and_diseases_control",
+    "name": "Livestock Health and Diseases Control",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.3635493516921997,
+    "rank_score": 0.33430733862130535,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'Livestock Health and Diseases Control'.",
+    "url": "https://dahd.nic.in/schemes/programmes/nadcp",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_nikshay_tb_notification_incentive_for_private_sector",
+    "name": "NIKSHAY - TB Notification incentive for Private Sector",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.3528623878955841,
+    "rank_score": 0.3244799784344175,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'NIKSHAY - TB Notification incentive for Private Sector'.",
+    "url": "https://tbcindia.gov.in/showfile.php?lid=3535",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_nikshay_tribal_tb_patients",
+    "name": "NIKSHAY - Tribal TB Patients",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.3517369329929352,
+    "rank_score": 0.3234450492521991,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'NIKSHAY - Tribal TB Patients'.",
+    "url": "https://tbcindia.gov.in/showfile.php?lid=3535",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_scheme_for_pension_and_medical_aid_to_artistes",
+    "name": "Scheme for Pension and Medical Aid to Artistes",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.3513058125972748,
+    "rank_score": 0.32304860593184176,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'Scheme for Pension and Medical Aid to Artistes'.",
+    "url": "http://csms.nic.in/registration/registration_individual.php",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "insurance"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_nikshay_dot_provider_honorarium",
+    "name": "NIKSHAY - DOT Provider Honorarium",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.3496958613395691,
+    "rank_score": 0.32156815075356027,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'NIKSHAY - DOT Provider Honorarium'.",
+    "url": "https://tbcindia.gov.in/showfile.php?lid=3535",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_janani_shishu_suraksha_karyakram",
+    "name": "Janani Shishu Suraksha Karyakram",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.34692245721817017,
+    "rank_score": 0.3190178247897521,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'Janani Shishu Suraksha Karyakram'.",
+    "url": "https://www.nhp.gov.in/janani-shishu-suraksha-karyakaram-jssk_pg",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "insurance"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_ayushman_bharat_pradhan_mantri_jan_arogya_yojana_ab_pmjay",
+    "name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.3447607457637787,
+    "rank_score": 0.3170299901262573,
+    "category": "health",
+    "description": "This health scheme aims to support eligible citizens. Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access. This specific program is formally mapped as 'Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)'.",
+    "url": "https://www.pmjay.gov.in/",
+    "documents": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "insurance"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_pradhan_mantri_kisan_mandhan_yojna",
+    "name": "Pradhan Mantri Kisan Mandhan Yojna",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.2557222843170166,
+    "rank_score": 0.23515331796977829,
+    "category": "agriculture",
+    "description": "This agriculture scheme aims to support eligible citizens. Provides financial, technical, or resource assistance to farmers to improve agricultural productivity and secure rural livelihood. This specific program is formally mapped as 'Pradhan Mantri Kisan Mandhan Yojna'.",
+    "url": "https://maandhan.in",
+    "documents": "Aadhaar Card, Land Ownership Papers (Khasra/Khatauni), Bank Passbook, Passport Size Photo",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_agri_clinics_and_agri_business_centres_acabc",
+    "name": "Agri Clinics and Agri Business Centres ACABC",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.2532772421836853,
+    "rank_score": 0.2329049422689106,
+    "category": "agriculture",
+    "description": "This agriculture scheme aims to support eligible citizens. Provides financial, technical, or resource assistance to farmers to improve agricultural productivity and secure rural livelihood. This specific program is formally mapped as 'Agri Clinics and Agri Business Centres ACABC'.",
+    "url": "https://acabcmis.gov.in/ApplicantReg.aspx",
+    "documents": "Aadhaar Card, Land Ownership Papers (Khasra/Khatauni), Bank Passbook, Passport Size Photo",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_pradhan_mantri_kisan_urja_suraksha_evam_utthaan_mahabhiyan_s",
+    "name": "Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan Scheme",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.2476024180650711,
+    "rank_score": 0.2276865713946197,
+    "category": "agriculture",
+    "description": "This agriculture scheme aims to support eligible citizens. Provides financial, technical, or resource assistance to farmers to improve agricultural productivity and secure rural livelihood. This specific program is formally mapped as 'Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan Scheme'.",
+    "url": "https://pmkusum.mnre.gov.in/",
+    "documents": "Aadhaar Card, Land Ownership Papers (Khasra/Khatauni), Bank Passbook, Passport Size Photo",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "insurance"
+  },
+  {
+    "scheme_id": "dbtbharat_central_schemes_pm_kisan",
+    "name": "PM KISAN",
+    "eligible": true,
+    "confidence": 0.9195652173913043,
+    "benefit_score": 0.23889555037021637,
+    "rank_score": 0.2196800387100033,
+    "category": "agriculture",
+    "description": "This agriculture scheme aims to support eligible citizens. Provides financial, technical, or resource assistance to farmers to improve agricultural productivity and secure rural livelihood. This specific program is formally mapped as 'PM KISAN'.",
+    "url": "https://pmkisan.gov.in",
+    "documents": "Aadhaar Card, Land Ownership Papers (Khasra/Khatauni), Bank Passbook, Passport Size Photo",
+    "reasons": [
+      "Aapka rajya (state) match nahi karta",
+      "Sirf SC category ke liye"
+    ],
+    "missing": [],
+    "benefit_type": "scheme"
+  }
+]

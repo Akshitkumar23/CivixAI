@@ -16,11 +16,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
 import Magnetic from './Magnetic';
+import Link from 'next/link';
 
 type Message = {
   id: number;
   role: 'user' | 'bot';
   text: string;
+  redirectUrl?: string;
 };
 
 export default function Chatbot({ context }: { context?: any[] }) {
@@ -53,7 +55,11 @@ export default function Chatbot({ context }: { context?: any[] }) {
     try {
       const contextStr = context ? JSON.stringify(context) : '[]';
       const botResponse = await getChatbotResponse(input, contextStr);
-      const botMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponse };
+
+      let text = typeof botResponse === 'string' ? (botResponse as any) : botResponse.answer;
+      let redirectUrl = typeof botResponse === 'object' && botResponse !== null ? botResponse.redirectUrl : undefined;
+
+      const botMessage: Message = { id: Date.now() + 1, role: 'bot', text: text, redirectUrl: redirectUrl };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       const errorMessage: Message = { id: Date.now() + 1, role: 'bot', text: "Sorry, I'm having trouble connecting. Please try again later." };
@@ -106,11 +112,18 @@ export default function Chatbot({ context }: { context?: any[] }) {
                     )}
                     <div
                       className={`max-w-xs rounded-lg px-4 py-2 sm:max-w-sm md:max-w-md ${message.role === 'user'
-                          ? 'bg-accent text-accent-foreground'
-                          : 'bg-muted'
+                        ? 'bg-accent text-accent-foreground'
+                        : 'bg-muted'
                         }`}
                     >
-                      {message.text}
+                      <p>{message.text}</p>
+                      {message.redirectUrl && (
+                        <Button asChild size="sm" className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]">
+                          <Link href={message.redirectUrl} onClick={() => setIsOpen(false)}>
+                            Check Eligibility Matches
+                          </Link>
+                        </Button>
+                      )}
                     </div>
                     {message.role === 'user' && (
                       <Avatar className="h-8 w-8">

@@ -37,5 +37,8 @@ export async function getChatbotResponse(query: string, context: string = '[]') 
     schemeDetails: context,
   });
 
-  return result.answer;
+  return {
+    answer: result.answer,
+    redirectUrl: result.redirectUrl
+  };
 }

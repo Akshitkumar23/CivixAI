@@ -34,6 +34,7 @@ body {
     --chart-5: 210 70% 50%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
@@ -66,22 +67,99 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      background: hsl(var(--background));
+    }
+  }
+}
+
+/* ---------------------------------
+   Google Translate Widget Fixes
+----------------------------------- */
+body {
+  top: 0 !important;
+}
+
+/* Hide the banner frame and top body spacing */
+.skiptranslate iframe,
+.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Hide tooltip */
+#goog-gt-tt,
+.goog-tooltip {
+  display: none !important;
+}
+
+/* Hide the 'Powered by Google' text and images */
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0px !important;
+  display: flex !important;
+  align-items: center;
+}
+
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget img {
+  display: none !important;
+}
+
+/* Style the actual Select dropdown */
+.goog-te-combo {
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(var(--secondary)) !important;
+  color: white !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  outline: none !important;
+  min-width: 120px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease-in-out !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 8px center !important;
+  background-size: 16px !important;
+  padding-right: 32px !important;
+}
+
+.goog-te-combo:hover,
+.goog-te-combo:focus {
+  border-color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--muted)) !important;
 }
 
 @layer components {
-    .shimmer-button {
-        @apply relative overflow-hidden;
-    }
-    .shimmer-button::after {
-        content: '';
-        @apply absolute top-0 -inset-full h-full w-1/2 z-0 block -skew-x-12 transform bg-gradient-to-r from-transparent via-white/20 to-transparent;
-        transition: transform 0.7s ease;
-        transform: translateX(-200%);
-    }
-    .shimmer-button:hover::after {
-        transform: translateX(250%);
-    }
+  .shimmer-button {
+    @apply relative overflow-hidden;
+  }
+
+  .shimmer-button::after {
+    content: '';
+    @apply absolute top-0 -inset-full h-full w-1/2 z-0 block -skew-x-12 transform bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    transition: transform 0.7s ease;
+    transform: translateX(-200%);
+  }
+
+  .shimmer-button:hover::after {
+    transform: translateX(250%);
+  }
 }

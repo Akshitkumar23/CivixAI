@@ -5,17 +5,20 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { ArrowRight, User, Hand, IndianRupee, Briefcase, GraduationCap, Accessibility, Users, CheckCircle, XCircle, Plus, ChevronDown, ChevronUp, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, User, Hand, IndianRupee, Briefcase, GraduationCap, Accessibility, Users, CheckCircle, XCircle, Plus, ChevronDown, ChevronUp, Sparkles, Zap, Shield, Landmark } from 'lucide-react';
 import { type UserProfile } from '@/lib/types';
+import { Header } from '@/components/Header';
+import { ThreeDBackground } from '@/components/canvas/ThreeDBackground';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Form,
   FormControl,
@@ -25,18 +28,31 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Header } from '@/components/Header';
-import Chatbot from '@/components/Chatbot';
 import { useToast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import Chatbot from '@/components/Chatbot';
+
+// Define the API Response Type
+interface EligibleSchemeDetails {
+  id?: string;
+  name: string;
+  eligible: boolean;
+  confidence: number;
+  threshold: number;
+  description?: string;
+  ministry?: string;
+  category?: string;
+  benefit_type?: string;
+}
+
+interface EligibilityResponse {
+  success: boolean;
+  schemeDetails?: EligibleSchemeDetails[];
+  eligibleSchemes?: string[];
+  error?: string;
+  mlPrediction?: boolean;
+}
 
 const states = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa',
@@ -98,6 +114,7 @@ export default function CheckEligibilityPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [eligibleSchemes, setEligibleSchemes] = useState<string[]>([]);
+  const [rawSchemeData, setRawSchemeData] = useState<EligibleSchemeDetails[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showOptionalLevel1, setShowOptionalLevel1] = useState(false);
   const [showOptionalLevel2, setShowOptionalLevel2] = useState(false);
@@ -213,6 +230,9 @@ export default function CheckEligibilityPage() {
       }
 
       setEligibleSchemes(schemes);
+      if (result.schemeDetails) {
+        setRawSchemeData(result.schemeDetails);
+      }
       setHasSubmitted(true);
 
       // Store the exact result schemas to pass forward to the next screen if needed
@@ -235,29 +255,28 @@ export default function CheckEligibilityPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-transparent relative selection:bg-purple-500/30 text-slate-200 font-sans">
+      <ThreeDBackground />
       <Header />
-      <main className="flex-grow flex items-center justify-center">
-        <Card className="w-full max-w-2xl mx-auto bg-card/60 backdrop-blur-md shadow-xl my-12">
-          <CardHeader>
-            <div className="text-center">
-              <h1 className="font-headline text-3xl font-bold text-primary">Check Your Eligibility</h1>
-              <p className="text-muted-foreground mt-2">Fill out the form below to discover schemes, loans, and benefits you qualify for.</p>
-            </div>
-          </CardHeader>
-          <CardHeader>
-            <CardTitle className="font-headline text-2xl">Check Eligibility</CardTitle>
-            <CardDescription>Fill in the required fields to get started</CardDescription>
-          </CardHeader>
+      <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <Card className="w-full bg-black/40 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-[2.5rem] overflow-hidden">
           {!hasSubmitted ? (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <CardContent className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <CardHeader className="text-center pt-10 pb-4 border-b border-white/5 bg-white/[0.02]">
+                  <CardTitle className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300">Profile Analysis Setup</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Our AI models require these parameters to simulate your eligibility across thousands of schemes.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8 p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
                   {/* CORE INPUTS - Always visible and required */}
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <User className="h-5 w-5 text-primary" />
-                      <h3 className="font-semibold text-lg">Core Information</h3>
+                    <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-6">
+                      <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+                        <User className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <h3 className="font-bold tracking-tight text-white text-xl">Core Identity Parameters</h3>
                     </div>
                     <p className="text-sm text-muted-foreground">Required fields to check your basic eligibility</p>
 
@@ -1347,13 +1366,13 @@ export default function CheckEligibilityPage() {
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-end">
+                <CardFooter className="flex justify-end p-6 border-t border-white/10 bg-black/20">
                   <Button
                     type="submit"
-                    className="bg-accent text-accent-foreground hover:bg-accent/90 w-full md:w-auto"
+                    className="bg-white text-black hover:bg-slate-200 w-full md:w-auto px-8 py-6 rounded-2xl font-black shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Finding Schemes...' : 'Find My Schemes'}
+                    {isSubmitting ? 'Simulating Analysis...' : 'Commence Analysis'}
                   </Button>
                 </CardFooter>
               </form>
@@ -1367,41 +1386,79 @@ export default function CheckEligibilityPage() {
                   </div>
                   <h2 className="text-3xl font-black text-primary">Analysis Complete</h2>
                   <p className="text-muted-foreground text-lg">
-                    Our AI has successfully analyzed your profile against active government schemes.
+                    Our AI has classified your eligible benefits into 3 distinct categories.
                   </p>
 
-                  {eligibleSchemes.length > 0 ? (
-                    <div className="w-full mt-8">
-                      <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10">
-                        <div className="flex items-center justify-center gap-2 mb-6">
-                          <Sparkles className="h-5 w-5 text-primary" />
-                          <h3 className="text-xl font-bold text-primary tracking-tight">Top AI Matches Detected</h3>
-                        </div>
-
-                        <div className="space-y-3 mb-6">
-                          {eligibleSchemes.slice(0, 5).map((scheme, index) => (
-                            <div key={index} className="bg-white px-5 py-4 rounded-xl flex items-center shadow-sm border border-slate-100">
-                              <div className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0">
-                                <span className="text-primary font-black text-xs">{index + 1}</span>
-                              </div>
-                              <span className="font-bold text-slate-700 text-left line-clamp-1">{scheme}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <p className="text-sm font-semibold text-slate-500 flex items-center justify-center gap-1.5 bg-white/50 py-2 rounded-lg">
-                          <Zap className="h-4 w-4 text-yellow-500" />
-                          Found a total of <span className="text-primary font-black mx-1">{eligibleSchemes.length}</span> potential matches.
-                        </p>
+                  <div className="grid md:grid-cols-3 gap-6 w-full mt-8">
+                    {/* Schemes Category */}
+                    <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20 hover:border-primary/50 transition-colors flex flex-col items-center justify-center space-y-4">
+                      <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                        <Landmark className="h-7 w-7" />
                       </div>
-                    </div>
-                  ) : (
-                    <div className="bg-orange-50/50 border border-orange-100 p-6 rounded-2xl w-full mt-6">
-                      <p className="text-orange-800 font-medium">
-                        No direct matches found. Please adjust your profile or try adding more details.
+                      <h3 className="font-bold text-xl">Schemes</h3>
+                      <p className="text-sm text-center text-muted-foreground h-16">
+                        Government welfare programs, subsidies, and scholarships.
                       </p>
+                      <div className="text-3xl font-black text-primary mb-2">
+                        {rawSchemeData.filter(s => s.benefit_type === 'scheme' || !s.benefit_type).length}
+                      </div>
+                      <Button onClick={() => {
+                        const rawVals = form.getValues() as Record<string, any>;
+                        const cleanVals = Object.fromEntries(Object.entries(rawVals).filter(([_, v]) => v !== undefined && v !== '' && (!Array.isArray(v) || v.length > 0)));
+                        const params = new URLSearchParams(cleanVals as Record<string, string>);
+                        params.append('type', 'scheme');
+                        router.push(`/recommendations?${params.toString()}`);
+                      }} className="w-full gap-2">
+                        View Schemes <ArrowRight className="h-4 w-4" />
+                      </Button>
                     </div>
-                  )}
+
+                    {/* Loans Category */}
+                    <div className="bg-orange-500/5 rounded-2xl p-6 border border-orange-500/20 hover:border-orange-500/50 transition-colors flex flex-col items-center justify-center space-y-4">
+                      <div className="w-14 h-14 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-600">
+                        <Briefcase className="h-7 w-7" />
+                      </div>
+                      <h3 className="font-bold text-xl text-orange-800">Loans & Credit</h3>
+                      <p className="text-sm text-center text-muted-foreground h-16">
+                        Business financing, educational loans, and credit subsidies.
+                      </p>
+                      <div className="text-3xl font-black text-orange-600 mb-2">
+                        {rawSchemeData.filter(s => s.benefit_type === 'loan').length}
+                      </div>
+                      <Button onClick={() => {
+                        const rawVals = form.getValues() as Record<string, any>;
+                        const cleanVals = Object.fromEntries(Object.entries(rawVals).filter(([_, v]) => v !== undefined && v !== '' && (!Array.isArray(v) || v.length > 0)));
+                        const params = new URLSearchParams(cleanVals as Record<string, string>);
+                        params.append('type', 'loan');
+                        router.push(`/recommendations?${params.toString()}`);
+                      }} className="w-full bg-orange-600 hover:bg-orange-700 gap-2">
+                        View Loans <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Insurance Category */}
+                    <div className="bg-purple-500/5 rounded-2xl p-6 border border-purple-500/20 hover:border-purple-500/50 transition-colors flex flex-col items-center justify-center space-y-4">
+                      <div className="w-14 h-14 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-600">
+                        <Shield className="h-7 w-7" />
+                      </div>
+                      <h3 className="font-bold text-xl text-purple-800">Insurance</h3>
+                      <p className="text-sm text-center text-muted-foreground h-16">
+                        Health coverage, life insurance, and pension plans.
+                      </p>
+                      <div className="text-3xl font-black text-purple-600 mb-2">
+                        {rawSchemeData.filter(s => s.benefit_type === 'insurance').length}
+                      </div>
+                      <Button onClick={() => {
+                        const rawVals = form.getValues() as Record<string, any>;
+                        const cleanVals = Object.fromEntries(Object.entries(rawVals).filter(([_, v]) => v !== undefined && v !== '' && (!Array.isArray(v) || v.length > 0)));
+                        const params = new URLSearchParams(cleanVals as Record<string, string>);
+                        params.append('type', 'insurance');
+                        router.push(`/recommendations?${params.toString()}`);
+                      }} className="w-full bg-purple-600 hover:bg-purple-700 gap-2">
+                        View Insurance <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-center flex-wrap gap-4 border-t pt-6 bg-muted/20">
@@ -1417,22 +1474,16 @@ export default function CheckEligibilityPage() {
                 </Button>
                 <Button
                   type="button"
+                  variant="secondary"
                   onClick={() => {
-                    const params = new URLSearchParams();
-
-                    // Pass along all form data to the recommendations page for ML re-processing
-                    const formData = form.getValues();
-                    Object.entries(formData).forEach(([key, value]) => {
-                      if (value !== undefined && value !== null && value !== '') {
-                        params.append(key, String(value));
-                      }
-                    });
-
+                    const rawVals = form.getValues() as Record<string, any>;
+                    const cleanVals = Object.fromEntries(Object.entries(rawVals).filter(([_, v]) => v !== undefined && v !== '' && (!Array.isArray(v) || v.length > 0)));
+                    const params = new URLSearchParams(cleanVals as Record<string, string>);
                     router.push(`/recommendations?${params.toString()}`);
                   }}
-                  className="px-8 h-12 gap-2 shadow-lg shadow-primary/20"
+                  className="px-8 h-12 gap-2 shadow-sm"
                 >
-                  View Detailed Interactive Results <ArrowRight className="h-4 w-4" />
+                  View All Together <ArrowRight className="h-4 w-4" />
                 </Button>
               </CardFooter>
             </div>

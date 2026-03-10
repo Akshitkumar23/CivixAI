@@ -97,22 +97,39 @@ def ensure_columns(df: pd.DataFrame, required: List[str]) -> pd.DataFrame:
     return df
 
 
-def split_features_targets(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
+def engineer_features(X: pd.DataFrame) -> pd.DataFrame:
+    # Custom Feature: Per Capita Income
+    if "annualIncome" in X.columns and "familySize" in X.columns:
+        X["per_capita_income"] = X["annualIncome"] / np.maximum(X["familySize"].fillna(1).astype(float), 1.0)
+    # Custom Feature: Age to Income Ratio
+    if "annualIncome" in X.columns and "age" in X.columns:
+        X["age_income_ratio"] = X["annualIncome"] / np.maximum(X["age"].fillna(1).astype(float), 1.0)
+    return X
+
+
+def split_features_targets(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, pd.Series, Any]:
     features = USER_FEATURES + SCHEME_FEATURES
     ensure_columns(df, features + [TARGET_CLASS, TARGET_REG])
     X = df[features].copy()
     # Normalize text features for stable downstream encoders/models.
     for col in X.columns:
-        if is_object_dtype(X[col]) or is_string_dtype(X[col]) or is_categorical_dtype(X[col]):
+        if is_object_dtype(X[col]) or is_string_dtype(X[col]) or is_categorical_dtype(X[col]) or col in ['state', 'caste', 'occupation', 'gender', 'educationLevel', 'digitalLiteracy', 'urbanRural', 'employmentType', 'skillCertification', 'loanRequirement', 'prioritySchemes', 'scheme_id', 'scheme_type', 'scheme_category', 'applicable_states', 'special_conditions_required']:
             X[col] = X[col].fillna("").astype(str)
+    X = engineer_features(X)
+    
     y_class = df[TARGET_CLASS].astype(int)
     y_reg = df[TARGET_REG].astype(float)
-    return X, y_class, y_reg
+    group_id = df["group_id"] if "group_id" in df.columns else None
+    return X, y_class, y_reg, group_id
 
 
 def infer_categorical_features(X: pd.DataFrame) -> List[str]:
     cat_cols = []
+    # Force text features out of categorical because CatBoost handles them differently
+    text_cols = ["benefit_description"] 
     for col in X.columns:
+        if col in text_cols:
+            continue
         if is_object_dtype(X[col]) or is_string_dtype(X[col]) or is_categorical_dtype(X[col]):
             cat_cols.append(col)
     return cat_cols

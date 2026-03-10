@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { SearchX, Loader2, Sparkles, TrendingUp, ShieldCheck, Zap, Info, FileText, Globe, ExternalLink, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
+import { SearchX, Loader2, Sparkles, TrendingUp, ShieldCheck, Zap, Info, FileText, Globe, ExternalLink, ChevronDown, ChevronUp, ArrowRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,8 @@ import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import Chatbot from '@/components/Chatbot';
 import { Input } from '@/components/ui/input';
+import { ThreeDBackground } from '@/components/canvas/ThreeDBackground';
+import { ScrollWrapper } from '@/components/animations/ScrollWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Accordion,
@@ -36,10 +38,13 @@ interface APIResponse {
     reasons?: string[];
     missing?: string[];
     description?: string;
+    ministry?: string;
+    level?: string;
     category?: string;
     states?: string;
     documents?: string;
     url?: string;
+    benefit_type?: string;
   }>;
   topSchemes?: Array<{
     scheme: string;
@@ -83,11 +88,18 @@ function CardSkeleton() {
   );
 }
 
-function DetailedSchemeCard({ scheme, index, details }: { scheme: any; index: number; details?: any }) {
+function DetailedSchemeCard({ scheme, index, details, onFeedback }: { scheme: any; index: number; details?: any; onFeedback: (schemeId: string, accepted: number) => void }) {
   const confidence = scheme.confidence || 50;
   const isEligible = scheme.eligible !== false;
   const priority = scheme.priority || 'medium';
   const [isExpanded, setIsExpanded] = useState(false);
+  const [feedbackGiven, setFeedbackGiven] = useState<number | null>(null);
+
+  const submitFeedback = (accepted: number) => {
+    if (feedbackGiven !== null) return;
+    setFeedbackGiven(accepted);
+    onFeedback(scheme.id, accepted);
+  };
 
   return (
     <motion.div
@@ -110,7 +122,7 @@ function DetailedSchemeCard({ scheme, index, details }: { scheme: any; index: nu
                   {isEligible ? 'Eligible Match' : 'Check Criteria'}
                 </Badge>
                 <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 ml-1">
-                  {details?.category || 'General'}
+                  {details?.benefit_type === 'loan' ? 'Loan / Credit' : details?.benefit_type === 'insurance' ? 'Insurance / Pension' : details?.category || 'General'}
                 </div>
               </div>
 
@@ -129,8 +141,13 @@ function DetailedSchemeCard({ scheme, index, details }: { scheme: any; index: nu
         </CardHeader>
 
         <CardContent className="p-6 pt-2 space-y-5">
+          {details?.ministry && (
+            <div className="text-xs font-semibold text-slate-400 mb-2">
+              Ministry: {details.ministry} {details.level ? `(${details.level})` : ''}
+            </div>
+          )}
           <p className="text-[15px] text-slate-300 leading-relaxed line-clamp-3">
-            {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status.'}
+            {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status. Detailed benefits are currently unavailable.'}
           </p>
 
           <div className="flex items-center gap-4 py-3 px-4 bg-black/20 backdrop-blur-sm rounded-2xl border border-white/5 shadow-inner">
@@ -222,6 +239,14 @@ function DetailedSchemeCard({ scheme, index, details }: { scheme: any; index: nu
                   <Button variant="outline" size="sm" className="rounded-xl border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white" asChild>
                     <Link href={`/scheme/${scheme.id}`}>Full Analysis</Link>
                   </Button>
+                  <div className="flex items-center gap-1 border border-white/10 p-0.5 rounded-xl bg-black/20">
+                    <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-lg ${feedbackGiven === 1 ? 'text-green-400 bg-green-500/20' : 'text-slate-400 hover:text-green-400 hover:bg-green-500/20'}`} onClick={(e) => { e.preventDefault(); submitFeedback(1); }}>
+                      <ThumbsUp className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-lg ${feedbackGiven === 0 ? 'text-red-400 bg-red-500/20' : 'text-slate-400 hover:text-red-400 hover:bg-red-500/20'}`} onClick={(e) => { e.preventDefault(); submitFeedback(0); }}>
+                      <ThumbsDown className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -267,7 +292,8 @@ function TopMatchHero({ scheme, details }: { scheme: any; details?: any }) {
             </h2>
 
             <p className="text-lg text-slate-300 leading-relaxed line-clamp-3">
-              {details?.summary || "This scheme represents the absolute best match for your current profile. Our models predict a high success rate for your application based on socio-economic trends and recent policy updates."}
+              {details?.ministry && <strong className="block mb-2 text-sm text-blue-300">{details.ministry}</strong>}
+              {details?.summary || `A highly recommended ${scheme.category || 'governmental'} scheme tailored for your profile based on socio-economic trends and recent policy updates.`}
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
@@ -307,6 +333,21 @@ export default function RecommendationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [minConfidence, setMinConfidence] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+
+  const handleFeedback = async (schemeId: string, accepted: number) => {
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scheme_id: schemeId,
+          accepted: accepted
+        })
+      });
+    } catch (e) {
+      console.error("Failed to submit feedback", e);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -426,11 +467,15 @@ export default function RecommendationsPage() {
     if (!apiData?.schemeDetails) return new Map();
     return new Map(
       apiData.schemeDetails.map(s => [
-        toSlug(s.name || ''),
+        s.id || toSlug(s.name || ''),
         {
           scheme_name: s.name,
           source_url: s.url,
           summary: s.description,
+          ministry: s.ministry,
+          level: s.level,
+          category: s.category,
+          benefit_type: s.benefit_type || 'scheme',
           benefits_snippets: s.description ? [s.description] : [],
           documents_snippets: s.documents ? [s.documents] : []
         }
@@ -440,6 +485,7 @@ export default function RecommendationsPage() {
 
   type ModelItem = {
     key: string;
+    name?: string;
     eligible: boolean;
     confidence?: number;
     benefit_score?: number;
@@ -451,7 +497,8 @@ export default function RecommendationsPage() {
   const modelItems: ModelItem[] =
     apiData?.schemeDetails && apiData.schemeDetails.length > 0
       ? apiData.schemeDetails.map(item => ({
-        key: item.name || item.id || 'Unknown Scheme',
+        key: item.id || item.name || 'Unknown Scheme',
+        name: item.name,
         eligible: item.eligible,
         confidence: item.confidence,
         benefit_score: item.benefit_score,
@@ -461,22 +508,24 @@ export default function RecommendationsPage() {
       }))
       : apiData?.topSchemes && apiData.topSchemes.length > 0
         ? apiData.topSchemes.map(item => ({
-          key: item.scheme,
+          key: toSlug(item.scheme),
+          name: item.scheme,
           eligible: true,
           confidence: item.confidence,
           threshold: item.threshold
         }))
         : (apiData?.eligibleSchemes || []).map(name => ({
-          key: name,
+          key: toSlug(name),
+          name: name,
           eligible: true
         }));
 
   const schemes = modelItems.map(item => {
-    const schemeName = item.key;
+    const schemeName = item.name || item.key;
     const confidence = normalizeConfidence(item.confidence);
     const eligible = item.eligible !== false;
     return {
-      id: toSlug(schemeName),
+      id: item.key,
       scheme_name: schemeName,
       confidence,
       benefit_score: item.benefit_score,
@@ -508,23 +557,28 @@ export default function RecommendationsPage() {
     });
   }, [eligibleOnlySchemes, minConfidence, searchQuery, structuredById]);
 
-  // Group by category if possible
-  const categories = useMemo(() => {
-    const set = new Set(['All']);
-    rankedSchemes.forEach(s => {
-      const d = structuredById.get(s.id);
-      if (d?.category) set.add(d.category);
-    });
-    return Array.from(set);
-  }, [rankedSchemes, structuredById]);
-
-  const [activeTab, setActiveTab] = useState('All');
+  // Base Categories for the new specific filtering (Schemes vs Loans vs Insurance)
+  const [activeTab, setActiveTab] = useState(() => {
+    return searchParams?.get('type') || 'All';
+  });
 
   const finalSchemes = useMemo(() => {
     return filteredSchemes.filter(s => {
       if (activeTab === 'All') return true;
       const d = structuredById.get(s.id);
-      return d?.category === activeTab;
+
+      // Match the specific benefit classification
+      const benefitType = d?.benefit_type || 'scheme';
+
+      if (activeTab === 'scheme' && benefitType === 'scheme') return true;
+      if (activeTab === 'loan' && benefitType === 'loan') return true;
+      if (activeTab === 'insurance' && benefitType === 'insurance') return true;
+
+      // Fallback for specific categories if the tab doesn't match the 3 main types
+      if (activeTab !== 'scheme' && activeTab !== 'loan' && activeTab !== 'insurance') {
+        return d?.category === activeTab;
+      }
+      return false;
     });
   }, [filteredSchemes, activeTab, structuredById]);
 
@@ -581,154 +635,169 @@ export default function RecommendationsPage() {
 
   if (!apiData?.success || eligibleOnlySchemes.length === 0) {
     return (
-      <div className="flex flex-col min-h-screen bg-slate-950 font-sans text-slate-200">
+      <div className="flex flex-col min-h-screen bg-transparent font-sans text-slate-200">
+        <ThreeDBackground />
         <Header />
-        <main className="flex-grow bg-slate-950 relative overflow-hidden">
-          {/* Ambient Dark Mode Globs */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <ScrollWrapper>
+          <main className="flex-grow relative overflow-hidden">
+            {/* Ambient Dark Mode Globs */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-          <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
-            <div className="flex flex-col items-center justify-center text-center py-20">
-              <div className="bg-white/5 border border-white/10 backdrop-blur-2xl p-12 rounded-3xl shadow-2xl space-y-6 max-w-2xl">
-                <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
-                  <SearchX className="h-12 w-12 text-red-400" />
+            <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
+              <div className="flex flex-col items-center justify-center text-center py-20">
+                <div className="bg-white/5 border border-white/10 backdrop-blur-2xl p-12 rounded-3xl shadow-2xl space-y-6 max-w-2xl">
+                  <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mx-auto border border-red-500/20">
+                    <SearchX className="h-12 w-12 text-red-400" />
+                  </div>
+                  <div className="space-y-3">
+                    <h2 className="text-4xl font-black text-white">No Schemes Found</h2>
+                    <p className="text-slate-400 text-lg">
+                      Our AI models scanned all active governmental databases but could not find a scheme matching your precise demographic profile constraints. Try adjusting your inputs.
+                    </p>
+                  </div>
+                  <Button asChild className="w-full py-7 text-lg bg-white text-black hover:bg-slate-200 font-bold rounded-2xl" size="lg">
+                    <Link href="/check-eligibility">Refine My Profile</Link>
+                  </Button>
                 </div>
-                <div className="space-y-3">
-                  <h2 className="text-4xl font-black text-white">No Schemes Found</h2>
-                  <p className="text-slate-400 text-lg">
-                    Our AI models scanned all active governmental databases but could not find a scheme matching your precise demographic profile constraints. Try adjusting your inputs.
-                  </p>
-                </div>
-                <Button asChild className="w-full py-7 text-lg bg-white text-black hover:bg-slate-200 font-bold rounded-2xl" size="lg">
-                  <Link href="/check-eligibility">Refine My Profile</Link>
-                </Button>
               </div>
-            </div>
-          </section>
-        </main>
+            </section>
+          </main>
+        </ScrollWrapper>
         <Chatbot />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#050510] font-sans selection:bg-blue-500/30 text-white">
+    <div className="flex flex-col min-h-screen bg-transparent font-sans selection:bg-blue-500/30 text-white">
+      <ThreeDBackground />
       <Header />
-      <main className="flex-grow relative overflow-hidden">
-        {/* Soft animated background blobs for the glass effect - Dark Mode */}
-        <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
-        <div className="fixed top-[40%] right-[10%] w-[30%] h-[30%] bg-cyan-600/10 rounded-full blur-[100px] -z-10" />
+      <ScrollWrapper>
+        <main className="flex-grow relative overflow-hidden">
+          {/* Glass background blobs removed since we have 3D WebGL */}
+          <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+          <div className="fixed top-[40%] right-[10%] w-[30%] h-[30%] bg-cyan-600/10 rounded-full blur-[100px] -z-10" />
 
-        <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
+          <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
 
-          <TopMatchHero scheme={topScheme} details={structuredById.get(topScheme?.id)} />
-
-          <div className="mb-12">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-white/5">
-              <div className="space-y-2">
-                <h1 className="text-5xl font-black text-white tracking-tight">AI Selection Hub</h1>
-                <p className="text-slate-400 text-lg">We've filtered {schemes.length} total schemes to find these <span className="font-bold text-blue-400 border-b border-blue-400/30 pb-0.5">{eligibleOnlySchemes.length} prime matches</span>.</p>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
-                  <span className="text-4xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]">{highPriorityCount}</span>
-                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">High Priority</span>
-                </div>
-                <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
-                  <span className="text-4xl font-black text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)]">{eligibleOnlySchemes.length}</span>
-                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">Total Eligible</span>
-                </div>
-              </div>
+            <div className="gsap-animate">
+              <TopMatchHero scheme={topScheme} details={structuredById.get(topScheme?.id)} />
             </div>
 
-            <Tabs defaultValue="All" onValueChange={setActiveTab} className="w-full">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-                <TabsList className="h-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto">
-                  {categories.map(cat => (
-                    <TabsTrigger key={cat} value={cat} className="rounded-xl py-2.5 px-6 font-bold text-slate-400 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all focus:ring-0">
-                      {cat}
+            <div className="mb-12 gsap-animate">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-white/5">
+                <div className="space-y-2">
+                  <h1 className="text-5xl font-black text-white tracking-tight">AI Selection Hub</h1>
+                  <p className="text-slate-400 text-lg">We've filtered {schemes.length} total schemes to find these <span className="font-bold text-blue-400 border-b border-blue-400/30 pb-0.5">{eligibleOnlySchemes.length} prime matches</span>.</p>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
+                    <span className="text-4xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]">{highPriorityCount}</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">High Priority</span>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
+                    <span className="text-4xl font-black text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)]">{eligibleOnlySchemes.length}</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">Total Eligible</span>
+                  </div>
+                </div>
+              </div>
+
+              <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                  <TabsList className="h-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto">
+                    <TabsTrigger value="All" className="rounded-xl py-2.5 px-6 font-bold text-slate-400 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all focus:ring-0">
+                      All Results
                     </TabsTrigger>
-                  ))}
-                </TabsList>
+                    <TabsTrigger value="scheme" className="rounded-xl py-2.5 px-6 font-bold text-slate-400 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all focus:ring-0">
+                      Govt Schemes
+                    </TabsTrigger>
+                    <TabsTrigger value="loan" className="rounded-xl py-2.5 px-6 font-bold text-orange-400/70 data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-300 data-[state=active]:shadow-sm transition-all focus:ring-0">
+                      Loans & Credit
+                    </TabsTrigger>
+                    <TabsTrigger value="insurance" className="rounded-xl py-2.5 px-6 font-bold text-purple-400/70 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 data-[state=active]:shadow-sm transition-all focus:ring-0">
+                      Insurance & Pension
+                    </TabsTrigger>
+                  </TabsList>
 
-                <div className="relative w-full md:w-80 group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500" />
-                  <Input
-                    placeholder="Search your matches..."
-                    className="relative pl-5 h-14 rounded-2xl bg-black/40 backdrop-blur-xl border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/50 focus-visible:border-blue-500/50"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                <AnimatePresence mode="popLayout">
-                  {finalSchemes.slice(0, 50).map((scheme, index) => (
-                    <DetailedSchemeCard
-                      key={scheme.id}
-                      scheme={scheme}
-                      index={index}
-                      details={structuredById.get(scheme.id)}
+                  <div className="relative w-full md:w-80 group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500" />
+                    <Input
+                      placeholder="Search your matches..."
+                      className="relative pl-5 h-14 rounded-2xl bg-black/40 backdrop-blur-xl border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/50 focus-visible:border-blue-500/50"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                  ))}
-                </AnimatePresence>
-              </div>
-
-              {finalSchemes.length === 0 && (
-                <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-md">
-                  <p className="text-slate-400">No schemes found in this category. Please check another tab.</p>
-                </div>
-              )}
-            </Tabs>
-          </div>
-
-          {/* AI Insights & Footer Controls */}
-          <div className="grid gap-6 lg:grid-cols-3 mt-12">
-            <Card className="lg:col-span-2 bg-gradient-to-br from-blue-900/20 to-purple-900/10 border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
-              <div className="flex items-center gap-3 mb-6">
-                <Sparkles className="h-8 w-8 text-blue-400" />
-                <h3 className="text-3xl font-black text-white">AI Strategy Summary</h3>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <div className="font-bold text-blue-300 flex items-center gap-2">
-                    <Zap className="h-4 w-4" /> Next Steps
                   </div>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    Based on predictive modeling, your best course of action is to immediately apply for <strong>{topScheme?.scheme_name}</strong>, as it has historically fast approval rates for your demographic.
-                  </p>
                 </div>
-                <div className="space-y-2">
-                  <div className="font-bold text-purple-300 flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4" /> Smart Tip
-                  </div>
-                  <p className="text-sm text-slate-300 leading-relaxed">
-                    Ensure your Aadhar is firmly linked to your bank account. Our AI detected {eligibleOnlySchemes.filter(s => s.id.includes('dbt')).length || 3} schemes operating via DBT (Direct Benefit Transfer).
-                  </p>
-                </div>
-              </div>
-            </Card>
 
-            <Card className="p-8 rounded-3xl bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] flex flex-col justify-center gap-6">
-              <div>
-                <h4 className="text-xl font-black mb-1 text-white">Actions</h4>
-                <p className="text-sm text-slate-400">Manage your eligibility results</p>
-              </div>
-              <div className="space-y-3">
-                <Button onClick={handleExport} className="w-full py-6 rounded-2xl bg-white text-black hover:bg-slate-200 font-bold" variant="default">
-                  Download PDF Report
-                </Button>
-                <Button asChild variant="outline" className="w-full py-6 rounded-2xl border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent">
-                  <Link href="/check-eligibility">Refresh My Profile</Link>
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </section>
-      </main>
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  <AnimatePresence mode="popLayout">
+                    {finalSchemes.slice(0, 50).map((scheme, index) => (
+                      <DetailedSchemeCard
+                        key={scheme.id}
+                        scheme={scheme}
+                        index={index}
+                        details={structuredById.get(scheme.id)}
+                        onFeedback={handleFeedback}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {finalSchemes.length === 0 && (
+                  <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-md">
+                    <p className="text-slate-400">No schemes found in this category. Please check another tab.</p>
+                  </div>
+                )}
+              </Tabs>
+            </div>
+
+            {/* AI Insights & Footer Controls */}
+            <div className="grid gap-6 lg:grid-cols-3 mt-12">
+              <Card className="gsap-animate lg:col-span-2 bg-gradient-to-br from-blue-900/20 to-purple-900/10 border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+                <div className="flex items-center gap-3 mb-6">
+                  <Sparkles className="h-8 w-8 text-blue-400" />
+                  <h3 className="text-3xl font-black text-white">AI Strategy Summary</h3>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <div className="font-bold text-blue-300 flex items-center gap-2">
+                      <Zap className="h-4 w-4" /> Next Steps
+                    </div>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      Based on predictive modeling, your best course of action is to immediately apply for <strong>{topScheme?.scheme_name}</strong>, as it has historically fast approval rates for your demographic.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="font-bold text-purple-300 flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4" /> Smart Tip
+                    </div>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      Ensure your Aadhar is firmly linked to your bank account. Our AI detected {eligibleOnlySchemes.filter(s => s.id.includes('dbt')).length || 3} schemes operating via DBT (Direct Benefit Transfer).
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="gsap-animate p-8 rounded-3xl bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] flex flex-col justify-center gap-6">
+                <div>
+                  <h4 className="text-xl font-black mb-1 text-white">Actions</h4>
+                  <p className="text-sm text-slate-400">Manage your eligibility results</p>
+                </div>
+                <div className="space-y-3">
+                  <Button onClick={handleExport} className="w-full py-6 rounded-2xl bg-white text-black hover:bg-slate-200 font-bold" variant="default">
+                    Download PDF Report
+                  </Button>
+                  <Button asChild variant="outline" className="w-full py-6 rounded-2xl border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent">
+                    <Link href="/check-eligibility">Refresh My Profile</Link>
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          </section>
+        </main>
+      </ScrollWrapper>
       <Chatbot context={finalSchemes} />
     </div>
   );

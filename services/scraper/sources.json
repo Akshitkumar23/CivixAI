@@ -53,6 +53,106 @@
       "notes": "India.gov scheme hub and category links."
     },
     {
+      "id": "my_scheme_gov",
+      "type": "generic_gov_page",
+      "url": "https://www.myscheme.gov.in/search",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "MyScheme Central Search Portal."
+    },
+    {
+      "id": "up_gov_schemes",
+      "type": "generic_gov_page",
+      "url": "https://up.gov.in/en/page/schemes",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Uttar Pradesh",
+      "notes": "List of schemes from UP Government."
+    },
+    {
+      "id": "mp_gov_schemes",
+      "type": "generic_gov_page",
+      "url": "https://mp.gov.in/en/schemes",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Madhya Pradesh",
+      "notes": "List of schemes from MP Government."
+    },
+    {
+      "id": "maha_gov_schemes",
+      "type": "generic_gov_page",
+      "url": "https://mahaschemes.maharashtra.gov.in/",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Maharashtra",
+      "notes": "Schemes from Maha Government."
+    },
+    {
+      "id": "msme_schemes",
+      "type": "generic_gov_page",
+      "url": "https://msme.gov.in/all-schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "business",
+      "applicable_states": "ALL",
+      "notes": "Ministry of Micro, Small and Medium Enterprises schemes."
+    },
+    {
+      "id": "agricoop_schemes",
+      "type": "generic_gov_page",
+      "url": "https://agricoop.nic.in/en/major-schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "agriculture",
+      "applicable_states": "ALL",
+      "notes": "Department of Agriculture and Farmers Welfare schemes."
+    },
+    {
+      "id": "scholarships_gov",
+      "type": "generic_gov_page",
+      "url": "https://scholarships.gov.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "education",
+      "applicable_states": "ALL",
+      "notes": "National Scholarship Portal."
+    },
+    {
+      "id": "vidyalakshmi_loans",
+      "type": "generic_gov_page",
+      "url": "https://www.vidyalakshmi.co.in/Students/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "education",
+      "applicable_states": "ALL",
+      "notes": "Vidya Lakshmi Education Loans Portal."
+    },
+    {
+      "id": "jansamarth_loans",
+      "type": "generic_gov_page",
+      "url": "https://www.jansamarth.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "business",
+      "applicable_states": "ALL",
+      "notes": "Jan Samarth credit-linked portal."
+    },
+    {
+      "id": "pmjay_insurance",
+      "type": "generic_gov_page",
+      "url": "https://pmjay.gov.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "health",
+      "applicable_states": "ALL",
+      "notes": "Ayushman Bharat PMJAY Health Insurance."
+    },
+    {
       "id": "data_gov_in_dataset_example",
       "type": "data_gov_in_api",
       "resource_id": "",

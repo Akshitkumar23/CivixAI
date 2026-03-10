@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 from typing import Dict
 
-# Add current directory to sys.path for local imports
 current_dir = Path(__file__).resolve().parent
 if str(current_dir) not in sys.path:
     sys.path.append(str(current_dir))
@@ -16,9 +15,9 @@ from sklearn.preprocessing import OneHotEncoder  # type: ignore
 from sklearn.pipeline import Pipeline  # type: ignore
 
 try:
-    from catboost import CatBoostRegressor  # type: ignore
+    from catboost import CatBoostRanker, Pool  # type: ignore
 except ImportError:
-    CatBoostRegressor = None
+    CatBoostRanker = None
 
 try:
     from xgboost import XGBRegressor  # type: ignore
@@ -32,24 +31,42 @@ def _ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def _build_catboost_regressor(X_train, y_train, X_val, y_val):
-    if CatBoostRegressor is None:
+def _build_catboost_ranker(X_train, y_train, group_train, X_val, y_val, group_val):
+    if CatBoostRanker is None:
         raise ImportError("catboost is not installed")
 
     cat_features = infer_categorical_features(X_train)
-    model = CatBoostRegressor(
+    text_features = ["benefit_description"] if "benefit_description" in X_train.columns else None
+
+    # CatBoostRanker expects integer labels or floats for YetiRank. YetiRank is very stable.
+    model = CatBoostRanker(
         iterations=500,
-        depth=8,
+        depth=6,
         learning_rate=0.08,
-        loss_function="RMSE",
-        eval_metric="RMSE",
+        loss_function="YetiRank",
+        eval_metric="NDCG",
         verbose=False,
     )
-    model.fit(
-        X_train,
-        y_train,
+    
+    train_pool = Pool(
+        data=X_train,
+        label=y_train,
+        group_id=group_train,
         cat_features=cat_features,
-        eval_set=(X_val, y_val),
+        text_features=text_features
+    )
+    
+    val_pool = Pool(
+        data=X_val,
+        label=y_val,
+        group_id=group_val,
+        cat_features=cat_features,
+        text_features=text_features
+    )
+
+    model.fit(
+        train_pool,
+        eval_set=val_pool,
         use_best_model=True,
     )
     return model
@@ -60,7 +77,7 @@ def _build_xgboost_regressor(X_train, y_train):
         raise ImportError("xgboost is not installed")
 
     cat_cols = infer_categorical_features(X_train)
-    num_cols = [c for c in X_train.columns if c not in cat_cols]
+    num_cols = [c for c in X_train.columns if c not in cat_cols and c != "benefit_description"]
 
     pre = ColumnTransformer(
         transformers=[
@@ -87,8 +104,7 @@ def _evaluate(model, X_test, y_test) -> Dict[str, float]:
     preds = model.predict(X_test)
     rmse = mean_squared_error(y_test, preds) ** 0.5
     mae = mean_absolute_error(y_test, preds)
-    r2 = r2_score(y_test, preds)
-    return {"rmse": float(rmse), "mae": float(mae), "r2": float(r2)}
+    return {"rmse": float(rmse), "mae": float(mae)}
 
 
 def train(
@@ -96,28 +112,34 @@ def train(
     output_dir: str = "services/ml/models",
 ):
     df = load_dataset(dataset_path)
-    X, _, y_reg = split_features_targets(df)
+    X, _, y_reg, group_id = split_features_targets(df)
 
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y_reg, test_size=0.2, random_state=42
-    )
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp, test_size=0.5, random_state=42
-    )
+    # Ranker requires contiguous groups
+    sort_idx = group_id.argsort()
+    X = X.iloc[sort_idx].reset_index(drop=True)
+    y_reg = y_reg.iloc[sort_idx].reset_index(drop=True)
+    group_id = group_id.iloc[sort_idx].reset_index(drop=True)
+
+    unique_groups = group_id.unique()
+    train_groups, temp_groups = train_test_split(unique_groups, test_size=0.2, random_state=42)
+    val_groups, test_groups = train_test_split(temp_groups, test_size=0.5, random_state=42)
+
+    X_train, y_train, group_train = X[group_id.isin(train_groups)], y_reg[group_id.isin(train_groups)], group_id[group_id.isin(train_groups)]
+    X_val, y_val, group_val = X[group_id.isin(val_groups)], y_reg[group_id.isin(val_groups)], group_id[group_id.isin(val_groups)]
+    X_test, y_test, group_test = X[group_id.isin(test_groups)], y_reg[group_id.isin(test_groups)], group_id[group_id.isin(test_groups)]
 
     metrics = {}
 
-    cat_model = _build_catboost_regressor(X_train, y_train, X_val, y_val)
+    cat_model = _build_catboost_ranker(X_train, y_train, group_train, X_val, y_val, group_val)
     metrics["catboost"] = _evaluate(cat_model, X_test, y_test)
 
+    # XGBoost remains a baseline simple regressor
     xgb_model = _build_xgboost_regressor(X_train, y_train)
     metrics["xgboost"] = _evaluate(xgb_model, X_test, y_test)
 
+    # Always prefer CatBoostRanker for ranking context
     best_model = cat_model
     best_name = "catboost"
-    if metrics["xgboost"]["rmse"] < metrics["catboost"]["rmse"]:
-        best_model = xgb_model
-        best_name = "xgboost"
 
     out_dir = Path(output_dir)
     _ensure_dir(out_dir)

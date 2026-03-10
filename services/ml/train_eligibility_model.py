@@ -51,6 +51,8 @@ def _build_catboost(X_train, y_train, X_val, y_val):
         raise ImportError("catboost is not installed")
 
     cat_features = infer_categorical_features(X_train)
+    text_features = ["benefit_description"] if "benefit_description" in X_train.columns else None
+
     model = CatBoostClassifier(
         iterations=500,
         depth=8,
@@ -63,6 +65,7 @@ def _build_catboost(X_train, y_train, X_val, y_val):
         X_train,
         y_train,
         cat_features=cat_features,
+        text_features=text_features,
         eval_set=(X_val, y_val),
         use_best_model=True,
     )
@@ -77,7 +80,7 @@ def _build_xgboost(X_train, y_train, X_val, y_val):
         raise ImportError("xgboost is not installed")
 
     cat_cols = infer_categorical_features(X_train)
-    num_cols = [c for c in X_train.columns if c not in cat_cols]
+    num_cols = [c for c in X_train.columns if c not in cat_cols and c != "benefit_description"]
 
     pre = ColumnTransformer(
         transformers=[
@@ -122,7 +125,7 @@ def train(
     use_lightgbm: bool = False,
 ):
     df = load_dataset(dataset_path)
-    X, y_class, _ = split_features_targets(df)
+    X, y_class, _, _ = split_features_targets(df)
 
     X_train, X_temp, y_train, y_temp = train_test_split(
         X, y_class, test_size=0.2, random_state=42, stratify=y_class
@@ -149,7 +152,7 @@ def train(
                 raise ImportError("lightgbm is not installed")
 
             cat_cols = infer_categorical_features(X_train)
-            num_cols = [c for c in X_train.columns if c not in cat_cols]
+            num_cols = [c for c in X_train.columns if c not in cat_cols and c != "benefit_description"]
             pre = ColumnTransformer(
                 transformers=[
                     ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols),

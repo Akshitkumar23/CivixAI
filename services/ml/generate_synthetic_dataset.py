@@ -132,55 +132,88 @@ def _scheme_constraints(name: str, category: str) -> Tuple[int, int, int, List[s
 def _make_user() -> Dict[str, Any]:
     state = random.choice(STATES)
     district = random.choice(STATE_DISTRICTS[state])
-    age = int(np.random.triangular(16, 29, 80))
-    annual_income = int(np.random.lognormal(mean=12.3, sigma=0.7))
-    annual_income = int(max(50000, min(annual_income, 2500000)))
-
-    gender = random.choices(["male", "female", "other"], weights=[0.51, 0.48, 0.01])[0]
-    category = random.choices(["GEN", "OBC", "SC", "ST"], weights=[0.33, 0.41, 0.19, 0.07])[0]
-    minority = int(random.random() < 0.2)
-    disability = int(random.random() < 0.08)
-    urban_rural = random.choices(["urban", "rural"], weights=[0.4, 0.6])[0]
-
-    if age <= 24 and random.random() < 0.45:
-        occupation = "student"
+    
+    # ML Edge Cases Injection (5% extreme population)
+    if random.random() < 0.05:
+        age = random.choice([16, 17, 95, 99])
+        annual_income = random.choice([0, 5000, 5000000])
+        family_size = random.choice([1, 10, 15])
+        gender = random.choice(["male", "female"])
+        category = "GEN" if annual_income > 100000 else "SC"
+        minority = 1
+        occupation = "unemployed" if age > 60 else "worker"
+        land = 0.0 if annual_income == 0 else 5.0
+        education = "none"
+        disability = 1 if age > 90 else 0
+        urban_rural = "rural"
     else:
-        occupation = random.choice([o for o in OCCUPATIONS if o != "student"])
+        age = int(np.random.triangular(16, 29, 80))
+        annual_income = int(np.random.lognormal(mean=12.3, sigma=0.7))
+        annual_income = int(max(50000, min(annual_income, 2500000)))
+        family_size = random.randint(1, 6)
 
-    if age < 18:
-        education = random.choice(["secondary", "higher_secondary"])
-    elif occupation == "student":
-        education = random.choice(["higher_secondary", "graduate", "postgraduate"])
-    else:
-        education = random.choice(EDU_LEVELS)
+        gender = random.choices(["male", "female", "other"], weights=[0.51, 0.48, 0.01])[0]
+        category = random.choices(["GEN", "OBC", "SC", "ST"], weights=[0.33, 0.41, 0.19, 0.07])[0]
+        minority = int(random.random() < 0.2)
+        disability = int(random.random() < 0.08)
+        urban_rural = random.choices(["urban", "rural"], weights=[0.4, 0.6])[0]
 
-    if occupation == "farmer":
-        land = float(round(float(np.random.gamma(shape=2.2, scale=1.2)), 2))  # type: ignore
-    else:
-        land = float(round(float(np.random.gamma(shape=1.2, scale=0.4)), 2))  # type: ignore
-        if random.random() < 0.7:
-            land = 0.0
+        if age <= 24 and random.random() < 0.45:
+            occupation = "student"
+        else:
+            occupation = random.choice([o for o in OCCUPATIONS if o != "student"])
+
+        if age < 18:
+            education = random.choice(["secondary", "higher_secondary"])
+        elif occupation == "student":
+            education = random.choice(["higher_secondary", "graduate", "postgraduate"])
+        else:
+            education = random.choice(EDU_LEVELS)
+
+        if occupation == "farmer":
+            land = float(round(float(np.random.gamma(shape=2.2, scale=1.2)), 2))  # type: ignore
+        else:
+            land = float(round(float(np.random.gamma(shape=1.2, scale=0.4)), 2))  # type: ignore
+            if random.random() < 0.7:
+                land = 0.0
 
     return {
         "age": age,
-        "annual_income": annual_income,
+        "annualIncome": annual_income,
         "state": state,
-        "district": district,
-        "gender": gender,
-        "category": category,
+        "caste": category,
         "occupation": occupation,
-        "education_level": education,
-        "disability": disability,
-        "minority": minority,
-        "land_holding_acres": land,
-        "urban_rural": urban_rural,
+        "gender": gender,
+        "hasLand": 1 if land > 0 else 0,
+        "hasDisability": disability,
+        "familyIncome": annual_income,
+        "hasAvailedSimilarScheme": 0,
+        "landSize": land,
+        "familySize": family_size,
+        "isSingleGirlChild": 1 if gender == "female" and random.random() < 0.1 else 0,
+        "isWidowOrSenior": 1 if (age > 60 or (gender == "female" and random.random() < 0.05)) else 0,
+        "isTaxPayer": 1 if annual_income > 500000 else 0,
+        "isBankLinked": 1 if random.random() < 0.9 else 0,
+        "educationLevel": education,
+        "digitalLiteracy": random.choice(["high", "medium", "low"]),
+        "urbanRural": urban_rural,
+        "monthlyExpenses": int(annual_income / 12 * 0.8),
+        "hasSmartphone": 1 if random.random() < 0.8 else 0,
+        "hasInternet": 1 if random.random() < 0.7 else 0,
+        "employmentType": "self_employed" if occupation == "self_employed" else "salaried",
+        "skillCertification": random.choice(["none", "iti", "diploma"]),
+        "loanRequirement": "business" if occupation == "self_employed" else "none",
+        "monthlySavings": int(annual_income / 12 * 0.2),
+        "hasInsurance": 1 if random.random() < 0.3 else 0,
+        "hasPension": 1 if age > 60 and random.random() < 0.4 else 0,
+        "prioritySchemes": "",
     }
 
 
 def _eligible(user: Dict[str, Any], scheme: Dict[str, Any]) -> int:
     if int(user["age"]) < int(scheme["min_age"]) or int(user["age"]) > int(scheme["max_age"]):
         return 0
-    if int(user["annual_income"]) > int(scheme["income_limit"]):
+    if int(user["annualIncome"]) > int(scheme["income_limit"]):
         return 0
 
     app_states = str(scheme["applicable_states"]).strip()
@@ -198,17 +231,15 @@ def _eligible(user: Dict[str, Any], scheme: Dict[str, Any]) -> int:
             return 0
         if c == "farmer" and user["occupation"] != "farmer":
             return 0
-        if c == "disability" and user["disability"] != 1:
+        if c == "disability" and user["hasDisability"] != 1:
             return 0
-        if c == "minority" and user["minority"] != 1:
+        if c == "rural" and user["urbanRural"] != "rural":
             return 0
-        if c == "rural" and user["urban_rural"] != "rural":
+        if c == "urban" and user["urbanRural"] != "urban":
             return 0
-        if c == "urban" and user["urban_rural"] != "urban":
+        if c == "sc_st" and user["caste"] not in {"SC", "ST"}:
             return 0
-        if c == "sc_st" and user["category"] not in {"SC", "ST"}:
-            return 0
-        if c == "obc" and user["category"] != "OBC":
+        if c == "obc" and user["caste"] != "OBC":
             return 0
 
     return 1
@@ -227,12 +258,11 @@ def _benefit_score(user: Dict[str, Any], scheme: Dict[str, Any], eligible: int) 
         "general": 0.6,
     }.get(str(category), 0.6))
 
-    income_factor = max(0.0, min(1.0, 1.0 - (float(user["annual_income"]) / 2500000)))
+    income_factor = max(0.0, min(1.0, 1.0 - (float(user["annualIncome"]) / 2500000)))
     vulnerability_bonus = 0.0
-    vulnerability_bonus += 0.05 if user["category"] in {"SC", "ST"} else 0.0
-    vulnerability_bonus += 0.04 if user["disability"] == 1 else 0.0
-    vulnerability_bonus += 0.03 if user["minority"] == 1 else 0.0
-    vulnerability_bonus += 0.03 if user["urban_rural"] == "rural" else 0.0
+    vulnerability_bonus += 0.05 if user["caste"] in {"SC", "ST"} else 0.0
+    vulnerability_bonus += 0.04 if user["hasDisability"] == 1 else 0.0
+    vulnerability_bonus += 0.03 if user["urbanRural"] == "rural" else 0.0
 
     if eligible == 0:
         score = 0.05 + 0.2 * income_factor + np.random.normal(0, 0.03)
@@ -266,6 +296,7 @@ def _load_schemes(master_path: Path) -> pd.DataFrame:
                 "income_limit": int(existing_inc) if not math.isnan(existing_inc) else income_limit,
                 "applicable_states": str(r.get("applicable_states") or "ALL"),
                 "special_conditions_required": str(r.get("special_conditions_required") or "|".join(cond)),
+                "benefit_description": str(r.get("benefit_description", "")),
             }
         )
     return pd.DataFrame(out_rows).drop_duplicates(subset=["scheme_id"])
@@ -306,10 +337,11 @@ def generate(
                 "income_limit": int(scheme["income_limit"]),
                 "applicable_states": scheme["applicable_states"],
                 "special_conditions_required": scheme["special_conditions_required"],
+                "benefit_description": scheme["benefit_description"],
                 "eligible": int(y),
                 "benefit_score": float(round(float(b), 4)),  # type: ignore
                 "priority_rank": 999,
-                "_uid": uid,
+                "group_id": uid,
             }
             records.append(row)
             user_rows_idx.append(len(records) - 1)
@@ -324,7 +356,7 @@ def generate(
             records[ridx].update({"priority_rank": rank})  # type: ignore
 
     out_df = pd.DataFrame(records)
-    out_df.drop(columns=["_uid"], inplace=True)
+    out_df.sort_values(["group_id"], inplace=True)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_df.to_csv(out_path, index=False, encoding="utf-8")
@@ -335,8 +367,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate synthetic eligibility training dataset.")
     parser.add_argument("--master-path", default=str(MASTER_PATH))
     parser.add_argument("--out-path", default=str(OUT_PATH))
-    parser.add_argument("--n-users", type=int, default=1400)
-    parser.add_argument("--schemes-per-user", type=int, default=90)
+    parser.add_argument("--n-users", type=int, default=10000)
+    parser.add_argument("--schemes-per-user", type=int, default=30)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 

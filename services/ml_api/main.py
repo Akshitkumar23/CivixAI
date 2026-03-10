@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# Trigger reload for new model schemas
 import json
 import sys
 from datetime import datetime, timezone
@@ -23,6 +24,8 @@ SHADOW_LOG_PATH = LOG_DIR / "shadow_logs.jsonl"
 
 if str(ML_SRC_DIR) not in sys.path:
     sys.path.append(str(ML_SRC_DIR))
+
+from utils import engineer_features  # type: ignore
 
 
 class UserProfile(BaseModel):
@@ -156,9 +159,12 @@ def build_feature_rows(user: UserProfile, schemes: pd.DataFrame) -> pd.DataFrame
 
 
 def normalize_feature_frame(X: pd.DataFrame, schema: Dict[str, Any]) -> pd.DataFrame:
+    X = engineer_features(X)
+    
     feature_defs = schema.get("features", [])
     feature_names = [f["name"] for f in feature_defs] if feature_defs else list(X.columns)
     categorical = set(schema.get("categorical", []))
+    text_cols = set()
 
     for col in feature_names:
         if col not in X.columns:
@@ -167,10 +173,10 @@ def normalize_feature_frame(X: pd.DataFrame, schema: Dict[str, Any]) -> pd.DataF
     X = X[feature_names].copy()
 
     for col in X.columns:
-        if col in categorical:
+        if col in categorical or col in text_cols:
             X[col] = X[col].fillna("").astype(str)
         else:
-            X[col] = pd.to_numeric(X[col], errors="coerce").fillna(0)
+            X[col] = pd.to_numeric(X[col], errors="coerce").fillna(0.0)
     return X
 
 
@@ -178,6 +184,7 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
     reasons = []
     missing = []
     eligible = True
+    match_score = 0.80  # Base match score, increased to allow reaching ~100%
 
     # 1. Age check
     if scheme.get("min_age") is not None and not np.isnan(scheme.get("min_age", np.nan)):
@@ -186,12 +193,16 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
         elif user.age < scheme["min_age"]:
             eligible = False
             reasons.append(f"Umar kam hai (Min: {scheme['min_age']})")
+        else:
+            match_score += 0.05
     if scheme.get("max_age") is not None and not np.isnan(scheme.get("max_age", np.nan)):
         if user.age is None:
             missing.append("age")
         elif user.age > scheme["max_age"]:
             eligible = False
             reasons.append(f"Umar zyada hai (Max: {scheme['max_age']})")
+        else:
+            match_score += 0.05
 
     # 2. Income check
     if scheme.get("income_limit") is not None and not np.isnan(scheme.get("income_limit", np.nan)):
@@ -200,6 +211,8 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
         elif user.annualIncome > scheme["income_limit"]:
             eligible = False
             reasons.append(f"Aay zyada hai (Limit: {scheme['income_limit']})")
+        else:
+            match_score += 0.10
 
     # 3. State check
     states = _normalize_states(scheme.get("applicable_states"))
@@ -208,9 +221,11 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
             missing.append("state")
         else:
             state_val = str(user.state).strip().lower()
-            if state_val not in states:
+            if "all" not in states and state_val not in states:
                 eligible = False
                 reasons.append("Aapka rajya (state) match nahi karta")
+            else:
+                match_score += 0.10
 
     # 4. Keyword-based Hard Rejection (Occupation & Gender)
     name_text = str(scheme.get("scheme_name", "")).lower()
@@ -223,21 +238,30 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
         if str(user.gender or "").lower() == "male":
             eligible = False
             reasons.append("Sirf mahilaon (women) ke liye")
+        elif str(user.gender or "").lower() == "female":
+            match_score += 0.05
     
     # 5. Caste/Category Check
-    user_caste = str(user.category or "").lower()
-    if "sc" in combined_text or "scheduled caste" in combined_text:
+    user_caste = str(user.caste or "").lower()
+    import re
+    if re.search(r'\b(sc|scheduled caste)\b', combined_text):
         if user_caste != "sc":
             eligible = False
             reasons.append("Sirf SC category ke liye")
-    elif "st" in combined_text or "scheduled tribe" in combined_text:
+        else:
+            match_score += 0.05
+    elif re.search(r'\b(st|scheduled tribe)\b', combined_text):
         if user_caste != "st":
             eligible = False
             reasons.append("Sirf ST category ke liye")
-    elif "obc" in combined_text or "backward class" in combined_text:
+        else:
+            match_score += 0.05
+    elif re.search(r'\b(obc|backward class)\b', combined_text):
         if user_caste not in ["obc", "sc", "st"]: # Usually SC/ST are eligible for OBC schemes too, but OBC is strict
             eligible = False
             reasons.append("Sirf OBC category ke liye")
+        else:
+            match_score += 0.05
 
     # Occupation Check
     farmer_keywords = ["farmer", "kisan", "krishi", "agriculture", "cultivator"]
@@ -245,18 +269,20 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
         if str(user.occupation or "").lower() == "student":
             eligible = False
             reasons.append("Sirf kisano (farmers) ke liye")
+        elif str(user.occupation or "").lower() == "farmer":
+            match_score += 0.05
     
     student_keywords = ["student", "scholarship", "education", "padhai", "shiksha"]
     if any(k in combined_text for k in student_keywords):
         if str(user.occupation or "").lower() == "farmer":
             eligible = False
-            # Allow farmers to have education schemes if they are young, but usually they are distinct
-            pass
+        elif str(user.occupation or "").lower() == "student":
+            match_score += 0.05
 
     if eligible and not reasons:
         reasons.append("Aapke profile ke hisaab se fit hai")
 
-    return {"eligible_rules": eligible, "reasons": reasons, "missing": list(set(missing))}
+    return {"eligible_rules": eligible, "reasons": reasons, "missing": list(set(missing)), "match_score": min(1.0, match_score)}
 
 
 @app.on_event("startup")
@@ -270,6 +296,19 @@ def _append_shadow_log(payload: Dict[str, Any]) -> None:
     payload["timestamp"] = datetime.now(timezone.utc).isoformat()
     with open(SHADOW_LOG_PATH, "a", encoding="utf-8") as f:
         f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
+class FeedbackEvent(BaseModel):
+    user_id: Optional[str] = None
+    scheme_id: str
+    accepted: int
+
+@app.post("/api/feedback")
+def submit_feedback(feedback: FeedbackEvent):
+    payload = feedback.model_dump()
+    payload["event_type"] = "click_feedback"
+    _append_shadow_log(payload)
+    return {"status": "recorded"}
 
 
 @app.post("/api/check-eligibility", response_model=EligibilityResponse)
@@ -365,6 +404,7 @@ def recommend(user: UserProfile):
         # Hard constraint: If rule-based says ineligible AND ML confidence is not extremely high, reject.
         rule_eligible = explanation["eligible_rules"]
         ml_prob = probs[i]
+        match_score = explanation.get("match_score", 0.50)
         
         # We only consider it truly eligible if it passes rules, OR if ML is 95%+ sure
         is_truly_eligible = rule_eligible or (ml_prob > 0.95)
@@ -373,23 +413,34 @@ def recommend(user: UserProfile):
         if not is_truly_eligible or ml_prob < 0.75:
             continue
 
-        score = float(ml_prob * float(benefit_scores[i]))
+        # Blend ML probability with deterministic heuristic match_score
         if rule_eligible:
-            score *= 1.3 # Higher bonus for meeting all rules
+            penalty = len(explanation["missing"]) * 0.05
+            base_score = max(0.85, match_score) - penalty
+            blended_prob = min(1.0, float(base_score + (ml_prob * 0.15)))
+        else:
+            blended_prob = float((ml_prob * 0.3) + (match_score * 0.7))
+
+        score = float(blended_prob * float(benefit_scores[i]))
+        if rule_eligible:
+            score *= 1.5 # Higher bonus for meeting all rules
         
         entry = {
             "scheme_id": scheme_dict.get("scheme_id"),
             "name": scheme_dict.get("scheme_name", scheme_dict.get("scheme_id")),
             "eligible": True,
-            "confidence": float(ml_prob),
+            "confidence": blended_prob,
             "benefit_score": float(benefit_scores[i]),
             "rank_score": score,
             "category": scheme_dict.get("scheme_category", "General"),
-            "description": scheme_dict.get("benefit_description", scheme_dict.get("benefits", "")),
+            "description": scheme_dict.get("benefit_description") if str(scheme_dict.get("benefit_description", "")) not in ["", "nan", "None"] else f"A {scheme_dict.get('scheme_level', 'central')} level scheme provided by the {scheme_dict.get('ministry', 'Government')} to support citizens in the {scheme_dict.get('scheme_category', 'general')} sector.",
+            "ministry": scheme_dict.get("ministry", "Central Government"),
+            "level": scheme_dict.get("scheme_level", "central"),
             "url": scheme_dict.get("application_url", ""),
             "documents": str(scheme_dict.get("documents_required", "")),
             "reasons": explanation["reasons"],
-            "missing": explanation["missing"]
+            "missing": explanation["missing"],
+            "benefit_type": scheme_dict.get("benefit_type", "scheme")
         }
         ranked.append(entry)
         # ... (rest of metadata)

@@ -37,6 +37,7 @@ MASTER_COLUMNS = [
     "applicable_states",
     "special_conditions_required",
     "source_url",
+    "benefit_type",
 ]
 
 
@@ -158,7 +159,7 @@ def extract_dbtbharat_central(html: str, source: Source) -> List[Dict[str, Any]]
                     "scheme_type": source.scheme_type,
                     "scheme_category": source.scheme_category,
                     "documents_required": "",
-                    "application_url": href,
+                    "application_url": _clean_application_url(href),
                     "benefit_description": "",
                     "min_age": "",
                     "max_age": "",
@@ -195,6 +196,19 @@ def _is_good_scheme_text(text: str) -> bool:
     return re.search(keywords, text, flags=re.IGNORECASE) is not None
 
 
+def _clean_application_url(url: str) -> str:
+    """Ensure the URL is an application portal and not just a PDF guideline."""
+    if not url:
+        return ""
+    lower_url = url.lower()
+    # If it's a document or circular, it's not the online application link
+    bad_exts = [".pdf", ".doc", ".docx", "guideline", "notification", "circular", "download"]
+    if any(ext in lower_url for ext in bad_exts):
+        return "" # Clear it out so we don't send people to a PDF to 'apply'
+        
+    return url
+
+
 def extract_generic_page(html: str, source: Source) -> List[Dict[str, Any]]:
     soup = BeautifulSoup(html, "lxml")
     results: List[Dict[str, Any]] = []
@@ -218,7 +232,7 @@ def extract_generic_page(html: str, source: Source) -> List[Dict[str, Any]]:
                 "scheme_type": source.scheme_type,
                 "scheme_category": source.scheme_category,
                 "documents_required": "",
-                "application_url": href,
+                "application_url": _clean_application_url(href),
                 "benefit_description": "",
                 "min_age": "",
                 "max_age": "",
@@ -353,10 +367,22 @@ def run():
 
     for source in sources:
         rows = scrape_source(source, user_agent)
+        # Ensure scraped schemes have benefit_type="scheme"
+        for r in rows:
+            if "benefit_type" not in r:
+                r["benefit_type"] = "scheme"
         all_rows.extend(rows)
         time.sleep(rate_limit)
 
     all_rows = dedupe_rows(all_rows)
+    
+    # Merge financial schemes so they are not overwritten
+    try:
+        from scrape_financials import FINANCIAL_SCHEMES
+        all_rows.extend(FINANCIAL_SCHEMES)
+    except Exception as e:
+        print(f"Warning: Could not import financial schemes - {e}")
+
     write_master(all_rows)
     return len(all_rows)
 

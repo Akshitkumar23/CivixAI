@@ -21,6 +21,7 @@ export type ProvideChatbotAssistanceInput = z.infer<
 
 const ProvideChatbotAssistanceOutputSchema = z.object({
   answer: z.string().describe('The chatbot answer in Hinglish.'),
+  redirectUrl: z.string().optional().describe('An optional URL to redirect the user to, e.g. if they provide age and income, generate /recommendations?age=X&annualIncome=Y'),
 });
 export type ProvideChatbotAssistanceOutput = z.infer<
   typeof ProvideChatbotAssistanceOutputSchema
@@ -38,9 +39,10 @@ const prompt = ai.definePrompt({
   output: { schema: ProvideChatbotAssistanceOutputSchema },
   prompt: `You are a helpful chatbot assistant that answers questions about government schemes in Hinglish.
 
-  You should provide clear, concise and easy to understand answers. Use simple language. Your goal is to help the user understand the schemes.
+  If the user provides their basic demographic details (like age, income, state, category, etc.) and asks for schemes, generate a \`redirectUrl\` field in the output with the path \`/recommendations\` and query parameters. For example: \`/recommendations?age=25&annualIncome=300000\`.
+  Otherwise, just provide clear, concise and easy to understand answers. Use simple language.
 
-  Here are some scheme details: {{{schemeDetails}}}
+  Here are some scheme details for context (if any): {{{schemeDetails}}}
 
   User Query: {{{query}}} `,
 });
