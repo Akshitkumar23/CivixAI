@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -325,7 +325,7 @@ function TopMatchHero({ scheme, details }: { scheme: any; details?: any }) {
   );
 }
 
-export default function RecommendationsPage() {
+function RecommendationsContent() {
   const searchParams = useSearchParams();
   const [apiData, setApiData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -803,3 +803,29 @@ export default function RecommendationsPage() {
   );
 }
 
+export default function RecommendationsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col min-h-screen bg-background">
+        <Header />
+        <main className="flex-grow bg-muted">
+          <section className="container mx-auto px-4 py-10 sm:py-14">
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              </div>
+              <h1 className="font-headline text-4xl sm:text-5xl font-bold text-primary">Analyzing Your Profile</h1>
+              <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+                Our AI is processing your information to find the best government schemes for you...
+              </p>
+            </div>
+            <RecommendationsSkeleton />
+          </section>
+        </main>
+        <Chatbot />
+      </div>
+    }>
+      <RecommendationsContent />
+    </Suspense>
+  );
+}
