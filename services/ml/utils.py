@@ -26,6 +26,9 @@ USER_FEATURES = [
     "educationLevel",
     "digitalLiteracy",
     "urbanRural",
+    "maritalStatus",
+    "isBPL",
+    "isMinority",
     "monthlyExpenses",
     "hasSmartphone",
     "hasInternet",
@@ -47,6 +50,16 @@ SCHEME_FEATURES = [
     "income_limit",
     "applicable_states",
     "special_conditions_required",
+    "gender_eligibility",
+    "caste_eligibility",
+    "disability_required",
+    "occupation_eligibility",
+    "education_level_required",
+    "urban_rural_eligibility",
+    "marital_status_required",
+    "employment_type_eligibility",
+    "is_bpl_only",
+    "popularity_score",
 ]
 
 TARGET_CLASS = "eligible"

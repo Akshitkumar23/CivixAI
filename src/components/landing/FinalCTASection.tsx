@@ -10,9 +10,9 @@ export function FinalCTASection() {
         <div className="max-w-4xl mx-auto">
 
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-8 drop-shadow-2xl">
-            Millions miss benefits they deserve. <br className="hidden md:block" />
+            Don't miss the benefits you deserve. <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-              CivixAI brings clarity, intelligence, and access.
+              Let CivixAI find them for you today.
             </span>
           </h2>
 
@@ -21,7 +21,7 @@ export function FinalCTASection() {
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
               <Button className="relative h-16 px-12 text-xl bg-white text-black hover:bg-slate-200 shadow-2xl transition-transform hover:scale-105 font-bold rounded-full" asChild>
                 <Link href="/check-eligibility">
-                  Get Started with CivixAI
+                  Find My Benefits Now
                   <ArrowRight className="ml-3 h-6 w-6 text-black" />
                 </Link>
               </Button>

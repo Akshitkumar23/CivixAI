@@ -127,14 +127,14 @@ FINANCIAL_SCHEMES = [
         "scheme_type": "central",
         "scheme_category": "housing",
         "documents_required": "Aadhaar, PAN, Income Proof, Property Documents",
-        "application_url": "https://pmaymis.gov.in/",
+        "application_url": "https://pmay-urban.gov.in/pma-online-application",
         "benefit_description": "Interest subsidy up to ₹2.67 Lakhs on home loans for purchasing or constructing your first house.",
         "min_age": 18,
         "max_age": 70,
         "income_limit": 1800000,
         "applicable_states": "ALL",
         "special_conditions_required": "Applicant must not own a pucca house in India.",
-        "source_url": "https://pmaymis.gov.in/",
+        "source_url": "https://pmay-urban.gov.in/",
         "benefit_type": "loan"
     },
     {
@@ -219,14 +219,14 @@ FINANCIAL_SCHEMES = [
         "scheme_type": "central",
         "scheme_category": "health",
         "documents_required": "Aadhaar, Ration Card, PMJAY Card",
-        "application_url": "https://pmjay.gov.in",
+        "application_url": "https://beneficiary.nha.gov.in/",
         "benefit_description": "India's largest health assurance scheme covering up to ₹5 lakh per family per year for most severe medical conditions entirely free.",
         "min_age": 0,
         "max_age": "",
         "income_limit": 500000,
         "applicable_states": "ALL",
         "special_conditions_required": "Listed in SEC-2011/BPL category.",
-        "source_url": "https://pmjay.gov.in",
+        "source_url": "https://nha.gov.in/PM-JAY",
         "benefit_type": "insurance"
     },
     

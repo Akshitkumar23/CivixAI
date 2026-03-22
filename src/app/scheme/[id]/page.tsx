@@ -10,6 +10,7 @@ import Link from 'next/link';
 import Chatbot from '@/components/Chatbot';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 type SchemeRow = {
     scheme_id?: string;
@@ -139,6 +140,9 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
         scheme_level,
         scheme_category,
         applicable_states,
+        min_age,
+        max_age,
+        income_limit,
         benefit_description,
         documents_required,
         application_url,
@@ -183,6 +187,26 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
                     <div className="flex items-center gap-3 text-slate-300 bg-white/5 border border-white/10 w-fit px-4 py-2.5 rounded-2xl backdrop-blur-md">
                         <Building2 className="h-5 w-5 text-blue-400" />
                         <span className="font-semibold">{ministry || 'Government of India'}</span>
+                    </div>
+                </div>
+
+                {/* Eligibility Snapshot */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-[#0a0a0b]/80 border border-white/5 p-4 rounded-2xl flex flex-col gap-2 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-slate-500" /> Min Age</span>
+                        <span className="text-lg font-black text-white">{min_age && min_age !== '0' && min_age !== 'NA' ? `${min_age} Years` : 'No Minimum'}</span>
+                    </div>
+                    <div className="bg-[#0a0a0b]/80 border border-white/5 p-4 rounded-2xl flex flex-col gap-2 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-slate-500" /> Max Age</span>
+                        <span className="text-lg font-black text-white">{max_age && max_age !== '100' && max_age !== 'NA' && max_age !== '99' ? `${max_age} Years` : 'No Limit'}</span>
+                    </div>
+                    <div className="bg-[#0a0a0b]/80 border border-white/5 p-4 rounded-2xl flex flex-col gap-2 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><CheckCircle className="h-3 w-3 text-green-500" /> Income Limit</span>
+                        <span className="text-lg font-black text-green-400">{income_limit && income_limit !== '0' && income_limit !== 'NA' ? `₹${Number(income_limit).toLocaleString('en-IN')}` : 'No Limit'}</span>
+                    </div>
+                    <div className="bg-[#0a0a0b]/80 border border-white/5 p-4 rounded-2xl flex flex-col gap-2 shadow-sm">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><MapPin className="h-3 w-3 text-blue-500" /> Allowed State</span>
+                        <span className="text-lg font-black text-blue-400 line-clamp-1">{applicable_states && applicable_states !== 'All' ? applicable_states : 'All-India Active'}</span>
                     </div>
                 </div>
 

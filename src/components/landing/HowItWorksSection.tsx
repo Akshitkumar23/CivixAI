@@ -5,12 +5,12 @@ import { CheckCircle, FileText, BrainCircuit, BarChart, User, Bot } from 'lucide
 import { ScrollWrapper } from '@/components/animations/ScrollWrapper';
 
 const steps = [
-  { icon: <User />, text: 'User enters basic details' },
-  { icon: <Bot />, text: 'AI + rule engine checks eligibility' },
-  { icon: <BrainCircuit />, text: 'Transparent explanation of results' },
-  { icon: <BarChart />, text: 'Schemes, loans & insurance ranked' },
-  { icon: <FileText />, text: 'Required documents list generated' },
-  { icon: <CheckCircle />, text: 'Smarter application decisions' },
+  { icon: <User />, text: 'Tell us a bit about yourself' },
+  { icon: <Bot />, text: 'Our AI checks thousands of rules' },
+  { icon: <BrainCircuit />, text: 'See exactly why you might qualify' },
+  { icon: <BarChart />, text: 'Get your top schemes and loans ranked' },
+  { icon: <FileText />, text: 'Save a checklist of documents you need' },
+  { icon: <CheckCircle />, text: 'Apply confidently without confusion' },
 ];
 
 export function HowItWorksSection() {
@@ -23,7 +23,7 @@ export function HowItWorksSection() {
               How CivixAI Works
             </h2>
             <p className="mt-6 text-xl text-slate-300 font-medium tracking-wide drop-shadow-sm">
-              A simple, transparent, and intelligent process to connect you with your entitlements.
+              Discover what belongs to you in just a few quick and easy steps. We do the hard work so you do not have to.
             </p>
           </div>
         </ScrollWrapper>

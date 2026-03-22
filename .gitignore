@@ -40,3 +40,17 @@ pnpm-debug.log*
 # genkit
 .genkit/cache
 .genkit-ui-history.json
+
+# Large ML training data files (>100MB - GitHub limit)
+data/processed/eligibility_train.csv
+data/processed/benefit_train.csv
+data/processed/*.csv
+
+# ML Model binaries (large pkl files)
+services/ml/models/*.pkl
+catboost_info/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

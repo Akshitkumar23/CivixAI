@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 type SchemeRow = {
   scheme_id?: string;
@@ -15,10 +16,27 @@ type SchemeRow = {
   max_age?: string;
   income_limit?: string;
   benefit_description?: string;
+  real_description?: string;
   documents_required?: string;
   application_url?: string;
   source_url?: string;
   benefit_type?: string;
+  // New enriched columns
+  gender_eligibility?: string;
+  caste_eligibility?: string;
+  disability_required?: string;
+  occupation_eligibility?: string;
+  benefit_amount?: string;
+  tags?: string;
+  education_level_required?: string;
+  urban_rural_eligibility?: string;
+  marital_status_required?: string;
+  employment_type_eligibility?: string;
+  is_bpl_only?: string;
+  application_deadline?: string;
+  processing_time?: string;
+  popularity_score?: string;
+  is_scheme_active?: string;
 };
 
 type EligibilityPayload = {
@@ -26,11 +44,21 @@ type EligibilityPayload = {
   income?: number;
   annualIncome?: number;
   state?: string;
+  gender?: string;
+  caste?: string;
+  occupation?: string;
+  educationLevel?: string;
+  urbanRural?: string;
+  maritalStatus?: string;
+  isBPL?: boolean | number;
+  isMinority?: boolean | number;
+  hasDisability?: boolean | number;
+  hasLand?: boolean | number;
 };
 
 const DATA_PATH = path.join(process.cwd(), 'data', 'master', 'schemes_master.csv');
 const DEFAULT_THRESHOLD = 0.6;
-const RESULT_LIMIT = 50;
+const RESULT_LIMIT = 500;
 const ML_TIMEOUT_MS = 60000;
 
 let cachedSchemes: SchemeRow[] | null = null;
@@ -127,53 +155,71 @@ function computeConfidence(input: {
   schemeName: string;
   schemeCategory: string;
   schemeDesc: string;
+  schemeGenderEligibility?: string;
+  schemeCasteEligibility?: string;
+  schemeDisabilityRequired?: string;
+  schemeOccupationEligibility?: string;
   userAge?: number;
   userIncome?: number;
   userCaste?: string;
   userOccupation?: string;
   userGender?: string;
+  userHasDisability?: boolean;
 }): number {
-  let confidence = 0.5;
+  let confidence = 0.50;
 
-  if (input.specificState) confidence += 0.15;
-  if (input.hasConstraints) confidence += 0.10;
+  if (input.specificState) confidence += 0.12;
+  if (input.hasConstraints)  confidence += 0.08;
 
-  const combined = (input.schemeName + ' ' + input.schemeCategory + ' ' + input.schemeDesc).toLowerCase();
+  // ── Structured Gender Matching (new column) ────────────────────────────────
+  const schemeGender = (input.schemeGenderEligibility || 'all').toLowerCase();
+  const userGender   = (input.userGender || '').toLowerCase();
+  if (schemeGender === 'female') {
+    if (userGender === 'female') confidence += 0.18;
+    else if (userGender === 'male') confidence -= 0.55;
+    // unknown gender → small penalty
+    else confidence -= 0.05;
+  } else if (schemeGender === 'male') {
+    if (userGender === 'male') confidence += 0.12;
+    else if (userGender === 'female') confidence -= 0.50;
+  }
 
-  // Gender match
-  if (combined.includes('women') || combined.includes('female') || combined.includes('mahila') || combined.includes('girl')) {
-    if (input.userGender && input.userGender.toLowerCase() === 'female') {
-      confidence += 0.10;
-    } else if (input.userGender && input.userGender.toLowerCase() === 'male') {
-      confidence -= 0.5; // Likely ineligible
+  // ── Structured Caste Matching ─────────────────────────────────────────────
+  const schemeCastes = (input.schemeCasteEligibility || 'all').toLowerCase().split(',').map(s => s.trim());
+  const userCaste    = (input.userCaste || '').toLowerCase();
+  if (!schemeCastes.includes('all')) {
+    if (userCaste && schemeCastes.some(c => c === userCaste || userCaste.includes(c))) {
+      confidence += 0.18;
+    } else if (userCaste && !schemeCastes.some(c => c === userCaste)) {
+      confidence -= 0.55; // wrong caste, very likely ineligible
+    } else {
+      confidence -= 0.08; // caste unknown — reduce slightly
     }
   }
 
-  // Caste match
-  const caste = (input.userCaste || '').toLowerCase();
-  if (combined.includes('sc') || combined.includes('scheduled caste')) {
-    if (caste === 'sc') confidence += 0.15;
-    else confidence -= 0.5;
-  } else if (combined.includes('st') || combined.includes('scheduled tribe')) {
-    if (caste === 'st') confidence += 0.15;
-    else confidence -= 0.5;
-  } else if (combined.includes('obc') || combined.includes('backward class')) {
-    if (caste === 'obc' || caste === 'sc' || caste === 'st') confidence += 0.10;
-    else confidence -= 0.5;
+  // ── Structured Disability Matching ───────────────────────────────────────
+  if (input.schemeDisabilityRequired === 'true') {
+    if (input.userHasDisability === true)  confidence += 0.18;
+    else if (input.userHasDisability === false) confidence -= 0.55;
+    else confidence -= 0.05;
   }
 
-  // Occupation match
-  const occ = (input.userOccupation || '').toLowerCase();
-  const farmerKeywords = ['farmer', 'kisan', 'krishi', 'agriculture', 'cultivator'];
-  if (farmerKeywords.some(k => combined.includes(k))) {
-    if (occ === 'farmer') confidence += 0.15;
-    else if (occ === 'student') confidence -= 0.5;
-  }
-
-  const studentKeywords = ['student', 'scholarship', 'education', 'padhai', 'shiksha'];
-  if (studentKeywords.some(k => combined.includes(k))) {
-    if (occ === 'student') confidence += 0.15;
-    else if (occ === 'farmer') confidence -= 0.5;
+  // ── Structured Occupation Matching ────────────────────────────────────────
+  const schemeOccs = (input.schemeOccupationEligibility || 'all').toLowerCase().split(',').map(s => s.trim());
+  const userOcc    = (input.userOccupation || '').toLowerCase();
+  if (!schemeOccs.includes('all') && schemeOccs.length > 0) {
+    if (userOcc && schemeOccs.some(o => userOcc.includes(o) || o.includes(userOcc))) {
+      confidence += 0.15;
+    } else if (userOcc && !schemeOccs.some(o => userOcc.includes(o) || o.includes(userOcc))) {
+      confidence -= 0.45;
+    } else {
+      confidence -= 0.05;
+    }
+  } else {
+    // all occupations — small bump for keyword match
+    const combined = (input.schemeName + ' ' + input.schemeCategory).toLowerCase();
+    if (userOcc === 'farmer' && (combined.includes('kisan') || combined.includes('agriculture'))) confidence += 0.10;
+    if (userOcc === 'student' && combined.includes('scholarship')) confidence += 0.10;
   }
 
   return Math.max(0, Math.min(0.98, confidence));
@@ -182,9 +228,8 @@ function computeConfidence(input: {
 async function loadSchemes(): Promise<SchemeRow[]> {
   try {
     const stat = await fs.stat(DATA_PATH);
-    if (cachedSchemes && cachedMtimeMs === stat.mtimeMs) {
-      return cachedSchemes;
-    }
+    // Always reload — disable stale cache so enrich updates are reflected immediately
+    void stat;
 
     const csvText = await fs.readFile(DATA_PATH, 'utf-8');
     const rows = parseCsv(csvText);
@@ -213,12 +258,29 @@ async function loadSchemes(): Promise<SchemeRow[]> {
       max_age: getValue(row, 'max_age'),
       income_limit: getValue(row, 'income_limit'),
       benefit_description: getValue(row, 'benefit_description'),
+      real_description: getValue(row, 'real_description'),
       ministry: getValue(row, 'ministry'),
       scheme_level: getValue(row, 'scheme_level'),
       documents_required: getValue(row, 'documents_required'),
       application_url: getValue(row, 'application_url'),
       source_url: getValue(row, 'source_url'),
-      benefit_type: getValue(row, 'benefit_type')
+      benefit_type: getValue(row, 'benefit_type'),
+      // New enriched columns
+      gender_eligibility: getValue(row, 'gender_eligibility'),
+      caste_eligibility: getValue(row, 'caste_eligibility'),
+      disability_required: getValue(row, 'disability_required'),
+      occupation_eligibility: getValue(row, 'occupation_eligibility'),
+      benefit_amount: getValue(row, 'benefit_amount'),
+      tags: getValue(row, 'tags'),
+      education_level_required: getValue(row, 'education_level_required'),
+      urban_rural_eligibility: getValue(row, 'urban_rural_eligibility'),
+      marital_status_required: getValue(row, 'marital_status_required'),
+      employment_type_eligibility: getValue(row, 'employment_type_eligibility'),
+      is_bpl_only: getValue(row, 'is_bpl_only'),
+      application_deadline: getValue(row, 'application_deadline'),
+      processing_time: getValue(row, 'processing_time'),
+      popularity_score: getValue(row, 'popularity_score'),
+      is_scheme_active: getValue(row, 'is_scheme_active'),
     }));
 
     cachedSchemes = parsed;
@@ -241,7 +303,7 @@ function normalizePayload(payload: EligibilityPayload & Record<string, unknown>)
 }
 
 async function tryMlService(payload: EligibilityPayload & Record<string, unknown>) {
-  const baseUrl = process.env.ML_API_URL || process.env.NEXT_PUBLIC_ML_API_URL;
+  const baseUrl = process.env.ML_API_URL || process.env.NEXT_PUBLIC_ML_API_URL || 'http://127.0.0.1:8000';
   if (!baseUrl) return null;
 
   try {
@@ -300,7 +362,7 @@ async function tryMlService(payload: EligibilityPayload & Record<string, unknown
         url: item?.url || details?.application_url || item?.application_url,
         benefit_type: item?.benefit_type || details?.benefit_type || 'scheme',
         reasons: item?.reasons || why?.reasons || [],
-        missing: why?.missing || []
+        missing_inputs: why?.missing || []
       };
     });
 
@@ -344,22 +406,46 @@ async function fallbackEligibility(payload: EligibilityPayload & Record<string, 
         schemeName: scheme.scheme_name || '',
         schemeCategory: scheme.scheme_category || '',
         schemeDesc: scheme.benefit_description || '',
+        schemeGenderEligibility: scheme.gender_eligibility,
+        schemeCasteEligibility: scheme.caste_eligibility,
+        schemeDisabilityRequired: scheme.disability_required,
+        schemeOccupationEligibility: scheme.occupation_eligibility,
         userAge: age,
         userIncome: income,
         userCaste: String(payload.caste || payload.category || ''),
         userOccupation: String(payload.occupation || ''),
         userGender: String(payload.gender || ''),
+        userHasDisability: payload.hasDisability as boolean | undefined,
       });
 
-      // Filter out low confidence early if no rules explicitly make them eligible
-      if (confidence < 0.60) return null;
+      // Filter out very low confidence
+      if (confidence < 0.30) return null;
 
-      return {
-        scheme,
-        confidence
-      };
+      // Compute missing inputs using new structured fields
+      const missing_inputs: string[] = [];
+      if (confidence < 0.95) {
+        const genderElig = (scheme.gender_eligibility || 'all').toLowerCase();
+        const casteElig  = (scheme.caste_eligibility  || 'all').toLowerCase();
+        const disabReq   = scheme.disability_required === 'true';
+        const occElig    = (scheme.occupation_eligibility || 'all').toLowerCase();
+
+        if (genderElig !== 'all' && !payload.gender)
+          missing_inputs.push('Gender');
+        if (casteElig !== 'all' && !payload.caste && !payload.category)
+          missing_inputs.push('Caste Category');
+        if (disabReq && payload.hasDisability === undefined)
+          missing_inputs.push('Disability Status');
+        if (occElig !== 'all' && !payload.occupation)
+          missing_inputs.push('Occupation');
+        if (!payload.isBankLinked && (scheme.tags || '').includes('DBT'))
+          missing_inputs.push('Bank Linked (DBT)');
+        if (!payload.income && !payload.familyIncome && toNumber(scheme.income_limit))
+          missing_inputs.push('Income Details');
+      }
+
+      return { scheme, confidence, missing_inputs };
     })
-    .filter(Boolean) as Array<{ scheme: SchemeRow; confidence: number }>;
+    .filter(Boolean) as Array<{ scheme: SchemeRow; confidence: number; missing_inputs: string[] }>;
 
   scored.sort((a, b) => b.confidence - a.confidence);
 
@@ -369,14 +455,17 @@ async function fallbackEligibility(payload: EligibilityPayload & Record<string, 
     eligible: true,
     confidence: item.confidence * 100,
     threshold: DEFAULT_THRESHOLD,
-    description: item.scheme.benefit_description,
+    description: item.scheme.real_description || item.scheme.benefit_description,
     ministry: item.scheme.ministry,
     level: item.scheme.scheme_level,
     category: item.scheme.scheme_category,
     states: item.scheme.applicable_states,
     documents: item.scheme.documents_required,
     url: item.scheme.application_url,
-    benefit_type: item.scheme.benefit_type || 'scheme'
+    benefit_type: item.scheme.benefit_type || 'scheme',
+    benefit_amount: item.scheme.benefit_amount,
+    tags: item.scheme.tags,
+    missing_inputs: item.missing_inputs
   }));
 
   return {

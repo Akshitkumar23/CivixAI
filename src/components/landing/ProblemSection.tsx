@@ -5,9 +5,9 @@ import { useScroll, useTransform, motion } from 'framer-motion';
 import { useRef } from 'react';
 
 const problems = [
-    { title: 'Scattered Schemes', description: 'Benefits are spread across hundreds of confusing websites by Central & State Governments.' },
-    { title: 'Complex Eligibility', description: 'Rules are hard to understand, leading to missed opportunities for millions of eligible citizens.' },
-    { title: 'Lack of Guidance', description: 'No personalized help to navigate the application process and correct documents.' },
+    { title: 'Information is Everywhere', description: 'Details about schemes are scattered across hundreds of different websites, making them very hard to find.' },
+    { title: 'Confusing Rules', description: 'Eligibility rules are often too complex, because of which millions of people miss out on benefits they actually deserve.' },
+    { title: 'No Real Help', description: 'People rarely get proper guidance on how to apply or what documents to actually submit.' },
 ];
 
 export function ProblemSection() {
@@ -18,7 +18,7 @@ export function ProblemSection() {
     });
 
     return (
-        <section ref={containerRef} className="relative bg-transparent h-[400vh]">
+        <section ref={containerRef} className="relative bg-transparent h-[250vh]">
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden">
 
                 {/* Minimalist 3D Map of India (Background) */}
@@ -90,28 +90,31 @@ export function ProblemSection() {
                     {/* Final AI Solution Card */}
                     <motion.div
                         style={{
-                            opacity: useTransform(scrollYProgress, [0.75, 0.85], [0, 1]),
-                            y: useTransform(scrollYProgress, [0.75, 0.85], [400, problems.length * 20 + 20]),
-                            scale: useTransform(scrollYProgress, [0.8, 0.9], [0.95, 1.05]),
+                            opacity: useTransform(scrollYProgress, [0.6, 0.75], [0, 1]),
+                            y: useTransform(scrollYProgress, [0.6, 0.75, 1], [300, 0, 0]),
+                            scale: useTransform(scrollYProgress, [0.6, 0.75], [0.95, 1.02]),
                             zIndex: 10,
-                            position: 'absolute'
+                            position: 'absolute',
+                            top: `${problems.length * 20}px`
                         }}
-                        className="w-[95%] sm:w-[105%]"
+                        className="w-[90%] sm:w-full will-change-transform"
                     >
-                        <Card className="p-8 sm:p-10 bg-gradient-to-br from-blue-950/80 to-[#020205] border border-blue-400/50 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] backdrop-blur-3xl rounded-[2.5rem] relative overflow-hidden">
+                        <Card className="p-6 sm:p-8 md:p-10 bg-[#060b28] border border-blue-400/50 shadow-[0_-15px_40px_rgba(0,0,0,0.6)] rounded-3xl relative overflow-hidden">
                             {/* Tricolor Glow representing solution */}
                             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#ea580c] via-[#ffffff] to-[#10b981]" />
-                            <div className="absolute -inset-10 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl rounded-full opacity-50 pointer-events-none" />
+                            
+                            {/* Fast Radial Background gradient instead of heavy CSS blur filter to fix mobile lag */}
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none" />
 
-                            <div className="flex flex-col md:flex-row items-center justify-center gap-8 text-center md:text-left relative z-10">
-                                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-6 rounded-2xl flex-shrink-0 shadow-[0_0_30px_rgba(99,102,241,0.5)] rotate-3">
-                                    <Lightbulb className="w-10 h-10" />
+                            <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left relative z-10 w-full">
+                                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-5 rounded-2xl flex-shrink-0 shadow-lg rotate-3 w-16 h-16 flex items-center justify-center">
+                                    <Lightbulb className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                                 </div>
-                                <div>
-                                    <h3 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-white tracking-tight">
+                                <div className="space-y-2 flex-1">
+                                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-white tracking-tight">
                                         The AI Solution
                                     </h3>
-                                    <p className="text-slate-300 mt-3 text-lg font-medium leading-relaxed">
+                                    <p className="text-slate-300 text-sm sm:text-base md:text-lg font-medium leading-relaxed">
                                         CivixAI uses artificial intelligence to instantly cut through the noise, matching you to the right schemes accurately.
                                     </p>
                                 </div>

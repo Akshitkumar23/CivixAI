@@ -152,6 +152,16 @@ def build_feature_rows(user: UserProfile, schemes: pd.DataFrame) -> pd.DataFrame
             "income_limit": row.get("income_limit"),
             "applicable_states": row.get("applicable_states"),
             "special_conditions_required": row.get("special_conditions_required"),
+            "gender_eligibility": row.get("gender_eligibility", "all"),
+            "caste_eligibility": row.get("caste_eligibility", "all"),
+            "disability_required": row.get("disability_required", "false"),
+            "occupation_eligibility": row.get("occupation_eligibility", "all"),
+            "education_level_required": row.get("education_level_required", "any"),
+            "urban_rural_eligibility": row.get("urban_rural_eligibility", "both"),
+            "marital_status_required": row.get("marital_status_required", "any"),
+            "employment_type_eligibility": row.get("employment_type_eligibility", "any"),
+            "is_bpl_only": row.get("is_bpl_only", "false"),
+            "popularity_score": row.get("popularity_score", "5.0"),
         }
         combined = {**user_dict, **scheme_row}
         rows.append(combined)
@@ -334,10 +344,13 @@ def check_eligibility(user: UserProfile):
         rule_eligible = explanation["eligible_rules"]
         ml_prob = probs[i]
         
-        # Consistent logic with recommend endpoint
-        is_truly_eligible = rule_eligible or (ml_prob > 0.95)
+        # Rule-based eligible schemes always pass. ML is secondary boost.
+        is_truly_eligible = rule_eligible or (ml_prob > 0.60)
         
-        if not is_truly_eligible or ml_prob < 0.70: # slightly lower threshold for quick check
+        # Rule-eligible always shown; ML-only needs higher confidence
+        if not rule_eligible and ml_prob < 0.35:
+            continue
+        if not is_truly_eligible:
             continue
 
         payload = {
@@ -401,16 +414,17 @@ def recommend(user: UserProfile):
         scheme_dict = row.to_dict()
         explanation = rule_based_explain(user, scheme_dict)
         
-        # Hard constraint: If rule-based says ineligible AND ML confidence is not extremely high, reject.
+        # Rule-based is PRIMARY filter. ML provides confidence scoring only.
         rule_eligible = explanation["eligible_rules"]
         ml_prob = probs[i]
         match_score = explanation.get("match_score", 0.50)
         
-        # We only consider it truly eligible if it passes rules, OR if ML is 95%+ sure
-        is_truly_eligible = rule_eligible or (ml_prob > 0.95)
-        
-        # High threshold for detailed view
-        if not is_truly_eligible or ml_prob < 0.75:
+        # Rule-eligible schemes always included. ML-only needs >0.40
+        is_truly_eligible = rule_eligible or (ml_prob > 0.60)
+        if not is_truly_eligible:
+            continue
+        # Only block ML-only schemes with very low probability
+        if not rule_eligible and ml_prob < 0.40:
             continue
 
         # Blend ML probability with deterministic heuristic match_score
@@ -440,7 +454,12 @@ def recommend(user: UserProfile):
             "documents": str(scheme_dict.get("documents_required", "")),
             "reasons": explanation["reasons"],
             "missing": explanation["missing"],
-            "benefit_type": scheme_dict.get("benefit_type", "scheme")
+            "benefit_type": scheme_dict.get("benefit_type", "scheme"),
+            "benefit_amount": str(scheme_dict.get("benefit_amount", "")),
+            "tags": str(scheme_dict.get("tags", "")),
+            "application_deadline": str(scheme_dict.get("application_deadline", "")),
+            "processing_time": str(scheme_dict.get("processing_time", "")),
+            "popularity_score": str(scheme_dict.get("popularity_score", "5.0")),
         }
         ranked.append(entry)
         # ... (rest of metadata)
@@ -449,7 +468,7 @@ def recommend(user: UserProfile):
         why.append({"scheme_id": entry["scheme_id"], "reasons": entry["reasons"], "eligible_by_rules": rule_eligible, "missing": entry["missing"]})
 
     ranked.sort(key=lambda x: x["rank_score"], reverse=True)
-    limit = 50
+    limit = 500
     # Use standard slicing which is safer for type checkers
     top_ranked = [ranked[i] for i in range(min(len(ranked), limit))]
     top_benefits = [benefits[i] for i in range(min(len(benefits), limit))]

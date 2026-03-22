@@ -11,10 +11,10 @@ export function BeforeAfterSection() {
         <ScrollWrapper>
           <div className="text-center max-w-4xl mx-auto mb-20 gsap-animate">
             <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
-              The Old Way vs. <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">The CivixAI Way</span>
+              The Old Way vs. <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">The Simple Way</span>
             </h2>
             <p className="mt-6 text-xl text-slate-300 font-medium drop-shadow-sm">
-              Stop drowning in information. Start getting clear answers.
+              Stop struggling with confusing information and start getting clear answers instantly.
             </p>
           </div>
         </ScrollWrapper>
@@ -28,9 +28,9 @@ export function BeforeAfterSection() {
                 <CardHeader className="px-0 pt-0 border-b border-rose-500/20 mb-8 pb-6">
                   <div className="flex items-center gap-4">
                     <div className="h-4 w-4 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.6)] animate-pulse" />
-                    <CardTitle className="text-3xl font-bold text-white tracking-wide">Without CivixAI</CardTitle>
+                    <CardTitle className="text-3xl font-bold text-white tracking-wide">The Usual Struggle</CardTitle>
                   </div>
-                  <p className="text-rose-400 font-medium mt-2">The Search is Endless</p>
+                  <p className="text-rose-400 font-medium mt-2">Endless searching and frustration</p>
                 </CardHeader>
 
                 <CardContent className="space-y-8 px-0">
@@ -39,7 +39,7 @@ export function BeforeAfterSection() {
                       <FileSearch className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-slate-300 text-lg">Jumping between countless government websites, news articles, and local offices.</p>
+                      <p className="text-slate-300 text-lg">Jumping between dozens of complicated government websites and local offices just to find basic details.</p>
                     </div>
                   </div>
 
@@ -48,7 +48,7 @@ export function BeforeAfterSection() {
                       <AlertTriangle className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-slate-300 text-lg">Confusing eligibility rules and unclear application processes lead to mistakes.</p>
+                      <p className="text-slate-300 text-lg">Very confusing rules and difficult application steps that easily result in mistakes or rejections.</p>
                     </div>
                   </div>
 
@@ -57,7 +57,7 @@ export function BeforeAfterSection() {
                       <Clock className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-slate-300 text-lg">Hours, days, even weeks wasted on research with no guarantee of finding the right benefit.</p>
+                      <p className="text-slate-300 text-lg">Wasting hours or days trying to understand what to do, without even knowing if you qualify.</p>
                     </div>
                   </div>
                 </CardContent>
@@ -77,7 +77,7 @@ export function BeforeAfterSection() {
                     <div className="h-4 w-4 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.8)]" />
                     <CardTitle className="text-3xl font-bold text-white tracking-wide">With CivixAI</CardTitle>
                   </div>
-                  <p className="text-blue-300 font-medium mt-2">Clarity in Minutes</p>
+                  <p className="text-blue-300 font-medium mt-2">Crystal clear answers in minutes</p>
                 </CardHeader>
 
                 <CardContent className="space-y-8 px-0">
@@ -86,7 +86,7 @@ export function BeforeAfterSection() {
                       <BrainCircuit className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-slate-200 text-lg font-medium">Answer a few simple questions and let our AI do the heavy lifting for you.</p>
+                      <p className="text-slate-200 text-lg font-medium">Answer a few basic questions and let our smart AI instantly handle all the heavy lifting.</p>
                     </div>
                   </div>
 
@@ -95,7 +95,7 @@ export function BeforeAfterSection() {
                       <CheckCircle className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-slate-200 text-lg font-medium">Get a clear, prioritized list of schemes you are actually eligible for.</p>
+                      <p className="text-slate-200 text-lg font-medium">Get a direct, prioritized list of government programs and loans that are actually made for you.</p>
                     </div>
                   </div>
 
@@ -104,7 +104,7 @@ export function BeforeAfterSection() {
                       <Smile className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="text-slate-200 text-lg font-medium">Feel confident and empowered with personalized checklists and transparent reasons.</p>
+                      <p className="text-slate-200 text-lg font-medium">Feel totally confident with your own ready-to-use checklist and easy-to-read instructions.</p>
                     </div>
                   </div>
                 </CardContent>

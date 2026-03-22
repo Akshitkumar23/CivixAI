@@ -64,8 +64,8 @@ BENEFIT_TEMPLATES = {
 
 # 5. Benefit Type Classifiers (Schemes, Loans, Insurance)
 BENEFIT_TYPE_RULES = {
-    "loan": ["loan", "credit", "mudra", "nabard", "financing", "subsidy", "startup funding", "capital", "kcc", "kisan credit card", "bima"],
-    "insurance": ["insurance", "bima", "pension", "suraksha", "jeevan jyoti", "suraksha bima", "ayushman", "health cover"],
+    "loan": ["loan", "credit", "mudra", "nabard", "financing", "startup funding", "capital", "kcc", "kisan credit card", "pmegp", "stand-up", "standup", "mudra yojana", "svamitva", "home loan", "education loan", "business loan"],
+    "insurance": ["insurance", "bima", "suraksha", "jeevan jyoti", "jeevan bima", "suraksha bima", "ayushman", "health cover", "term life", "life insurance", "health insurance", "pm-jay", "pmjjby", "pmsby", "atal pension", "pension yojana", "annuity"],
 }
 
 def infer_category(text):
@@ -129,9 +129,11 @@ def enrich_data():
         # We combine text from name, ministry, and current description to analyze the context
         combined_text = f"{name} {ministry} {desc}".lower()
         
-        # 1. Infer Category Dynamically
-        if pd.isna(row.get('scheme_category')) or str(row.get('scheme_category')).strip() in ['', 'mixed', 'general', 'nan']:
-            cat = infer_category(combined_text)
+        # 1. Always re-infer Category for better accuracy
+        cat = infer_category(combined_text)
+        if cat != 'general_welfare':
+            df.at[i, 'scheme_category'] = cat
+        elif pd.isna(row.get('scheme_category')) or str(row.get('scheme_category')).strip() in ['', 'mixed', 'general', 'nan']:
             df.at[i, 'scheme_category'] = cat
         else:
             cat = str(row.get('scheme_category')).strip()
@@ -154,9 +156,13 @@ def enrich_data():
         if pd.isna(row.get('benefit_description')) or str(row.get('benefit_description')).strip() in ['', 'nan'] or "provides targeted benefits" in desc:
             df.at[i, 'benefit_description'] = infer_benefit(cat, name, ministry.strip() or 'Government')
             
-        # 5. Infer Benefit Type (Scheme vs Loan vs Insurance)
-        if pd.isna(row.get('benefit_type')) or str(row.get('benefit_type')).strip() in ['', 'nan']:
-            df.at[i, 'benefit_type'] = infer_benefit_type(combined_text)
+        # 5. Always re-infer Benefit Type for ALL rows (force override)
+        inferred_type = infer_benefit_type(combined_text)
+        if inferred_type != 'scheme':
+            df.at[i, 'benefit_type'] = inferred_type
+        # keep existing if already loan/insurance
+        elif str(row.get('benefit_type')).strip() not in ['loan', 'insurance', 'investment']:
+            df.at[i, 'benefit_type'] = 'scheme'
              
         enriched_count += 1
 

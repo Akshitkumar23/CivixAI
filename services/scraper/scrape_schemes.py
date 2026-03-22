@@ -159,7 +159,7 @@ def extract_dbtbharat_central(html: str, source: Source) -> List[Dict[str, Any]]
                     "scheme_type": source.scheme_type,
                     "scheme_category": source.scheme_category,
                     "documents_required": "",
-                    "application_url": _clean_application_url(href),
+                    "application_url": _clean_application_url(href, name=name),
                     "benefit_description": "",
                     "min_age": "",
                     "max_age": "",
@@ -196,15 +196,34 @@ def _is_good_scheme_text(text: str) -> bool:
     return re.search(keywords, text, flags=re.IGNORECASE) is not None
 
 
-def _clean_application_url(url: str) -> str:
-    """Ensure the URL is an application portal and not just a PDF guideline."""
+def _clean_application_url(url: str, name: str = "", category: str = "") -> str:
+    """Ensure the URL is an application portal and not just a PDF/Generic List."""
     if not url:
+        # Heuristic fallback for missing or broken links
+        n = name.lower()
+        if "scholarship" in n or "student" in n: return "https://scholarships.gov.in/"
+        if "business" in n or "mudra" in n or "loan" in n: return "https://www.jansamarth.in"
+        if "kisan" in n or "farmer" in n: return "https://pmkisan.gov.in/"
+        if "ayushman" in n: return "https://beneficiary.nha.gov.in/"
         return ""
+
     lower_url = url.lower()
-    # If it's a document or circular, it's not the online application link
+    lower_name = name.lower()
+
+    # Reject generic lists that lead to 'Page Not Found' or confusion
+    if "dbtbharat.gov.in/central-scheme/list" in lower_url:
+        # Try to resolve to a better portal
+        if "scholarship" in lower_name: return "https://scholarships.gov.in/"
+        if "kisan" in lower_name or "farmer" in lower_name: return "https://pmkisan.gov.in/"
+        if "loan" in lower_name or "credit" in lower_name: return "https://www.jansamarth.in"
+        return "https://www.india.gov.in/my-government/schemes" # Better than a list
+
+    # Rejection of documents/PDFs
     bad_exts = [".pdf", ".doc", ".docx", "guideline", "notification", "circular", "download"]
     if any(ext in lower_url for ext in bad_exts):
-        return "" # Clear it out so we don't send people to a PDF to 'apply'
+        # Instead of just empty, try to resolve to a portal
+        if "scholarship" in lower_name: return "https://scholarships.gov.in/"
+        return "" 
         
     return url
 
@@ -232,7 +251,7 @@ def extract_generic_page(html: str, source: Source) -> List[Dict[str, Any]]:
                 "scheme_type": source.scheme_type,
                 "scheme_category": source.scheme_category,
                 "documents_required": "",
-                "application_url": _clean_application_url(href),
+                "application_url": _clean_application_url(href, name=normalized),
                 "benefit_description": "",
                 "min_age": "",
                 "max_age": "",

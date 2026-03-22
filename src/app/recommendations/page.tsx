@@ -36,7 +36,7 @@ interface APIResponse {
     benefit_score?: number;
     rank_score?: number;
     reasons?: string[];
-    missing?: string[];
+    missing_inputs?: string[];
     description?: string;
     ministry?: string;
     level?: string;
@@ -44,7 +44,13 @@ interface APIResponse {
     states?: string;
     documents?: string;
     url?: string;
+    source_url?: string;
     benefit_type?: string;
+    benefit_amount?: string;
+    tags?: string;
+    application_deadline?: string;
+    processing_time?: string;
+    popularity_score?: string;
   }>;
   topSchemes?: Array<{
     scheme: string;
@@ -88,11 +94,17 @@ function CardSkeleton() {
   );
 }
 
-function DetailedSchemeCard({ scheme, index, details, onFeedback }: { scheme: any; index: number; details?: any; onFeedback: (schemeId: string, accepted: number) => void }) {
+function DetailedSchemeCard({
+  scheme, index, details, onFeedback, isInCompare, onToggleCompare
+}: {
+  scheme: any; index: number; details?: any;
+  onFeedback: (schemeId: string, accepted: number) => void;
+  isInCompare: boolean;
+  onToggleCompare: (scheme: any, details?: any) => void;
+}) {
   const confidence = scheme.confidence || 50;
   const isEligible = scheme.eligible !== false;
-  const priority = scheme.priority || 'medium';
-  const [isExpanded, setIsExpanded] = useState(false);
+  const benefitAmount = scheme.benefit_amount;
   const [feedbackGiven, setFeedbackGiven] = useState<number | null>(null);
 
   const submitFeedback = (accepted: number) => {
@@ -103,169 +115,125 @@ function DetailedSchemeCard({ scheme, index, details, onFeedback }: { scheme: an
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="group relative"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.25, delay: Math.min(index * 0.04, 0.4), ease: 'easeOut' }}
+      className="group relative h-full"
+      layout
     >
-      <Card className={`relative z-10 overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white/5 hover:bg-white/10 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] rounded-3xl ${priority === 'high' ? 'ring-1 ring-primary/50 shadow-primary/20' : priority === 'medium' ? 'ring-1 ring-white/20' : ''}`}>
-
-        {/* Subtle top reflection for glass */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-white/0 via-white/20 to-white/0" />
-
-        <CardHeader className="p-6 pb-2">
-          <div className="flex justify-between items-start gap-4 p-1">
-            <div className="space-y-2 flex-1">
+      <Card className="relative flex flex-col h-full overflow-hidden bg-[#0a0a0b]/80 border-white/5 shadow-none hover:bg-[#121214]/90 transition-all duration-300 rounded-2xl">
+        <CardHeader className="p-5 pb-3">
+          <div className="flex justify-between items-start gap-4">
+            <div className="space-y-3 flex-1">
               <div className="flex items-center flex-wrap gap-2">
-                <Badge variant={isEligible ? "default" : "secondary"} className={isEligible ? "bg-green-500/20 text-green-300 border border-green-400/30 shadow-sm backdrop-blur-md" : "bg-red-500/20 text-red-300 border border-red-400/30"}>
-                  <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isEligible ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-                  {isEligible ? 'Eligible Match' : 'Check Criteria'}
-                </Badge>
-                <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 ml-1">
+                {isEligible ? (
+                  <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                    <div className="w-1.5 h-1.5 rounded-full mr-1.5 bg-green-400" />
+                    Eligible Match
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                    Check Criteria
+                  </Badge>
+                )}
+                <span className="text-xs font-semibold text-slate-500">
                   {details?.benefit_type === 'loan' ? 'Loan / Credit' : details?.benefit_type === 'insurance' ? 'Insurance / Pension' : details?.category || 'General'}
-                </div>
+                </span>
               </div>
 
-              <CardTitle className="text-xl md:text-2xl font-black leading-tight text-white line-clamp-2 group-hover:text-primary-foreground transition-colors group-hover:shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+              <CardTitle className="text-xl font-bold leading-tight text-white line-clamp-2">
                 {details?.scheme_name || scheme.scheme_name}
               </CardTitle>
+              {benefitAmount && (
+                <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full w-fit">
+                  <span className="text-emerald-300">₹</span> {benefitAmount}
+                </div>
+              )}
+              {details?.popularity_score && (
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-400 bg-amber-400/5 border border-amber-400/10 px-2.5 py-1 rounded-full w-fit">
+                  <TrendingUp className="h-3 w-3" />
+                  Score: {details.popularity_score}
+                </div>
+              )}
             </div>
 
-            <div className={`flex flex-col items-center justify-center bg-black/40 backdrop-blur-md border border-white/10 shadow-inner rounded-2xl p-3 shrink-0 min-w-[80px] transition-all duration-300 ${priority === 'high' ? 'shadow-[0_0_15px_rgba(59,130,246,0.3)]' : ''}`}>
-              <div className={`text-2xl md:text-3xl font-black ${confidence > 80 ? 'text-transparent bg-clip-text bg-gradient-to-br from-blue-300 to-purple-400' : 'text-slate-300'}`}>
-                {Math.round(confidence)}<span className="text-sm opacity-50">%</span>
+            <div className="flex flex-col items-end shrink-0">
+              <div className={`text-2xl font-bold ${confidence > 80 ? 'text-blue-400' : 'text-slate-300'}`}>
+                {Math.round(confidence)}%
               </div>
-              <div className="text-[9px] uppercase tracking-widest font-black text-slate-500 mt-1">Match</div>
+              <div className="text-xs text-slate-500 font-medium">Match</div>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-6 pt-2 space-y-5">
-          {details?.ministry && (
-            <div className="text-xs font-semibold text-slate-400 mb-2">
-              Ministry: {details.ministry} {details.level ? `(${details.level})` : ''}
-            </div>
-          )}
-          <p className="text-[15px] text-slate-300 leading-relaxed line-clamp-3">
-            {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status. Detailed benefits are currently unavailable.'}
+        <CardContent className="p-5 pt-2 flex-grow">
+          <p className="text-sm text-slate-400 leading-relaxed line-clamp-3">
+            {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status.'}
           </p>
 
-          <div className="flex items-center gap-4 py-3 px-4 bg-black/20 backdrop-blur-sm rounded-2xl border border-white/5 shadow-inner">
-            <div className="flex-1 space-y-2">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Plausibility</span>
-                <span className="text-xs font-bold text-blue-300">{Math.round(confidence)}%</span>
+          <div className="flex flex-wrap gap-2 mt-4 pt-1">
+            {details?.application_deadline && (
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-300 bg-red-400/10 border border-red-500/20 px-2 py-1 rounded-lg">
+                <span className="opacity-70">ENDS</span> {details.application_deadline}
               </div>
-              <div className="h-2 w-full bg-slate-800/80 rounded-full overflow-hidden border border-white/5">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full"
-                  style={{ width: `${Math.round(confidence)}%` }}
-                />
-              </div>
-            </div>
-            {scheme.benefit_score !== undefined && (
-              <div className="px-3 py-1.5 bg-green-500/20 backdrop-blur-md rounded-xl border border-green-400/30 flex flex-col items-center justify-center shrink-0">
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3 text-green-300" />
-                  <span className="text-sm font-black text-green-300">+{Number(scheme.benefit_score).toFixed(1)}</span>
-                </div>
-                <div className="text-[9px] uppercase font-bold text-green-400/70">Impact</div>
+            )}
+            {details?.processing_time && (
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-300 bg-blue-400/10 border border-blue-500/20 px-2 py-1 rounded-lg">
+                <span className="opacity-70">WAIT</span> {details.processing_time}
               </div>
             )}
           </div>
 
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="pt-4 border-t border-white/10 space-y-4"
-              >
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="reasoning" className="border-none">
-                    <AccordionTrigger className="py-2 hover:no-underline text-white">
-                      <div className="flex items-center gap-2 text-blue-300">
-                        <Zap className="h-4 w-4" />
-                        <span className="text-sm font-bold uppercase tracking-tight">AI Reasoning</span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm space-y-2 bg-black/40 p-3 rounded-xl border border-white/5 text-slate-300">
-                      {scheme.reasons && scheme.reasons.length > 0 ? (
-                        <ul className="space-y-1">
-                          {scheme.reasons.map((r: string, i: number) => (
-                            <li key={i} className="flex gap-2">
-                              <ShieldCheck className="h-4 w-4 shrink-0 text-green-400" />
-                              <span>{r}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>Matches your demographics and socioeconomic status.</p>
-                      )}
-                    </AccordionContent>
-                  </AccordionItem>
-
-                  <AccordionItem value="details" className="border-none">
-                    <AccordionTrigger className="py-2 hover:no-underline text-white">
-                      <div className="flex items-center gap-2 text-slate-300">
-                        <FileText className="h-4 w-4" />
-                        <span className="text-sm font-bold uppercase tracking-tight">Requirements</span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="text-sm space-y-4 pt-2 text-slate-300">
-                      {details?.benefits_snippets?.length > 0 && (
-                        <div className="bg-black/20 p-3 rounded-xl border border-white/5">
-                          <div className="font-bold text-white mb-1">Key Benefits</div>
-                          <div className="opacity-90">{details.benefits_snippets[0]}</div>
-                        </div>
-                      )}
-                      {details?.documents_snippets?.length > 0 && (
-                        <div className="bg-black/20 p-3 rounded-xl border border-white/5">
-                          <div className="font-bold text-white mb-1">Documents Needed</div>
-                          <div className="opacity-90">{details.documents_snippets[0]}</div>
-                        </div>
-                      )}
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-
-                <div className="flex gap-3 pt-2">
-                  <Button className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)] border-none" size="sm" asChild>
-                    <a href={details?.source_url || '#'} target="_blank">
-                      Apply Now <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm" className="rounded-xl border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white" asChild>
-                    <Link href={`/scheme/${scheme.id}`}>Full Analysis</Link>
-                  </Button>
-                  <div className="flex items-center gap-1 border border-white/10 p-0.5 rounded-xl bg-black/20">
-                    <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-lg ${feedbackGiven === 1 ? 'text-green-400 bg-green-500/20' : 'text-slate-400 hover:text-green-400 hover:bg-green-500/20'}`} onClick={(e) => { e.preventDefault(); submitFeedback(1); }}>
-                      <ThumbsUp className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-lg ${feedbackGiven === 0 ? 'text-red-400 bg-red-500/20' : 'text-slate-400 hover:text-red-400 hover:bg-red-500/20'}`} onClick={(e) => { e.preventDefault(); submitFeedback(0); }}>
-                      <ThumbsDown className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {scheme.missing_inputs && scheme.missing_inputs.length > 0 && confidence < 100 && (
+            <div className="mt-4 p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-orange-400 tracking-wide uppercase">Boost Match Score 🚀</span>
+                <Link href="/check-eligibility" className="text-[10px] font-semibold text-orange-300 hover:text-white underline">Edit Profile</Link>
+              </div>
+              <p className="text-[10px] text-orange-300/80 mb-2 leading-snug">Add these details to verify 100% eligibility:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {scheme.missing_inputs.map((input: string) => (
+                  <span key={input} className="text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-1 bg-orange-500/20 text-orange-300 border border-orange-500/30">
+                    <Zap className="h-2 w-2" /> {input}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
 
-        <CardFooter className="p-3 bg-black/20 border-t border-white/10">
-          <Button
-            variant="ghost"
-            className="w-full h-10 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? 'Hide Details' : 'View AI Reasoning & Criteria'}
-            {isExpanded ? <ChevronUp className="ml-1.5 h-4 w-4" /> : <ChevronDown className="ml-1.5 h-4 w-4" />}
+        <CardFooter className="p-5 pt-0 mt-auto flex flex-wrap gap-3">
+          <Button className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium border-0" size="sm" asChild>
+            <a href={details?.url || details?.source_url || '#'} target="_blank">
+              Apply Now <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+            </a>
           </Button>
+          <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-[#121214] hover:bg-white/5 text-white" asChild>
+            <Link href={`/scheme/${scheme.id}`}>Details</Link>
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className={`rounded-xl px-3 border ${
+              isInCompare
+                ? 'border-blue-500/50 text-blue-400 bg-blue-500/10 hover:bg-blue-500/20'
+                : 'border-white/10 text-slate-400 hover:text-white hover:bg-white/5'
+            } transition-all`}
+            onClick={() => onToggleCompare(scheme, details)}
+          >
+            {isInCompare ? '✓ Comparing' : '⇄ Compare'}
+          </Button>
+          <div className="flex items-center gap-1 border border-white/10 p-1 rounded-xl bg-[#121214]">
+            <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-lg ${feedbackGiven === 1 ? 'text-green-400 bg-green-500/10' : 'text-slate-400 hover:text-green-400 hover:bg-green-500/10'}`} onClick={(e) => { e.preventDefault(); submitFeedback(1); }}>
+              <ThumbsUp className="h-4 w-4" />
+            </Button>
+            <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-lg ${feedbackGiven === 0 ? 'text-red-400 bg-red-500/10' : 'text-slate-400 hover:text-red-400 hover:bg-red-500/10'}`} onClick={(e) => { e.preventDefault(); submitFeedback(0); }}>
+              <ThumbsDown className="h-4 w-4" />
+            </Button>
+          </div>
         </CardFooter>
       </Card>
-      {/* Decorative background glow behind the card on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 rounded-3xl -z-10" />
     </motion.div>
   );
 }
@@ -274,56 +242,100 @@ function TopMatchHero({ scheme, details }: { scheme: any; details?: any }) {
   if (!scheme) return null;
 
   return (
-    <Card className="mb-10 overflow-hidden shadow-[0_0_40px_rgba(59,130,246,0.3)] bg-gradient-to-br from-slate-900 via-[#0a1128] to-[#1a0b2e] border border-white/10 text-white rounded-[2.5rem]">
-      <div className="relative p-8 md:p-12 overflow-hidden">
-        {/* Animated Background Decor */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-500/20 rounded-full blur-[80px]" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[80px]" />
+    <Card className="mb-10 overflow-hidden bg-[#0A0A0A] border border-white/10 text-white rounded-3xl relative">
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-900/10 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-xl text-xs font-black uppercase tracking-widest text-blue-300 border border-white/10 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-              <Sparkles className="h-3.5 w-3.5 text-blue-300 fill-blue-300 animate-pulse" />
-              Top AI Prediction
-            </div>
-
-            <h2 className="text-4xl md:text-6xl font-black leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-blue-200">
-              {details?.scheme_name || scheme.scheme_name}
-            </h2>
-
-            <p className="text-lg text-slate-300 leading-relaxed line-clamp-3">
-              {details?.ministry && <strong className="block mb-2 text-sm text-blue-300">{details.ministry}</strong>}
-              {details?.summary || `A highly recommended ${scheme.category || 'governmental'} scheme tailored for your profile based on socio-economic trends and recent policy updates.`}
-            </p>
-
-            <div className="flex flex-wrap gap-4 pt-4">
-              <div className="bg-white text-slate-900 px-7 py-3.5 rounded-2xl font-black text-sm hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all flex items-center cursor-pointer">
-                Apply Immediately <ArrowRight className="ml-2 h-4 w-4" />
-              </div>
-              <div className="bg-white/5 backdrop-blur-xl text-white border border-white/10 px-7 py-3.5 rounded-2xl font-bold text-sm hover:bg-white/10 transition-all cursor-pointer">
-                Save for Later
-              </div>
-            </div>
+      <div className="relative z-10 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+        <div className="space-y-4 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-xs font-semibold text-blue-400 border border-blue-500/20">
+            <Sparkles className="h-3.5 w-3.5" />
+            Top AI Prediction
           </div>
 
-          <div className="flex justify-center md:justify-end">
-            <div className="relative group perspective-1000">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full blur-[60px] opacity-30 group-hover:opacity-50 transition-opacity duration-1000 animate-pulse" />
-              <div className="relative w-56 h-56 md:w-72 md:h-72 rounded-full border border-white/20 shadow-[inset_0_0_40px_rgba(255,255,255,0.1)] backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center bg-black/40 transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
-                <div className="absolute inset-0 rounded-full border border-dashed border-white/20 animate-[spin_60s_linear_infinite]" />
-                <div className="text-xl font-bold text-slate-400 mb-1 z-10 uppercase tracking-widest text-[10px]">Plausibility Score</div>
-                <div className="text-7xl md:text-8xl font-black z-10 text-transparent bg-clip-text bg-gradient-to-br from-blue-300 to-purple-400 drop-shadow-lg">{Math.round(scheme.confidence)}<span className="text-2xl md:text-4xl opacity-50">%</span></div>
-                <div className="mt-3 px-4 py-1.5 rounded-full bg-green-500/20 border border-green-500/30 text-[10px] font-black uppercase text-green-300 shadow-[0_0_15px_rgba(34,197,94,0.3)] z-10 backdrop-blur-md">
-                  High Success
-                </div>
-              </div>
-            </div>
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-2">
+              {details?.scheme_name || scheme.scheme_name}
+            </h2>
+            <p className="text-slate-400 leading-relaxed text-sm md:text-base">
+              {details?.ministry && <span className="text-white font-medium mr-2">{details.ministry} •</span>}
+              {details?.summary || `A highly recommended ${scheme.category || 'governmental'} scheme tailored for your profile.`}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button className="rounded-xl bg-white text-black hover:bg-slate-200 font-semibold" asChild>
+              <a href={details?.source_url || '#'} target="_blank">
+                Apply Immediately <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+            <Button variant="outline" className="rounded-xl border-white/10 hover:bg-white/5 text-white bg-transparent">
+              Save for Later
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-shrink-0 flex flex-col items-center justify-center p-6 bg-[#121214] border border-white/5 rounded-2xl min-w-[160px]">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Match Score</div>
+          <div className="text-5xl font-bold text-blue-400">{Math.round(scheme.confidence)}<span className="text-2xl text-blue-400/50">%</span></div>
+          <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full">
+            <ShieldCheck className="w-3.5 h-3.5" /> High Success
           </div>
         </div>
       </div>
     </Card>
   );
 }
+
+// ─── Compare Modal ───────────────────────────────────────────────────────────
+function CompareModal({ items, onClose }: { items: { scheme: any; details?: any }[]; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-5xl bg-[#0a0a0b] border border-white/10 rounded-3xl shadow-2xl overflow-auto max-h-[90vh] z-10">
+        <div className="sticky top-0 bg-[#0a0a0b]/95 border-b border-white/5 p-5 flex items-center justify-between z-10">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <span className="text-blue-400">⇄</span> Scheme Comparison
+          </h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors text-2xl leading-none">&times;</button>
+        </div>
+
+        <div className="p-5 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr>
+                <th className="text-left text-slate-500 font-semibold text-xs uppercase tracking-wide pb-4 w-36">Field</th>
+                {items.map((item, i) => (
+                  <th key={i} className="text-left pb-4 px-3">
+                    <div className="text-white font-bold line-clamp-2 text-sm">{item.details?.scheme_name || item.scheme.scheme_name}</div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {[
+                { label: 'Match Score', render: (item: any) => <span className={`font-black text-lg ${item.scheme.confidence > 80 ? 'text-blue-400' : 'text-slate-300'}`}>{Math.round(item.scheme.confidence)}%</span> },
+                { label: 'Type', render: (item: any) => <span className="capitalize text-slate-300">{item.details?.benefit_type || 'Scheme'}</span> },
+                { label: 'Ministry', render: (item: any) => <span className="text-slate-400">{item.details?.ministry || '—'}</span> },
+                { label: 'Eligibility', render: (item: any) => item.scheme.eligible ? <span className="text-green-400 font-semibold">✓ Eligible</span> : <span className="text-red-400">✗ Check Criteria</span> },
+                { label: 'Key Benefits', render: (item: any) => <span className="text-slate-400 text-xs leading-snug line-clamp-3">{item.details?.summary || '—'}</span> },
+                { label: 'Documents', render: (item: any) => <span className="text-slate-400 text-xs leading-snug">{item.details?.documents_snippets?.[0] || '—'}</span> },
+                { label: 'Apply', render: (item: any) => item.details?.source_url ? <a href={item.details.source_url} target="_blank" className="text-blue-400 hover:underline text-xs flex items-center gap-1">Apply Now <ExternalLink className="h-3 w-3" /></a> : <span className="text-slate-500">—</span> },
+              ].map(row => (
+                <tr key={row.label}>
+                  <td className="py-4 pr-3 text-slate-500 font-semibold text-xs uppercase tracking-wide align-top">{row.label}</td>
+                  {items.map((item, i) => (
+                    <td key={i} className="py-4 px-3 align-top">{row.render(item)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 function RecommendationsContent() {
   const searchParams = useSearchParams();
@@ -333,6 +345,17 @@ function RecommendationsContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [minConfidence, setMinConfidence] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+  const [compareList, setCompareList] = useState<{ scheme: any; details?: any }[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+
+  const handleToggleCompare = (scheme: any, details?: any) => {
+    setCompareList(prev => {
+      const exists = prev.find(c => c.scheme.id === scheme.id);
+      if (exists) return prev.filter(c => c.scheme.id !== scheme.id);
+      if (prev.length >= 3) return prev; // max 3
+      return [...prev, { scheme, details }];
+    });
+  };
 
   const handleFeedback = async (schemeId: string, accepted: number) => {
     try {
@@ -422,23 +445,98 @@ function RecommendationsContent() {
   const latestSources: any[] = []; // Placeholder for now
 
 
-  const handleExport = () => {
+  const handleExport = async () => {
     setIsExporting(true);
     try {
-      const payload = filteredSchemes.map(s => ({
-        id: s.id,
-        confidence: s.confidence,
-        priority: s.priority,
-        eligible: s.eligible,
-        details: structuredById.get(s.id) || null
-      }));
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'eligible_schemes.json';
-      a.click();
-      URL.revokeObjectURL(url);
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      let y = 20;
+
+      // Header
+      doc.setFillColor(10, 10, 15);
+      doc.rect(0, 0, pageW, 30, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('CivixAI – My Matched Schemes', 15, 18);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(150, 150, 170);
+      doc.text(`Generated: ${new Date().toLocaleDateString('en-IN')}`, pageW - 15, 18, { align: 'right' });
+      y = 40;
+
+      filteredSchemes.slice(0, 30).forEach((scheme, idx) => {
+        const details = structuredById.get(scheme.id);
+        const name = details?.scheme_name || scheme.scheme_name || 'Unknown Scheme';
+        const confidence = Math.round(scheme.confidence);
+        const ministry = details?.ministry || 'Government of India';
+        const summary = details?.summary || 'Matched based on your profile.';
+        const docs = details?.documents_snippets?.[0] || 'Refer to official portal.';
+        const url = details?.source_url || '';
+
+        if (y > 260) { doc.addPage(); y = 20; }
+
+        // Card background
+        doc.setFillColor(18, 18, 20);
+        doc.roundedRect(12, y, pageW - 24, 52, 3, 3, 'F');
+
+        // Index + Name
+        doc.setTextColor(100, 160, 255);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`#${idx + 1}`, 17, y + 8);
+        doc.setTextColor(240, 240, 255);
+        doc.setFontSize(11);
+        doc.text(name.slice(0, 60), 26, y + 8);
+
+        // Confidence badge
+        doc.setFillColor(confidence > 80 ? 30 : 60, confidence > 80 ? 100 : 60, confidence > 80 ? 220 : 80);
+        doc.roundedRect(pageW - 40, y + 2, 26, 10, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${confidence}% Match`, pageW - 39, y + 9);
+
+        // Ministry
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(120, 130, 160);
+        doc.text(ministry.slice(0, 70), 17, y + 16);
+
+        // Summary
+        doc.setTextColor(180, 185, 200);
+        doc.setFontSize(8);
+        const summaryLines = doc.splitTextToSize(summary.slice(0, 200), pageW - 50);
+        doc.text(summaryLines.slice(0, 2), 17, y + 24);
+
+        // Documents
+        doc.setTextColor(100, 160, 100);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.text('Docs:', 17, y + 38);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(140, 150, 170);
+        doc.text(docs.slice(0, 90), 30, y + 38);
+
+        // Apply URL
+        if (url) {
+          doc.setTextColor(80, 130, 220);
+          doc.setFontSize(7);
+          doc.text(url.slice(0, 70), 17, y + 46);
+        }
+
+        y += 58;
+      });
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(80, 80, 100);
+      doc.text('Generated by CivixAI – AI-powered Government Schemes Platform', pageW / 2, 290, { align: 'center' });
+
+      doc.save('CivixAI_My_Schemes.pdf');
+    } catch (err) {
+      console.error('PDF export failed:', err);
     } finally {
       setIsExporting(false);
     }
@@ -465,22 +563,26 @@ function RecommendationsContent() {
 
   const structuredById = useMemo(() => {
     if (!apiData?.schemeDetails) return new Map();
-    return new Map(
-      apiData.schemeDetails.map(s => [
-        s.id || toSlug(s.name || ''),
-        {
-          scheme_name: s.name,
-          source_url: s.url,
-          summary: s.description,
-          ministry: s.ministry,
-          level: s.level,
-          category: s.category,
-          benefit_type: s.benefit_type || 'scheme',
-          benefits_snippets: s.description ? [s.description] : [],
-          documents_snippets: s.documents ? [s.documents] : []
-        }
-      ])
-    );
+    const entries = apiData.schemeDetails.map((s): [string, any] => {
+      const id = s.id || toSlug(s.name || '');
+      const details = {
+        scheme_name: s.name,
+        summary: s.description,
+        ministry: s.ministry,
+        level: s.level,
+        category: s.category,
+        benefit_type: s.benefit_type || 'scheme',
+        url: s.url,
+        source_url: s.source_url,
+        application_deadline: s.application_deadline,
+        processing_time: s.processing_time,
+        popularity_score: s.popularity_score,
+        benefits_snippets: s.description ? [s.description] : [],
+        documents_snippets: s.documents ? [s.documents] : []
+      };
+      return [id, details];
+    });
+    return new Map(entries);
   }, [apiData]);
 
   type ModelItem = {
@@ -492,6 +594,12 @@ function RecommendationsContent() {
     rank_score?: number;
     reasons?: string[];
     threshold?: number;
+    missing_inputs?: string[];
+    benefit_amount?: string;
+    tags?: string;
+    application_deadline?: string;
+    processing_time?: string;
+    popularity_score?: string;
   };
 
   const modelItems: ModelItem[] =
@@ -504,7 +612,13 @@ function RecommendationsContent() {
         benefit_score: item.benefit_score,
         rank_score: item.rank_score,
         reasons: item.reasons,
-        threshold: item.threshold
+        threshold: item.threshold,
+        missing_inputs: item.missing_inputs,
+        benefit_amount: item.benefit_amount,
+        tags: item.tags,
+        application_deadline: item.application_deadline,
+        processing_time: item.processing_time,
+        popularity_score: item.popularity_score,
       }))
       : apiData?.topSchemes && apiData.topSchemes.length > 0
         ? apiData.topSchemes.map(item => ({
@@ -531,6 +645,7 @@ function RecommendationsContent() {
       benefit_score: item.benefit_score,
       rank_score: item.rank_score,
       reasons: item.reasons,
+      missing_inputs: item.missing_inputs,
       priority: eligible ? toPriority(confidence) : 'low',
       eligible
     };
@@ -680,51 +795,62 @@ function RecommendationsContent() {
 
           <section className="container mx-auto px-4 py-10 sm:py-14 relative z-10">
 
-            <div className="gsap-animate">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
               <TopMatchHero scheme={topScheme} details={structuredById.get(topScheme?.id)} />
-            </div>
+            </motion.div>
 
-            <div className="mb-12 gsap-animate">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-white/5">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15, ease: 'easeOut' }}
+              className="mb-12"
+            >
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-6 border-b border-white/5">
                 <div className="space-y-2">
-                  <h1 className="text-5xl font-black text-white tracking-tight">AI Selection Hub</h1>
-                  <p className="text-slate-400 text-lg">We've filtered {schemes.length} total schemes to find these <span className="font-bold text-blue-400 border-b border-blue-400/30 pb-0.5">{eligibleOnlySchemes.length} prime matches</span>.</p>
+                  <h1 className="text-4xl font-bold text-white tracking-tight">Eligibility Matches</h1>
+                  <p className="text-slate-400">Showing <span className="font-semibold text-white">{eligibleOnlySchemes.length}</span> prime schemes from a dataset of {schemes.length}.</p>
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
-                    <span className="text-4xl font-black text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]">{highPriorityCount}</span>
-                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">High Priority</span>
+                  <div className="bg-[#121214] px-4 py-3 rounded-2xl border border-white/5 flex flex-col items-center justify-center min-w-[110px]">
+                    <span className="text-2xl font-bold text-blue-400">{highPriorityCount}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mt-1">High Priority</span>
                   </div>
-                  <div className="bg-white/5 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 flex flex-col items-center justify-center min-w-[130px] hover:scale-105 transition-transform">
-                    <span className="text-4xl font-black text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)]">{eligibleOnlySchemes.length}</span>
-                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mt-1 text-center">Total Eligible</span>
+                  <div className="bg-[#121214] px-4 py-3 rounded-2xl border border-white/5 flex flex-col items-center justify-center min-w-[110px]">
+                    <span className="text-2xl font-bold text-green-400">{eligibleOnlySchemes.length}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mt-1">Total Eligible</span>
                   </div>
                 </div>
               </div>
 
               <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-                  <TabsList className="h-auto bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg p-1.5 rounded-2xl w-full md:w-auto overflow-x-auto">
-                    <TabsTrigger value="All" className="rounded-xl py-2.5 px-6 font-bold text-slate-400 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all focus:ring-0">
-                      All Results
+                  <TabsList className="h-auto bg-[#0a0a0b]/80 border border-white/5 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
+                    <TabsTrigger value="All" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-white transition-all">
+                      All Items
                     </TabsTrigger>
-                    <TabsTrigger value="scheme" className="rounded-xl py-2.5 px-6 font-bold text-slate-400 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all focus:ring-0">
+                    <TabsTrigger value="scheme" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-white transition-all">
                       Govt Schemes
                     </TabsTrigger>
-                    <TabsTrigger value="loan" className="rounded-xl py-2.5 px-6 font-bold text-orange-400/70 data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-300 data-[state=active]:shadow-sm transition-all focus:ring-0">
-                      Loans & Credit
+                    <TabsTrigger value="loan" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-orange-400 transition-all">
+                      Loans
                     </TabsTrigger>
-                    <TabsTrigger value="insurance" className="rounded-xl py-2.5 px-6 font-bold text-purple-400/70 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 data-[state=active]:shadow-sm transition-all focus:ring-0">
-                      Insurance & Pension
+                    <TabsTrigger value="insurance" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-purple-400 transition-all">
+                      Insurance
                     </TabsTrigger>
                   </TabsList>
 
                   <div className="relative w-full md:w-80 group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500" />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <SearchX className="h-4 w-4 text-slate-500" />
+                    </div>
                     <Input
-                      placeholder="Search your matches..."
-                      className="relative pl-5 h-14 rounded-2xl bg-black/40 backdrop-blur-xl border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-blue-500/50 focus-visible:border-blue-500/50"
+                      placeholder="Search matches..."
+                      className="h-10 border-white/5 bg-[#0a0a0b]/80 pl-10 rounded-xl text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-blue-500/50"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -732,7 +858,7 @@ function RecommendationsContent() {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  <AnimatePresence mode="popLayout">
+                  <AnimatePresence mode="sync">
                     {finalSchemes.slice(0, 50).map((scheme, index) => (
                       <DetailedSchemeCard
                         key={scheme.id}
@@ -740,57 +866,66 @@ function RecommendationsContent() {
                         index={index}
                         details={structuredById.get(scheme.id)}
                         onFeedback={handleFeedback}
+                        isInCompare={compareList.some(c => c.scheme.id === scheme.id)}
+                        onToggleCompare={handleToggleCompare}
                       />
                     ))}
                   </AnimatePresence>
                 </div>
 
                 {finalSchemes.length === 0 && (
-                  <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-md">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-center py-20 bg-white/5 rounded-3xl border border-white/10"
+                  >
                     <p className="text-slate-400">No schemes found in this category. Please check another tab.</p>
-                  </div>
+                  </motion.div>
                 )}
               </Tabs>
-            </div>
+            </motion.div>
 
             {/* AI Insights & Footer Controls */}
-            <div className="grid gap-6 lg:grid-cols-3 mt-12">
-              <Card className="gsap-animate lg:col-span-2 bg-gradient-to-br from-blue-900/20 to-purple-900/10 border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+            <div className="grid gap-6 lg:grid-cols-3 mt-12 mb-8">
+              <Card className="lg:col-span-2 bg-[#0a0a0b]/80 border-white/5 p-6 md:p-8 rounded-2xl shadow-none">
                 <div className="flex items-center gap-3 mb-6">
-                  <Sparkles className="h-8 w-8 text-blue-400" />
-                  <h3 className="text-3xl font-black text-white">AI Strategy Summary</h3>
+                  <div className="p-2 bg-blue-500/10 rounded-xl">
+                    <Sparkles className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">AI Strategy Summary</h3>
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <div className="font-bold text-blue-300 flex items-center gap-2">
-                      <Zap className="h-4 w-4" /> Next Steps
+                    <div className="font-semibold text-white flex items-center gap-2 text-sm">
+                      <Zap className="h-4 w-4 text-blue-400" /> Next Steps
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      Based on predictive modeling, your best course of action is to immediately apply for <strong>{topScheme?.scheme_name}</strong>, as it has historically fast approval rates for your demographic.
+                    <p className="text-sm text-slate-400 leading-relaxed">
+                      Based on predictive modeling, your best course of action is to apply for <strong>{topScheme?.scheme_name}</strong>. It correlates highest with your demographic.
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <div className="font-bold text-purple-300 flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4" /> Smart Tip
+                    <div className="font-semibold text-white flex items-center gap-2 text-sm">
+                      <ShieldCheck className="h-4 w-4 text-green-400" /> Smart Tip
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      Ensure your Aadhar is firmly linked to your bank account. Our AI detected {eligibleOnlySchemes.filter(s => s.id.includes('dbt')).length || 3} schemes operating via DBT (Direct Benefit Transfer).
+                    <p className="text-sm text-slate-400 leading-relaxed">
+                      Ensure your Aadhar is firmly linked to your bank account. Our AI detected {eligibleOnlySchemes.filter(s => s.id.includes('dbt')).length || 3} schemes operating via DBT.
                     </p>
                   </div>
                 </div>
               </Card>
 
-              <Card className="gsap-animate p-8 rounded-3xl bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] flex flex-col justify-center gap-6">
+              <Card className="p-6 md:p-8 rounded-2xl bg-[#0a0a0b]/80 border-white/5 shadow-none flex flex-col justify-center gap-6">
                 <div>
-                  <h4 className="text-xl font-black mb-1 text-white">Actions</h4>
-                  <p className="text-sm text-slate-400">Manage your eligibility results</p>
+                  <h4 className="text-lg font-bold mb-1 text-white">Actions</h4>
+                  <p className="text-sm text-slate-400">Manage your results</p>
                 </div>
                 <div className="space-y-3">
-                  <Button onClick={handleExport} className="w-full py-6 rounded-2xl bg-white text-black hover:bg-slate-200 font-bold" variant="default">
-                    Download PDF Report
+                  <Button onClick={handleExport} disabled={isExporting} className="w-full rounded-xl bg-white text-black hover:bg-slate-200 font-semibold border-0" size="lg">
+                    {isExporting ? 'Generating PDF...' : '⬇ Download PDF Report'}
                   </Button>
-                  <Button asChild variant="outline" className="w-full py-6 rounded-2xl border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent">
-                    <Link href="/check-eligibility">Refresh My Profile</Link>
+                  <Button asChild variant="outline" size="lg" className="w-full rounded-xl border-white/10 text-white hover:bg-white/5 bg-transparent">
+                    <Link href="/check-eligibility">Refresh Profile</Link>
                   </Button>
                 </div>
               </Card>
@@ -799,6 +934,18 @@ function RecommendationsContent() {
         </main>
       </ScrollWrapper>
       <Chatbot context={finalSchemes} />
+
+      {/* Compare Sticky Bar */}
+      {compareList.length >= 2 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-4 px-6 py-3 rounded-2xl bg-blue-600/90 backdrop-blur-md border border-blue-400/30 shadow-[0_8px_32px_rgba(37,99,235,0.4)]">
+          <span className="text-white text-sm font-semibold">{compareList.length} schemes selected</span>
+          <Button size="sm" onClick={() => setShowCompare(true)} className="bg-white text-blue-700 hover:bg-blue-50 rounded-xl font-bold text-xs px-4">Compare Now ⇄</Button>
+          <button onClick={() => setCompareList([])} className="text-blue-200 hover:text-white text-xs underline">Clear</button>
+        </div>
+      )}
+
+      {/* Compare Modal */}
+      {showCompare && <CompareModal items={compareList} onClose={() => setShowCompare(false)} />}
     </div>
   );
 }

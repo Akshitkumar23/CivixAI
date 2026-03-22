@@ -9,18 +9,18 @@ import { ScrollWrapper } from '@/components/animations/ScrollWrapper';
 const highlightedFeatures = [
   {
     icon: <BrainCircuit className="h-10 w-10 text-blue-400" />,
-    title: 'AI Eligibility Engine',
-    description: 'Answer a few simple questions and let our AI instantly find schemes you qualify for.',
+    title: 'Smart AI Matcher',
+    description: 'Just answer a few questions and our AI instantly finds all the programs you can benefit from.',
   },
   {
     icon: <Target className="h-10 w-10 text-teal-400" />,
-    title: 'Transparent Recommendations',
-    description: 'Understand exactly why a scheme is recommended for you with clear, simple explanations.',
+    title: 'Clear Explanations',
+    description: 'See exactly why a scheme is the perfect fit for your profile, without any confusing government terms.',
   },
   {
     icon: <FileCheck2 className="h-10 w-10 text-indigo-400" />,
-    title: 'Auto-Generated Checklists',
-    description: 'Get a personalized list of all required documents for each application, reducing errors.',
+    title: 'Your Personal Checklist',
+    description: 'Get a custom list of every document you need before you even start applying, so you never make mistakes.',
   },
 ];
 
@@ -32,10 +32,10 @@ export function FeaturesHighlightSection() {
         <ScrollWrapper>
           <div className="text-center max-w-3xl mx-auto mb-20 gsap-animate">
             <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
-              Key Features at a Glance
+              Everything You Need in One Place
             </h2>
             <p className="mt-6 text-xl text-slate-300 font-medium drop-shadow-md">
-              We use technology to make finding and applying for benefits simple, transparent, and fast.
+              We simplify the process of claiming your rightful benefits, making it fast, clear, and stress-free.
             </p>
           </div>
         </ScrollWrapper>

@@ -93,6 +93,9 @@ const modernLevel2Schema = z.object({
   educationLevel: z.enum(['illiterate', 'primary', 'secondary', 'higher_secondary', 'graduate', 'postgraduate', 'phd'], { required_error: 'Education level is required' }).optional(),
   digitalLiteracy: z.enum(['none', 'basic', 'intermediate', 'advanced'], { required_error: 'Digital literacy is required' }).optional(),
   urbanRural: z.enum(['urban', 'rural'], { required_error: 'Location type is required' }).optional(),
+  maritalStatus: z.enum(['single', 'married', 'widowed', 'divorced'], { required_error: 'Marital status is required' }).optional(),
+  isBPL: z.boolean().default(false),
+  isMinority: z.boolean().default(false),
   monthlyExpenses: z.coerce.number().min(0, 'Monthly expenses must be a positive number').optional(),
   hasSmartphone: z.boolean().default(false),
   hasInternet: z.boolean().default(false),
@@ -141,6 +144,9 @@ export default function CheckEligibilityPage() {
       educationLevel: undefined,
       digitalLiteracy: undefined,
       urbanRural: undefined,
+      maritalStatus: undefined,
+      isBPL: false,
+      isMinority: false,
       monthlyExpenses: 0,
       hasSmartphone: false,
       hasInternet: false,
@@ -184,6 +190,9 @@ export default function CheckEligibilityPage() {
         educationLevel: data.educationLevel,
         digitalLiteracy: data.digitalLiteracy,
         urbanRural: data.urbanRural,
+        maritalStatus: data.maritalStatus,
+        isBPL: data.isBPL,
+        isMinority: data.isMinority,
         monthlyExpenses: data.monthlyExpenses || 0,
         hasSmartphone: data.hasSmartphone,
         hasInternet: data.hasInternet,
@@ -531,6 +540,83 @@ export default function CheckEligibilityPage() {
                             )}
                           />
                         )}
+
+                        {/* Smart follow-up based on tech/location */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="urbanRural"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Location Habitat</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger><SelectValue placeholder="Select habitat" /></SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="urban">Urban (City)</SelectItem>
+                                    <SelectItem value="rural">Rural (Village)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="maritalStatus"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Marital Status</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="single">Single</SelectItem>
+                                    <SelectItem value="married">Married</SelectItem>
+                                    <SelectItem value="widowed">Widowed</SelectItem>
+                                    <SelectItem value="divorced">Divorced</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="isBPL"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-white/5">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">BPL Card Holder</FormLabel>
+                                  <FormDescription>Do you have a BPL card?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="isMinority"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-white/5">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base">Minority Community</FormLabel>
+                                  <FormDescription>Part of a minority community?</FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
                         {/* Smart follow-up based on technology access */}
                         {(form.watch('hasSmartphone') || form.watch('hasInternet')) && (

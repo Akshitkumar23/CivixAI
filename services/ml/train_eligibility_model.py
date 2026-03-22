@@ -176,6 +176,7 @@ def train(
 
     out_dir = Path(output_dir)
     _ensure_dir(out_dir)
+    joblib.dump(best_model, out_dir / "eligibility_model.pkl")
 
     # Merge with existing schema if it exists
     schema_path = out_dir / "feature_schema.json"
