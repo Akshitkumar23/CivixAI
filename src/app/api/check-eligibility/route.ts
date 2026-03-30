@@ -118,7 +118,7 @@ function toNumber(value: unknown): number | undefined {
     return value;
   }
   if (typeof value === 'string') {
-    const trimmed = value.trim();
+    const trimmed = value.replace(/,/g, '').trim();
     if (!trimmed) return undefined;
     const parsed = Number(trimmed);
     return Number.isNaN(parsed) ? undefined : parsed;
@@ -326,16 +326,21 @@ async function tryMlService(payload: EligibilityPayload & Record<string, unknown
     const data = await response.json();
     const rankedSchemes = Array.isArray(data?.ranked_schemes) ? data.ranked_schemes : [];
 
-    // Create maps for quick lookup of benefits and reasoning
+    // Create maps for quick lookup of benefits, reasoning and knowledge graph
     const whyMap = new Map();
     if (Array.isArray(data?.why_this_scheme)) {
       data.why_this_scheme.forEach((w: any) => whyMap.set(w.scheme_id, w));
+    }
+    
+    const kgMap = new Map();
+    if (Array.isArray(data?.knowledge_graph)) {
+      data.knowledge_graph.forEach((kg: any) => kgMap.set(kg.scheme_id, kg.related));
     }
 
     const schemes = await loadSchemes();
     const schemeMap = new Map();
     schemes.forEach((s) => {
-      const key = (s.scheme_id || s.scheme_id || '').toLowerCase();
+      const key = (s.scheme_id || '').toLowerCase();
       if (key) schemeMap.set(key, s);
     });
 
@@ -344,6 +349,7 @@ async function tryMlService(payload: EligibilityPayload & Record<string, unknown
       const key = (item?.scheme_id || '').toLowerCase();
       const details = schemeMap.get(key);
       const why = whyMap.get(item?.scheme_id);
+      const related = kgMap.get(item?.scheme_id) || [];
 
       return {
         id: item?.scheme_id,
@@ -362,7 +368,9 @@ async function tryMlService(payload: EligibilityPayload & Record<string, unknown
         url: item?.url || details?.application_url || item?.application_url,
         benefit_type: item?.benefit_type || details?.benefit_type || 'scheme',
         reasons: item?.reasons || why?.reasons || [],
-        missing_inputs: why?.missing || []
+        missing_inputs: item?.missing || why?.missing || [],
+        path_to_eligibility: item?.path_to_eligibility || why?.path_to_eligibility || [],
+        related_schemes: related
       };
     });
 
@@ -398,6 +406,73 @@ async function fallbackEligibility(payload: EligibilityPayload & Record<string, 
       const states = normalizeStates(scheme.applicable_states);
       const match = stateMatch(states, state);
       if (!match.matches) return null;
+
+      // Strict Demographic Rules: If explicit rules are broken, drop immediately
+      const schemeGender = (scheme.gender_eligibility || 'all').toLowerCase().trim();
+      const userGender = String(payload.gender || '').toLowerCase().trim();
+      if (schemeGender !== 'all' && schemeGender !== 'nan' && schemeGender !== 'any' && userGender) {
+        if (schemeGender !== userGender) return null;
+      }
+
+      const schemeOccs = (scheme.occupation_eligibility || 'all').toLowerCase().split(',').map(s => s.trim());
+      const userOcc    = String(payload.occupation || '').toLowerCase().trim();
+      if (!schemeOccs.includes('all') && !schemeOccs.includes('nan') && !schemeOccs.includes('any') && schemeOccs.length > 0 && userOcc) {
+        if (!schemeOccs.some(o => userOcc.includes(o) || o.includes(userOcc) || userOcc === o)) {
+          return null;
+        }
+      }
+
+      const schemeCastes = (scheme.caste_eligibility || 'all').toLowerCase().split(',').map(s => s.trim());
+      const userCaste = String(payload.caste || payload.category || '').toLowerCase().trim();
+      if (!schemeCastes.includes('all') && !schemeCastes.includes('nan') && !schemeCastes.includes('any') && schemeCastes.length > 0 && userCaste) {
+        if (!schemeCastes.some(c => userCaste.includes(c) || c.includes(userCaste) || userCaste === c)) {
+          return null;
+        }
+      }
+      
+      const schemeDisab = String(scheme.disability_required || 'false').toLowerCase().trim();
+      if (schemeDisab === 'true' && payload.hasDisability === false) {
+        return null;
+      }
+
+      // Strict Text-based Keyword Rejections (Fallback since DB might lack structural occupation rules)
+      const combinedText = `${scheme.scheme_name || ''} ${scheme.benefit_description || ''} ${scheme.scheme_category || ''}`.toLowerCase();
+      
+      if (userOcc === 'student') {
+        if (combinedText.includes('farmer') || combinedText.includes('kisan') || combinedText.includes('agriculture') || combinedText.includes('krishi') || combinedText.includes('maternity') || combinedText.includes('pregnancy')) {
+          return null; // A student should not get farmer or maternity schemes
+        }
+      }
+      
+      if (userOcc === 'farmer') {
+        if (combinedText.includes('student') || combinedText.includes('scholarship') || combinedText.includes('fellowship') || combinedText.includes('school')) {
+          return null; // A farmer should not get student scholarships
+        }
+      }
+
+      if (userGender === 'male') {
+        if (combinedText.includes('women') || combinedText.includes('girl') || combinedText.includes('maternity') || combinedText.includes('mother')) {
+          return null; // A male should not get women's schemes
+        }
+      }
+      
+      if (userCaste !== 'sc' && userCaste !== 'st') {
+        if (combinedText.includes('scheduled caste') || combinedText.includes(' sc ') || combinedText.includes('scheduled tribe') || combinedText.includes(' st ')) {
+            return null;
+        }
+      }
+
+      if (userCaste !== 'obc') {
+        if (combinedText.includes('obc') || combinedText.includes('backward class')) {
+            return null;
+        }
+      }
+      
+      if (payload.hasDisability === false) {
+          if (combinedText.includes('disability') || combinedText.includes('pwd') || combinedText.includes('divyang')) {
+              return null;
+          }
+      }
 
       const hasConstraints = minAge !== undefined || maxAge !== undefined || incomeLimit !== undefined;
       const confidence = computeConfidence({

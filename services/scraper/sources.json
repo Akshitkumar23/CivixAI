@@ -23,16 +23,6 @@
       "notes": "Extracts central DBT schemes grouped by ministry."
     },
     {
-      "id": "dge_employment_schemes",
-      "type": "generic_gov_page",
-      "url": "https://dge.gov.in/dge/schemes_programmes",
-      "scheme_level": "central",
-      "scheme_type": "central",
-      "scheme_category": "employment",
-      "applicable_states": "ALL",
-      "notes": "Employment Generation Schemes and Programmes page."
-    },
-    {
       "id": "puducherry_restructured_css",
       "type": "generic_gov_page",
       "url": "https://pandr.py.gov.in/restructured-css-list",
@@ -153,13 +143,34 @@
       "notes": "Ayushman Bharat PMJAY Health Insurance."
     },
     {
-      "id": "data_gov_in_dataset_example",
-      "type": "data_gov_in_api",
-      "resource_id": "",
+      "id": "manage_state_repo",
+      "type": "generic_gov_page",
+      "url": "https://www.manage.gov.in/fpoacademy/SGSchemes/state-schemes.asp",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "agriculture",
+      "applicable_states": "ALL",
+      "notes": "Comprehensive state-wise repository for agricultural and rural schemes."
+    },
+    {
+      "id": "financial_services_central",
+      "type": "generic_gov_page",
+      "url": "https://financialservices.gov.in/beta/en/schemes-overview",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "finance",
+      "applicable_states": "ALL",
+      "notes": "Overview of major financial and social security schemes of India."
+    },
+    {
+      "id": "pm_india_initiatives",
+      "type": "generic_gov_page",
+      "url": "https://www.pmindia.gov.in/en/major-initiatives/",
       "scheme_level": "central",
       "scheme_type": "central",
       "scheme_category": "mixed",
-      "notes": "Fill resource_id and set DATAGOVINDIA_API_KEY env var to enable."
+      "applicable_states": "ALL",
+      "notes": "List of major flagship initiatives and schemes by the PMO."
     }
   ]
 }

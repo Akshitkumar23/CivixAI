@@ -80,38 +80,60 @@ def _create_user() -> dict:
     }
 
 def check_eligibility(user, scheme) -> int:
+    def safe_num(val, default):
+        try:
+            if pd.isna(val) or val == "" or val == "nan": return default
+            return int(float(val))
+        except: return default
+
     # 1. Basic Demographics
-    if user['age'] < int(float(scheme.get('min_age', 0) or 0)) or user['age'] > int(float(scheme.get('max_age', 100) or 100)): return 0
-    if user['annualIncome'] > int(float(scheme.get('income_limit', 9999999) or 9999999)): return 0
+    min_age = safe_num(scheme.get('min_age'), 0)
+    max_age = safe_num(scheme.get('max_age'), 100)
+    if user['age'] < min_age or user['age'] > max_age: return 0
+    
+    income_limit = safe_num(scheme.get('income_limit'), 999999999)
+    if user['annualIncome'] > income_limit: return 0
     
     # 2. Gender
-    if scheme.get('gender_eligibility', 'all') != 'all' and user['gender'] != scheme['gender_eligibility']: return 0
+    scheme_gender = str(scheme.get('gender_eligibility', 'all')).lower()
+    if scheme_gender != 'all' and user['gender'] != scheme_gender: return 0
     
     # 3. State
     app_states = str(scheme.get('applicable_states', 'ALL')).upper()
-    if app_states != 'ALL' and user['state'].lower() not in app_states.lower(): return 0
+    if app_states != 'ALL' and 'ALL' not in app_states and user['state'].lower() not in app_states.lower(): 
+        return 0
     
     # 4. Caste / Minority
     scheme_caste = str(scheme.get('caste_eligibility', 'all')).upper()
-    if scheme_caste != 'ALL' and 'MINORITY' in scheme_caste and user['isMinority'] == 0: return 0
-    if scheme_caste != 'ALL' and all(x not in scheme_caste for x in [user['caste'], 'ALL']): return 0
+    if scheme_caste != 'ALL' and 'ALL' not in scheme_caste:
+        if 'MINORITY' in scheme_caste and user['isMinority'] == 0: return 0
+        user_caste = str(user['caste']).upper()
+        if user_caste not in scheme_caste: return 0
     
     # 5. Disability
-    if scheme.get('disability_required', 'false') == 'true' and user['hasDisability'] == 0: return 0
+    if str(scheme.get('disability_required', 'false')).lower() == 'true' and user['hasDisability'] == 0: return 0
+
+    # 5.5 Occupation
+    scheme_occ = str(scheme.get('occupation_eligibility', 'all')).lower()
+    if scheme_occ != 'all' and scheme_occ != 'nan' and user['occupation']:
+        valid_occs = [o.strip() for o in scheme_occ.split(",")]
+        u_occ = str(user['occupation']).lower()
+        if not any(u_occ == o or u_occ in o or o in u_occ for o in valid_occs): return 0
     
     # 6. Advanced Fields
-    if scheme.get('urban_rural_eligibility', 'both') != 'both' and user['urbanRural'] != scheme['urban_rural_eligibility']: return 0
+    urban_rural = str(scheme.get('urban_rural_eligibility', 'both')).lower()
+    if urban_rural != 'both' and user['urbanRural'] != urban_rural: return 0
     
-    edu_req = scheme.get('education_level_required', 'any')
+    edu_req = str(scheme.get('education_level_required', 'any')).lower()
     if edu_req != 'any' and edu_req != 'none':
-        # Simple ranking check
         ranks = {"none":0, "primary":1, "secondary":2, "10th_pass":2, "higher_secondary":3, "graduate":4, "postgraduate":5}
         if ranks.get(user['educationLevel'], 0) < ranks.get(edu_req, 0): return 0
         
-    if scheme.get('marital_status_required', 'any') != 'any' and user['maritalStatus'] != scheme['marital_status_required']:
-        if scheme['marital_status_required'] == 'widowed' and user['maritalStatus'] != 'widowed': return 0
+    marital_req = str(scheme.get('marital_status_required', 'any')).lower()
+    if marital_req != 'any' and user['maritalStatus'] != marital_req:
+        return 0
         
-    if scheme.get('is_bpl_only', 'false') == 'true' and user['isBPL'] == 0: return 0
+    if str(scheme.get('is_bpl_only', 'false')).lower() == 'true' and user['isBPL'] == 0: return 0
 
     return 1
 
@@ -145,4 +167,4 @@ def generate_data(n_users=10000, schemes_per_user=50):
     print(f"✅ Success! Saved {len(out_df)} rows to {OUT_PATH}")
 
 if __name__ == "__main__":
-    generate_data(n_users=15000, schemes_per_user=40)
+    generate_data(n_users=1000, schemes_per_user=40)

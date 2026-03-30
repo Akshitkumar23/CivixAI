@@ -136,7 +136,9 @@ def train(
 
     metrics = {}
 
+    print(f"Building CatBoost with {len(X_train)} rows...")
     cat_model, cat_features = _build_catboost(X_train, y_train, X_val, y_val)
+    print("CatBoost Fit Complete.")
     metrics["catboost"] = _evaluate(cat_model, X_test, y_test)
 
     xgb_model, _ = _build_xgboost(X_train, y_train, X_val, y_val)

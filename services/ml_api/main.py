@@ -74,6 +74,7 @@ class RecommendationResponse(BaseModel):
     benefit_estimates: List[Dict[str, Any]]
     required_documents: List[Dict[str, Any]]
     why_this_scheme: List[Dict[str, Any]]
+    knowledge_graph: List[Dict[str, Any]]  # New field for related schemes
 
 
 app = FastAPI(title="CivixAI ML Service")
@@ -194,105 +195,183 @@ def rule_based_explain(user: UserProfile, scheme: Dict[str, Any]) -> Dict[str, A
     reasons = []
     missing = []
     eligible = True
-    match_score = 0.80  # Base match score, increased to allow reaching ~100%
+    hard_reject = False
+    match_score = 0.80
+    path_to_eligibility = []
 
-    # 1. Age check
-    if scheme.get("min_age") is not None and not np.isnan(scheme.get("min_age", np.nan)):
-        if user.age is None:
-            missing.append("age")
-        elif user.age < scheme["min_age"]:
-            eligible = False
-            reasons.append(f"Umar kam hai (Min: {scheme['min_age']})")
+    # Helper: Check numeric limit safely
+    def check_limit(val, limit, field_name, is_max=True):
+        if limit is None or np.isnan(float(limit)): return True, 0
+        limit = float(limit)
+        if val is None:
+            if field_name not in missing: missing.append(field_name)
+            return True, 0 # Keep eligible for now, but flag as missing
+        
+        if is_max:
+            if val > limit: return False, limit
         else:
-            match_score += 0.05
-    if scheme.get("max_age") is not None and not np.isnan(scheme.get("max_age", np.nan)):
-        if user.age is None:
-            missing.append("age")
-        elif user.age > scheme["max_age"]:
-            eligible = False
-            reasons.append(f"Umar zyada hai (Max: {scheme['max_age']})")
-        else:
-            match_score += 0.05
+            if val < limit: return False, limit
+        return True, 0
 
-    # 2. Income check
-    if scheme.get("income_limit") is not None and not np.isnan(scheme.get("income_limit", np.nan)):
-        if user.annualIncome is None:
-            missing.append("annualIncome")
-        elif user.annualIncome > scheme["income_limit"]:
+    # 1. Complex Age & Income Solver
+    ok_age, limit_age = check_limit(user.age, scheme.get("min_age"), "age", is_max=False)
+    if not ok_age:
+        eligible = False
+        reasons.append(f"Age criteria not met (Min: {int(limit_age)} years)")
+        # Negotiation Step
+        if (user.age or 0) >= int(limit_age) - 2:
+            path_to_eligibility.append(f"Almost at the age limit. Check if age relaxation applies for your category (SC/ST/OBC).")
+    
+    ok_age_max, limit_age_max = check_limit(user.age, scheme.get("max_age"), "age", is_max=True)
+    if not ok_age_max:
+        eligible = False
+        reasons.append(f"Age threshold exceeded (Max: {int(limit_age_max)} years)")
+
+    ok_inc, limit_inc = check_limit(user.annualIncome, scheme.get("income_limit"), "annualIncome", is_max=True)
+    if not ok_inc:
+        eligible = False
+        reasons.append(f"Income exceeds limit (Limit: ₹{int(limit_inc)})")
+        # AI Negotiation (#30)
+        gap = (user.annualIncome or 0) - limit_inc
+        if gap <= limit_inc * 0.25:
+            path_to_eligibility.append(f"Income slightly exceeds ₹{int(limit_inc)}. Check for legal deductions or apply via EWS.")
+
+    # 2. Smart Condition Logic (Graph-like Branching)
+    name_text = str(scheme.get("scheme_name", "")).lower()
+    desc_text = str(scheme.get("benefit_description", "")).lower()
+    combined_text = f"{name_text} {desc_text}".lower()
+
+    # Small/Marginal Farmer Check (Logic Branch)
+    if any(k in combined_text for k in ["farmer", "smf", "marginal", "kisan", "agriculture", "krishi", "kheti", "kisani"]):
+        if str(user.occupation).lower().strip() != "farmer" and not user.hasLand:
             eligible = False
-            reasons.append(f"Aay zyada hai (Limit: {scheme['income_limit']})")
+            hard_reject = True
+            reasons.append("Strictly for Farmers / Agricultural Activities")
+        elif (user.landSize or 0) > 2.0 and ("small" in combined_text or "marginal" in combined_text):
+            eligible = False
+            hard_reject = True
+            reasons.append("Land size exceeds Small/Marginal Farmer threshold")
+        else:
+            match_score += 0.15
+
+    # Student / Scholarship Check
+    if any(k in combined_text for k in ["student", "scholar", "scholarship", "fellowship", "school", "education"]):
+        if str(user.occupation).lower().strip() not in ["student", "unemployed"]:
+            eligible = False
+            hard_reject = True
+            reasons.append("Strictly for Students / Education")
+        else:
+            match_score += 0.15
+
+    # Single Girl Child / Minority / Caste (Branching OR logic)
+    if "minority" in combined_text:
+        is_minority = str(user.caste or "").lower() in ["muslim", "sikh", "christian", "jain", "buddhist", "parsi", "minority"]
+        if not is_minority:
+            eligible = False
+            hard_reject = True
+            reasons.append("Scheme intended for Minority communities")
         else:
             match_score += 0.10
 
-    # 3. State check
-    states = _normalize_states(scheme.get("applicable_states"))
-    if states:
-        if not user.state:
-            missing.append("state")
-        else:
-            state_val = str(user.state).strip().lower()
-            if "all" not in states and state_val not in states:
-                eligible = False
-                reasons.append("Aapka rajya (state) match nahi karta")
-            else:
-                match_score += 0.10
+    if any(k in combined_text for k in ["scheduled caste", " sc ", "st/sc", "sc/st", "harijan"]):
+        if str(user.caste or "").lower().strip() not in ["sc", "scheduled caste"]:
+            eligible = False
+            hard_reject = True
+            reasons.append("Reserved for SC category applicants")
 
-    # 4. Keyword-based Hard Rejection (Occupation & Gender)
-    name_text = str(scheme.get("scheme_name", "")).lower()
-    desc_text = str(scheme.get("benefit_description", "")).lower()
-    cat_text = str(scheme.get("scheme_category", "")).lower()
-    combined_text = name_text + " " + desc_text + " " + cat_text
+    if any(k in combined_text for k in ["scheduled tribe", " st ", "st/sc", "sc/st", "adivasi"]):
+        if str(user.caste or "").lower().strip() not in ["st", "scheduled tribe"]:
+            eligible = False
+            hard_reject = True
+            reasons.append("Reserved for ST category applicants")
 
-    # Gender Check
-    if "women" in combined_text or "female" in combined_text or "mahila" in combined_text or "girl" in combined_text:
+    if any(k in combined_text for k in ["obc", "backward class"]):
+        if str(user.caste or "").lower().strip() not in ["obc", "other backward class"]:
+            eligible = False
+            hard_reject = True
+            reasons.append("Reserved for OBC category applicants")
+
+    if any(k in combined_text for k in ["disability", "disabled", "pwd", "handicap", "divyang", "blind"]):
+        if user.hasDisability is False:
+            eligible = False
+            hard_reject = True
+            reasons.append("Reserved for persons with disabilities (PwD)")
+
+    if "girl" in combined_text or "daughter" in combined_text or "women" in combined_text or "mother" in combined_text or "maternity" in combined_text:
         if str(user.gender or "").lower() == "male":
             eligible = False
-            reasons.append("Sirf mahilaon (women) ke liye")
-        elif str(user.gender or "").lower() == "female":
-            match_score += 0.05
-    
-    # 5. Caste/Category Check
-    user_caste = str(user.caste or "").lower()
-    import re
-    if re.search(r'\b(sc|scheduled caste)\b', combined_text):
-        if user_caste != "sc":
-            eligible = False
-            reasons.append("Sirf SC category ke liye")
+            hard_reject = True
+            reasons.append("Reserved for female applicants only")
+        elif user.isSingleGirlChild:
+            match_score += 0.20 
+            reasons.append("Matched via Single Girl Child quota")
         else:
-            match_score += 0.05
-    elif re.search(r'\b(st|scheduled tribe)\b', combined_text):
-        if user_caste != "st":
-            eligible = False
-            reasons.append("Sirf ST category ke liye")
-        else:
-            match_score += 0.05
-    elif re.search(r'\b(obc|backward class)\b', combined_text):
-        if user_caste not in ["obc", "sc", "st"]: # Usually SC/ST are eligible for OBC schemes too, but OBC is strict
-            eligible = False
-            reasons.append("Sirf OBC category ke liye")
-        else:
-            match_score += 0.05
+            path_to_eligibility.append("Obtain an 'Affidavit for Single Girl Child' from a First Class Magistrate to claim this quota.")
 
-    # Occupation Check
-    farmer_keywords = ["farmer", "kisan", "krishi", "agriculture", "cultivator"]
-    if any(k in combined_text for k in farmer_keywords):
-        if str(user.occupation or "").lower() == "student":
+    # Education-level filtering
+    if "graduate" in combined_text or "degree" in combined_text:
+        edu = str(user.educationLevel or "").lower()
+        if edu not in ["graduate", "post_graduate", "phd"]:
             eligible = False
-            reasons.append("Sirf kisano (farmers) ke liye")
-        elif str(user.occupation or "").lower() == "farmer":
-            match_score += 0.05
-    
-    student_keywords = ["student", "scholarship", "education", "padhai", "shiksha"]
-    if any(k in combined_text for k in student_keywords):
-        if str(user.occupation or "").lower() == "farmer":
+            reasons.append("Completion of a Graduate degree is mandatory")
+            path_to_eligibility.append("If currently in final year, checking for 'Awaiting Results' provision in manual guidelines.")
+
+    # Document-based Negotiation (#30)
+    docs_required = str(scheme.get("documents_required", "")).lower()
+    if "aadhaar" in docs_required and not user.state: # Dummy check for missing state
+         path_to_eligibility.append("Ensure your Aadhaar is linked to your current mobile number for e-KYC.")
+    if "caste" in docs_required:
+         path_to_eligibility.append("Apply for a digital Caste Certificate on your state's Saral/e-District portal.")
+
+    # 3. Strict Schema Core Restrictions (Gender, Occupation, Disability, Caste)
+    # Gender Limitation
+    req_gender = str(scheme.get("gender_eligibility", "all")).lower().strip()
+    if req_gender and req_gender not in ["all", "nan", "any"] and user.gender:
+        if req_gender != str(user.gender).lower().strip():
             eligible = False
-        elif str(user.occupation or "").lower() == "student":
-            match_score += 0.05
+            hard_reject = True
+            reasons.append(f"Reserved for {req_gender.capitalize()} applicants only")
+
+    # Occupation Limitation
+    req_occ = str(scheme.get("occupation_eligibility", "all")).lower().strip()
+    if req_occ and req_occ not in ["all", "nan", "any"] and user.occupation:
+        valid_occs = [o.strip() for o in req_occ.split(",") if o.strip()]
+        u_occ = str(user.occupation).lower().strip()
+        if not any(u_occ == o or u_occ in o or o in u_occ for o in valid_occs):
+            eligible = False
+            hard_reject = True
+            reasons.append(f"Occupation requirement not met. Required: {req_occ.title()}")
+
+    # Category/Caste Check
+    req_caste = str(scheme.get("caste_eligibility", "all")).lower().strip()
+    if req_caste and req_caste not in ["all", "nan", "any"] and user.caste:
+        valid_castes = [c.strip() for c in req_caste.split(",") if c.strip()]
+        u_caste = str(user.caste).lower().strip()
+        if not any(u_caste == c or u_caste in c for c in valid_castes):
+            eligible = False
+            hard_reject = True
+            reasons.append(f"Scheme restricted to specific categories: {req_caste.upper()}")
+
+    # Disability Check
+    if str(scheme.get("disability_required", "false")).lower().strip() == "true":
+        if user.hasDisability is False:
+            eligible = False
+            hard_reject = True
+            reasons.append(f"Reserved for persons with disabilities (PwD)")
+        elif user.hasDisability is None:
+            if "hasDisability" not in missing: missing.append("hasDisability")
 
     if eligible and not reasons:
-        reasons.append("Aapke profile ke hisaab se fit hai")
+        reasons.append("Matches demographic profile and criteria")
 
-    return {"eligible_rules": eligible, "reasons": reasons, "missing": list(set(missing)), "match_score": min(1.0, match_score)}
+    return {
+        "eligible_rules": eligible, 
+        "hard_reject": hard_reject,
+        "reasons": reasons, 
+        "missing": list(set(missing)), 
+        "match_score": min(1.0, match_score),
+        "path_to_eligibility": path_to_eligibility
+    }
 
 
 @app.on_event("startup")
@@ -344,12 +423,12 @@ def check_eligibility(user: UserProfile):
         rule_eligible = explanation["eligible_rules"]
         ml_prob = probs[i]
         
-        # Rule-based eligible schemes always pass. ML is secondary boost.
-        is_truly_eligible = rule_eligible or (ml_prob > 0.60)
+        # Rule-based eligible schemes always pass. 
+        # Only allow ML predictions if there's a practical pathway to becoming eligible
+        has_pathway = len(explanation.get("path_to_eligibility", [])) > 0
+        hard_reject = explanation.get("hard_reject", False)
+        is_truly_eligible = rule_eligible or (has_pathway and ml_prob > 0.40 and not hard_reject)
         
-        # Rule-eligible always shown; ML-only needs higher confidence
-        if not rule_eligible and ml_prob < 0.35:
-            continue
         if not is_truly_eligible:
             continue
 
@@ -366,6 +445,7 @@ def check_eligibility(user: UserProfile):
             {
                 "scheme_id": payload["scheme_id"],
                 "reasons": explanation["reasons"],
+                "path_to_eligibility": explanation.get("path_to_eligibility", []),
                 "eligible_by_rules": rule_eligible,
             }
         )
@@ -414,30 +494,79 @@ def recommend(user: UserProfile):
         scheme_dict = row.to_dict()
         explanation = rule_based_explain(user, scheme_dict)
         
-        # Rule-based is PRIMARY filter. ML provides confidence scoring only.
         rule_eligible = explanation["eligible_rules"]
         ml_prob = probs[i]
-        match_score = explanation.get("match_score", 0.50)
+        match_score = explanation["match_score"]
+        has_pathway = len(explanation.get("path_to_eligibility", [])) > 0
+        hard_reject = explanation.get("hard_reject", False)
         
-        # Rule-eligible schemes always included. ML-only needs >0.40
-        is_truly_eligible = rule_eligible or (ml_prob > 0.60)
-        if not is_truly_eligible:
-            continue
-        # Only block ML-only schemes with very low probability
-        if not rule_eligible and ml_prob < 0.40:
-            continue
+        # ---------------------------------------------------------
+        # AI Strategic Directive Layer (#25)
+        # ---------------------------------------------------------
+        directive_boost = 1.0
+        directives_path = DATA_DIR / "master" / "policy_directives.json"
+        
+        if directives_path.exists():
+            try:
+                with open(directives_path, "r", encoding="utf-8") as f:
+                    policy_data = json.load(f)
+                    for ad in policy_data.get("active_directives", []):
+                        # Match Location
+                        state_match = "all" in [s.lower() for s in ad.get("target_states", [])] or \
+                                      (user.state and user.state.lower() in [s.lower() for s in ad.get("target_states", [])])
+                        
+                        if state_match:
+                            # Match Semantic Tags / Keywords
+                            keywords = [k.lower() for k in ad.get("keywords", [])]
+                            scheme_text = f"{scheme_dict.get('scheme_name', '')} {scheme_dict.get('tags', '')} {scheme_dict.get('scheme_category', '')}".lower()
+                            
+                            if any(k in scheme_text for k in keywords):
+                                directive_boost = max(directive_boost, float(ad.get("boost_factor", 1.0)))
+            except:
+                pass
 
+        # Include if truly eligible OR if there's a legal pathway to become eligible
+        is_candidate = rule_eligible or (has_pathway and ml_prob > 0.40 and not hard_reject)
+        
+        if not is_candidate:
+            continue
+        
         # Blend ML probability with deterministic heuristic match_score
         if rule_eligible:
             penalty = len(explanation["missing"]) * 0.05
-            base_score = max(0.85, match_score) - penalty
-            blended_prob = min(1.0, float(base_score + (ml_prob * 0.15)))
+            base_score = max(0.90, match_score) - penalty
+            blended_prob = min(1.0, float(base_score + (ml_prob * 0.10)))
         else:
-            blended_prob = float((ml_prob * 0.3) + (match_score * 0.7))
+            base = 0.50 if has_pathway else (0.20 + (match_score * 0.4))
+            blended_prob = float(base + (ml_prob * 0.3) - (len(explanation["missing"]) * 0.08))
+            blended_prob = max(0.10, min(0.99, blended_prob))
 
+        # Multi-objective Optimization: Max(Benefit) + Min(Effort/Docs) + Max(Confidence)
+        doc_list = str(scheme_dict.get("documents_required", "")).split(",")
+        effort_penalty = len(doc_list) * 0.02 # Small penalty for each document
+        
+        # RL Influence: Popularity Score (#22)
+        pop_score = float(scheme_dict.get("popularity_score", 5.0))
+        pop_multiplier = 0.8 + (pop_score / 25.0) # 5.0 -> 1.0 multiplier
+        
         score = float(blended_prob * float(benefit_scores[i]))
+        score = score * (1.1 - min(0.3, effort_penalty)) # Optimization for less effort
+        score = score * pop_multiplier # Reinforcement Learning Boost
+        score = score * directive_boost # AI Strategic Directive Boost (#25)
+        
         if rule_eligible:
-            score *= 1.5 # Higher bonus for meeting all rules
+            score *= 1.4 # High bonus for meeting all deterministic rules
+            
+        # Clean Description logic
+        raw_desc = str(scheme_dict.get("benefit_description", ""))
+        custom_desc = ""
+        if "This education program aims" in raw_desc or raw_desc in ["", "nan", "None"]:
+            ministry = str(scheme_dict.get('ministry', 'India'))
+            ministry = ministry.replace("Department of ", "").replace("Ministry of ", "")
+            category = str(scheme_dict.get('scheme_category', 'general')).title()
+            custom_desc = f"A {category} initiative by {ministry} offering direct benefits, financial aid, or relevant services to eligible candidates."
+        else:
+            custom_desc = raw_desc[:150] + "..." if len(raw_desc) > 150 else raw_desc
         
         entry = {
             "scheme_id": scheme_dict.get("scheme_id"),
@@ -447,7 +576,7 @@ def recommend(user: UserProfile):
             "benefit_score": float(benefit_scores[i]),
             "rank_score": score,
             "category": scheme_dict.get("scheme_category", "General"),
-            "description": scheme_dict.get("benefit_description") if str(scheme_dict.get("benefit_description", "")) not in ["", "nan", "None"] else f"A {scheme_dict.get('scheme_level', 'central')} level scheme provided by the {scheme_dict.get('ministry', 'Government')} to support citizens in the {scheme_dict.get('scheme_category', 'general')} sector.",
+            "description": custom_desc,
             "ministry": scheme_dict.get("ministry", "Central Government"),
             "level": scheme_dict.get("scheme_level", "central"),
             "url": scheme_dict.get("application_url", ""),
@@ -460,12 +589,13 @@ def recommend(user: UserProfile):
             "application_deadline": str(scheme_dict.get("application_deadline", "")),
             "processing_time": str(scheme_dict.get("processing_time", "")),
             "popularity_score": str(scheme_dict.get("popularity_score", "5.0")),
+            "path_to_eligibility": explanation.get("path_to_eligibility", []),
         }
         ranked.append(entry)
         # ... (rest of metadata)
         benefits.append({"scheme_id": entry["scheme_id"], "benefit_score": entry["benefit_score"]})
         docs.append({"scheme_id": entry["scheme_id"], "documents_required": entry["documents"], "application_url": entry["url"]})
-        why.append({"scheme_id": entry["scheme_id"], "reasons": entry["reasons"], "eligible_by_rules": rule_eligible, "missing": entry["missing"]})
+        why.append({"scheme_id": entry["scheme_id"], "reasons": entry["reasons"], "eligible_by_rules": rule_eligible, "missing": entry["missing"], "path_to_eligibility": entry["path_to_eligibility"]})
 
     ranked.sort(key=lambda x: x["rank_score"], reverse=True)
     limit = 500
@@ -475,9 +605,20 @@ def recommend(user: UserProfile):
     top_docs = [docs[i] for i in range(min(len(docs), limit))]
     top_why = [why[i] for i in range(min(len(why), limit))]
 
+    # Knowledge Graph (Link related schemes)
+    knowledge_graph = []
+    for s in top_ranked:
+        related = [
+            {"id": rs["scheme_id"], "name": rs["name"]} 
+            for rs in top_ranked 
+            if rs["scheme_id"] != s["scheme_id"] and rs["category"] == s["category"]
+        ][:3]
+        knowledge_graph.append({"scheme_id": s["scheme_id"], "related": related})
+
     return {
         "ranked_schemes": top_ranked,
         "benefit_estimates": top_benefits,
         "required_documents": top_docs,
         "why_this_scheme": top_why,
+        "knowledge_graph": knowledge_graph,
     }

@@ -122,11 +122,28 @@ def engineer_features(X: pd.DataFrame) -> pd.DataFrame:
 
 def split_features_targets(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, pd.Series, Any]:
     features = USER_FEATURES + SCHEME_FEATURES
-    ensure_columns(df, features + [TARGET_CLASS, TARGET_REG])
+    
+    # Ensure all features exist, fill missing with default/NaN
+    for col in features:
+        if col not in df.columns:
+            if col in ["gender_eligibility", "caste_eligibility", "occupation_eligibility", "education_level_required", "urban_rural_eligibility", "marital_status_required", "employment_type_eligibility"]:
+                df[col] = "all"
+            elif col in ["is_bpl_only", "disability_required"]:
+                df[col] = "false"
+            elif col == "popularity_score":
+                df[col] = 5.0
+            else:
+                df[col] = np.nan
+    
+    # Drop rows without target
+    df = df.dropna(subset=[TARGET_CLASS, TARGET_REG])
     X = df[features].copy()
+    
     # Normalize text features for stable downstream encoders/models.
+    text_cols = ['state', 'caste', 'occupation', 'gender', 'educationLevel', 'digitalLiteracy', 'urbanRural', 'employmentType', 'skillCertification', 'loanRequirement', 'prioritySchemes', 'scheme_id', 'scheme_type', 'scheme_category', 'applicable_states', 'special_conditions_required', 'gender_eligibility', 'caste_eligibility', 'occupation_eligibility', 'education_level_required', 'urban_rural_eligibility', 'marital_status_required', 'employment_type_eligibility', 'is_bpl_only']
+    
     for col in X.columns:
-        if is_object_dtype(X[col]) or is_string_dtype(X[col]) or is_categorical_dtype(X[col]) or col in ['state', 'caste', 'occupation', 'gender', 'educationLevel', 'digitalLiteracy', 'urbanRural', 'employmentType', 'skillCertification', 'loanRequirement', 'prioritySchemes', 'scheme_id', 'scheme_type', 'scheme_category', 'applicable_states', 'special_conditions_required']:
+        if col in text_cols or is_object_dtype(X[col]) or is_string_dtype(X[col]) or is_categorical_dtype(X[col]):
             X[col] = X[col].fillna("").astype(str)
     X = engineer_features(X)
     

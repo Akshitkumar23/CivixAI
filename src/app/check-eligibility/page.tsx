@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { ArrowRight, User, Hand, IndianRupee, Briefcase, GraduationCap, Accessibility, Users, CheckCircle, XCircle, Plus, ChevronDown, ChevronUp, Sparkles, Zap, Shield, Landmark } from 'lucide-react';
 import { type UserProfile } from '@/lib/types';
 import { Header } from '@/components/Header';
+import { useScrollRestoration } from '@/hooks/use-scroll-restoration';
 import { ThreeDBackground } from '@/components/canvas/ThreeDBackground';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -115,15 +116,14 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function CheckEligibilityPage() {
   const router = useRouter();
   const { toast } = useToast();
+  // Save and restore scroll position when navigating back
+  useScrollRestoration();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [eligibleSchemes, setEligibleSchemes] = useState<string[]>([]);
   const [rawSchemeData, setRawSchemeData] = useState<EligibleSchemeDetails[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [showOptionalLevel1, setShowOptionalLevel1] = useState(false);
-  const [showOptionalLevel2, setShowOptionalLevel2] = useState(false);
   const [step, setStep] = useState(1); // Multi-step form
   const [initialResults, setInitialResults] = useState<string[]>([]);
-  const [showFollowUp, setShowFollowUp] = useState(false);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -159,6 +159,53 @@ export default function CheckEligibilityPage() {
       prioritySchemes: [],
     },
   });
+
+  // ── Feature 1: LocalStorage Persistence ────────────────────────────────
+  // Load saved data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('civix_user_profile');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        // We only restore values that are non-empty to avoid breaking the form
+        Object.entries(parsed).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            form.setValue(key as any, value as any);
+          }
+        });
+        toast({
+          title: "Profile Restored",
+          description: "We've loaded your last saved information.",
+        });
+      } catch (e) {
+        console.error("Failed to parse saved profile", e);
+      }
+    }
+  }, [form, toast]);
+
+  // Save data on change
+  const formValues = form.watch();
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      localStorage.setItem('civix_user_profile', JSON.stringify(formValues));
+    }, 1000); // Debounce save
+    return () => clearTimeout(timeout);
+  }, [formValues]);
+
+  const clearProfile = () => {
+    localStorage.removeItem('civix_user_profile');
+    form.reset({
+      age: undefined,
+      annualIncome: 0,
+      state: '',
+      caste: undefined,
+      occupation: undefined,
+    });
+    toast({
+      title: "Profile Cleared",
+      description: "Your saved data has been deleted.",
+    });
+  };
 
   // Get current occupation value for conditional logic
   const currentOccupation = form.watch('occupation');
@@ -263,6 +310,39 @@ export default function CheckEligibilityPage() {
     }
   };
 
+  // ── Feature 13: Demo Mode profiles ────────────────────────────────────────
+  const demoProfiles = [
+    {
+      label: '👩‍🎓 SC Student',
+      emoji: '🎓',
+      color: 'from-blue-600/20 to-purple-600/20 border-blue-500/30',
+      values: { age: 20, annualIncome: 80000, state: 'Uttar Pradesh', caste: 'sc' as const, occupation: 'student' as const, gender: 'female' as const, educationLevel: 'graduate' as const, isBankLinked: true, isBPL: true },
+    },
+    {
+      label: '🚜 Marginal Farmer',
+      emoji: '🌾',
+      color: 'from-green-600/20 to-emerald-600/20 border-green-500/30',
+      values: { age: 42, annualIncome: 60000, state: 'Bihar', caste: 'obc' as const, occupation: 'farmer' as const, gender: 'male' as const, hasLand: true, landSize: 1.5, urbanRural: 'rural' as const },
+    },
+    {
+      label: '👩‍💼 Woman Entrepreneur',
+      emoji: '💼',
+      color: 'from-pink-600/20 to-rose-600/20 border-pink-500/30',
+      values: { age: 32, annualIncome: 250000, state: 'Maharashtra', caste: 'general' as const, occupation: 'employed' as const, gender: 'female' as const, employmentType: 'self_employed' as const, loanRequirement: 'business' as const },
+    },
+  ];
+
+  const applyDemoProfile = (profile: typeof demoProfiles[0]) => {
+    // Use setValue for each field individually so controlled Select dropdowns update
+    const opts = { shouldValidate: true, shouldDirty: true, shouldTouch: true };
+    Object.entries(profile.values).forEach(([key, value]) => {
+      form.setValue(key as keyof ProfileFormValues, value as any, opts);
+    });
+    setStep(1);
+    // Scroll form into view
+    window.scrollTo({ top: 200, behavior: 'smooth' });
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-transparent relative selection:bg-purple-500/30 text-slate-200 font-sans">
       <ThreeDBackground />
@@ -272,13 +352,52 @@ export default function CheckEligibilityPage() {
           {!hasSubmitted ? (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <CardHeader className="text-center pt-10 pb-4 border-b border-white/5 bg-white/[0.02]">
-                  <CardTitle className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300">Profile Analysis Setup</CardTitle>
+                <CardHeader className="text-center pt-10 pb-4 border-b border-white/5 bg-white/[0.02] relative">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
+                    <div className="h-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-500" style={{ width: step === 1 ? '50%' : '100%' }} />
+                  </div>
+                  <CardTitle className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300">
+                    {step === 1 ? 'Basic Core Profile' : 'Personalized Details'}
+                  </CardTitle>
                   <CardDescription className="text-slate-400">
-                    Our AI models require these parameters to simulate your eligibility across thousands of schemes.
+                    {step === 1 
+                      ? 'Step 1 of 2: Required for basic eligibility matching.' 
+                      : `Step 2 of 2: Optional details for ${currentOccupation}s to improve match accuracy.`}
                   </CardDescription>
+                  {form.formState.isDirty && (
+                    <button 
+                      type="button" 
+                      onClick={clearProfile}
+                      className="absolute bottom-4 right-8 text-[10px] uppercase tracking-widest text-slate-500 hover:text-red-400 transition-colors"
+                    >
+                      Reset Form ↺
+                    </button>
+                  )}
                 </CardHeader>
+                {/* Feature 13: Demo Mode Bar */}
+                {step === 1 && (
+                  <div className="px-8 pt-4 pb-2">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">⚡ Try a Demo Profile</span>
+                      <div className="flex-1 h-px bg-white/5" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {demoProfiles.map((profile) => (
+                        <button
+                          key={profile.label}
+                          type="button"
+                          onClick={() => applyDemoProfile(profile)}
+                          className={`flex flex-col items-center gap-2 p-3 rounded-2xl border bg-gradient-to-br ${profile.color} hover:scale-[1.03] active:scale-100 transition-all duration-200 group`}
+                        >
+                          <span className="text-2xl group-hover:scale-110 transition-transform">{profile.emoji}</span>
+                          <span className="text-[11px] font-bold text-slate-300 text-center leading-tight">{profile.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <CardContent className="space-y-8 p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                  <div className={step === 1 ? "block animate-in fade-in slide-in-from-left-4 duration-500" : "hidden"}>
                   {/* CORE INPUTS - Always visible and required */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-6">
@@ -328,7 +447,7 @@ export default function CheckEligibilityPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>State/Union Territory</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select your state" />
@@ -348,7 +467,7 @@ export default function CheckEligibilityPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Caste Category</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select category" />
@@ -373,7 +492,7 @@ export default function CheckEligibilityPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Occupation</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select your occupation" />
@@ -392,28 +511,12 @@ export default function CheckEligibilityPage() {
                       )}
                     />
                   </div>
+                  </div>
 
+                  <div className={step === 2 ? "block animate-in fade-in slide-in-from-right-4 duration-500" : "hidden"}>
                   {/* INTELLIGENT FOLLOW-UP QUESTIONS */}
                   <div className="space-y-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowFollowUp(!showFollowUp)}
-                      className="w-full justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Get personalized questions (recommended)
-                      </span>
-                      {showFollowUp ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Button>
-
-                    {showFollowUp && (
-                      <div className="space-y-4 border-t pt-4">
+                      <div className="space-y-4 pt-4">
                         <div className="flex items-center gap-2">
                           <Users className="h-5 w-5 text-primary" />
                           <h3 className="font-semibold text-lg">Additional Questions</h3>
@@ -429,7 +532,7 @@ export default function CheckEligibilityPage() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Current Education Level</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select education level" />
@@ -456,7 +559,7 @@ export default function CheckEligibilityPage() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Education Loan Required</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select loan requirement" />
@@ -549,7 +652,7 @@ export default function CheckEligibilityPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Location Habitat</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger><SelectValue placeholder="Select habitat" /></SelectTrigger>
                                   </FormControl>
@@ -568,7 +671,7 @@ export default function CheckEligibilityPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Marital Status</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger>
                                   </FormControl>
@@ -626,7 +729,7 @@ export default function CheckEligibilityPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Digital Literacy Level</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger>
                                       <SelectValue placeholder="Select digital literacy" />
@@ -686,29 +789,10 @@ export default function CheckEligibilityPage() {
                           </div>
                         )}
                       </div>
-                    )}
                   </div>
 
-                  {/* OPTIONAL LEVEL 1 - Hidden by default */}
+                  {/* OPTIONAL LEVEL 1 */}
                   <div className="space-y-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowOptionalLevel1(!showOptionalLevel1)}
-                      className="w-full justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add more details (improves accuracy)
-                      </span>
-                      {showOptionalLevel1 ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Button>
-
-                    {showOptionalLevel1 && (
                       <div className="space-y-4 border-t pt-4">
                         <div className="flex items-center gap-2">
                           <Hand className="h-5 w-5 text-primary" />
@@ -723,7 +807,7 @@ export default function CheckEligibilityPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Gender</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger>
                                       <SelectValue placeholder="Select gender" />
@@ -818,30 +902,11 @@ export default function CheckEligibilityPage() {
                           />
                         </div>
                       </div>
-                    )}
                   </div>
 
-                  {/* OPTIONAL LEVEL 2 - Hidden by default */}
-                  <div className="space-y-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowOptionalLevel2(!showOptionalLevel2)}
-                      className="w-full justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Advanced inputs (optional)
-                      </span>
-                      {showOptionalLevel2 ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Button>
-
-                    {showOptionalLevel2 && (
-                      <div className="space-y-4 border-t pt-4">
+                  {/* OPTIONAL LEVEL 2 */}
+                  <div className="space-y-4 border-t pt-4 mt-8">
+                      <div className="space-y-4">
                         <div className="flex items-center gap-2">
                           <Users className="h-5 w-5 text-primary" />
                           <h3 className="font-semibold text-lg">Advanced Details</h3>
@@ -989,7 +1054,7 @@ export default function CheckEligibilityPage() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Education Level</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select education level" />
@@ -1016,7 +1081,7 @@ export default function CheckEligibilityPage() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Location Type</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select location" />
@@ -1041,7 +1106,7 @@ export default function CheckEligibilityPage() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Digital Literacy</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select digital literacy" />
@@ -1067,7 +1132,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Employment Type</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select employment type" />
@@ -1098,7 +1163,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Skill Certification</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select skill type" />
@@ -1125,7 +1190,7 @@ export default function CheckEligibilityPage() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Loan Requirement</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                       <SelectTrigger>
                                         <SelectValue placeholder="Select loan type" />
@@ -1271,7 +1336,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Digital Literacy Level</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select digital literacy" />
@@ -1301,7 +1366,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Employment Type</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select employment type" />
@@ -1326,7 +1391,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Skill Certification</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select skill type" />
@@ -1398,7 +1463,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Current Education Level</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select education level" />
@@ -1425,7 +1490,7 @@ export default function CheckEligibilityPage() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Education Loan Required</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                       <FormControl>
                                         <SelectTrigger>
                                           <SelectValue placeholder="Select loan requirement" />
@@ -1449,17 +1514,52 @@ export default function CheckEligibilityPage() {
                           )}
                         </div>
                       </div>
-                    )}
+                  </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-end p-6 border-t border-white/10 bg-black/20">
-                  <Button
-                    type="submit"
-                    className="bg-white text-black hover:bg-slate-200 w-full md:w-auto px-8 py-6 rounded-2xl font-black shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Simulating Analysis...' : 'Commence Analysis'}
-                  </Button>
+                <CardFooter className="flex justify-between items-center p-6 border-t border-white/10 bg-black/20">
+                  {step === 1 ? (
+                    <div className="w-full flex justify-end">
+                      <Button
+                        type="button"
+                        onClick={async () => {
+                          const valid = await form.trigger(["age", "annualIncome", "state", "caste", "occupation"]);
+                          if (valid) setStep(2);
+                        }}
+                        className="bg-white text-black hover:bg-slate-200 w-full md:w-auto px-8 py-6 rounded-2xl font-black shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all group"
+                      >
+                        Next <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="w-full flex flex-col md:flex-row justify-between items-center gap-4">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setStep(1)}
+                        className="text-slate-400 hover:text-white"
+                      >
+                        Back
+                      </Button>
+                      <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                        <Button
+                          type="submit"
+                          variant="secondary"
+                          className="bg-slate-800 text-slate-300 hover:bg-slate-700 w-full md:w-auto px-6 py-6 rounded-2xl border border-slate-700 font-bold"
+                          disabled={isSubmitting}
+                        >
+                          Skip & Show Results ⏭️
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-white text-black hover:bg-slate-200 w-full md:w-auto px-10 py-6 rounded-2xl font-black shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? 'Analyzing...' : 'Submit & Analyze'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardFooter>
               </form>
             </Form>

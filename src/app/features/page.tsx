@@ -14,10 +14,12 @@ import Chatbot from '@/components/Chatbot';
 import { FinalCTASection } from '@/components/landing/FinalCTASection';
 import { FeaturesHighlightSection } from '@/components/landing/FeaturesHighlightSection';
 import { FeaturesBannerBackground } from '@/components/canvas/FeaturesBannerBackground';
+import { ClientScrollRestorer } from '@/components/ClientScrollRestorer';
 
 export default function FeaturesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#020205] text-slate-200">
+      <ClientScrollRestorer />
       <Header />
       <main className="flex-grow">
 

@@ -1,109 +1,184 @@
 import pandas as pd
 import re
+import os
+import time
+import requests
+import json
 from pathlib import Path
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+import google.generativeai as genai
+from typing import Optional, Dict, Any
 
 # Paths
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+ROOT = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = ROOT / "data"
 MASTER_CSV = DATA_DIR / "master" / "schemes_master.csv"
+ENV_PATH = ROOT / ".env"
+
+# Load Env
+load_dotenv(ENV_PATH)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if GEMINI_API_KEY:
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        # Try a few common model names to find one that works for this key
+        working_model = None
+        for model_name in ['gemini-1.5-flash', 'gemini-pro', 'gemini-1.5-flash-latest']:
+            try:
+                m = genai.GenerativeModel(model_name)
+                m.generate_content("test", request_options={"timeout": 10})
+                working_model = model_name
+                print(f"Using working model: {working_model}")
+                break
+            except:
+                continue
+        
+        if working_model:
+            model = genai.GenerativeModel(working_model)
+        else:
+            print("Warning: All Gemini models failed. Falling back to Heuristics.")
+            model = None
+    except Exception as e:
+        print(f"Warning: Gemini config failed: {e}. Falling back to Heuristics.")
+        model = None
+else:
+    print("Warning: GEMINI_API_KEY not found. Falling back to Heuristics.")
+    model = None
 
 # ==========================================
-# DYNAMIC HEURISTIC NLP RULES FOR ALL SCHEMES
+# ADVANCED CATEGORY RULES (Fallbacks)
 # ==========================================
-
-# 1. Categories based on keywords
 CATEGORY_RULES = {
-    "agriculture": ["kisan", "krishi", "agriculture", "crop", "farmer", "irrigation", "soil", "seed", "horticulture", "agri"],
-    "education": ["scholarship", "fellowship", "education", "student", "school", "college", "university", "vidya", "shiksha", "padhai", "academic", "hostel"],
-    "health": ["health", "medical", "swasthya", "arogya", "ayushman", "hospital", "disease", "treatment", "maternity", "medicine", "suraksha"],
-    "housing": ["housing", "awas", "shelter", "ghar"],
-    "pension": ["pension", "old age", "widow", "vridha", "vidhwa", "senior citizen", "retirement"],
-    "employment": ["employment", "rozgar", "nrega", "job", "shramik", "worker", "labour", "skill", "kaushal", "training"],
-    "business": ["business", "loan", "micro", "enterprise", "mudra", "startup", "stand-up", "msme", "udyog", "vyapar", "industry"],
-    "women_welfare": ["mahila", "women", "maternity", "pregnant", "girl", "beti", "sukanya", "kanya", "matru", "widow", "mother"],
-    "child_welfare": ["child", "bal", "infant", "anganwadi", "nutrition", "poshan", "orphan", "kids"],
-    "infrastructure": ["road", "sadak", "gramin", "village", "water", "jal", "electricity", "urja"],
+    "agriculture": ["kisan", "krishi", "agriculture", "crop", "farmer", "irrigation", "soil", "seed", "horticulture", "agri", "animal husbandry", "dairy", "fishery"],
+    "education": ["scholarship", "fellowship", "education", "student", "school", "college", "university", "vidya", "shiksha", "padhai", "academic", "hostel", "internship", "research"],
+    "health": ["health", "medical", "swasthya", "arogya", "ayushman", "hospital", "disease", "treatment", "maternity", "medicine", "suraksha", "vaccination", "ayush", "yoga"],
+    "housing": ["housing", "awas", "shelter", "ghar", "urban development", "rural housing", "slum"],
+    "pension": ["pension", "old age", "widow", "vridha", "vidhwa", "senior citizen", "retirement", "epfo", "social security"],
+    "employment": ["employment", "rozgar", "nrega", "job", "shramik", "worker", "labour", "skill", "kaushal", "training", "vocational", "placement"],
+    "business": ["business", "loan", "micro", "enterprise", "mudra", "startup", "stand-up", "msme", "udyog", "vyapar", "industry", "entrepreneur", "credit"],
+    "women_welfare": ["mahila", "women", "maternity", "pregnant", "girl", "beti", "sukanya", "kanya", "matru", "widow", "mother", "shakti"],
+    "child_welfare": ["child", "bal", "infant", "anganwadi", "nutrition", "poshan", "orphan", "kids", "vatsalya"],
+    "infrastructure": ["road", "sadak", "gramin", "village", "water", "jal", "electricity", "urja", "telecom", "digital india", "smart city"],
 }
 
-# 2. Age Limits logic
-AGE_RULES = [
-    ({"student", "scholarship", "child", "school", "bal", "kanya"}, {"min_age": 5, "max_age": 25}),
-    ({"old age", "vridha", "senior citizen", "retirement"}, {"min_age": 60, "max_age": None}),
-    ({"widow", "vidhwa"}, {"min_age": 18, "max_age": 60}),
-    ({"youth", "employment", "skill", "kaushal", "rozgar", "startup"}, {"min_age": 18, "max_age": 35}),
-    ({"kisan", "farmer", "business", "loan", "worker", "shramik", "msme"}, {"min_age": 18, "max_age": 60}),
-    ({"maternity", "pregnant", "matru", "mahila"}, {"min_age": 18, "max_age": 45}),
-]
+# ==========================================
+# SMART CRAWLING & AI EXTRACTION
+# ==========================================
 
-# 3. Required Documents logic
-DOC_RULES = {
-    "agriculture": "Aadhaar Card, Land Ownership Papers (Khasra/Khatauni), Bank Passbook, Passport Size Photo",
-    "education": "Aadhaar Card, Previous Year Marksheets, School/College ID, Income Certificate, Caste Certificate (if applicable)",
-    "health": "Aadhaar Card, Medical Reports/Certificate, Ration Card, Bank Details",
-    "housing": "Aadhaar Card, Residence Proof, Income Certificate, Bank Details",
-    "pension": "Aadhaar Card, Age/Death/Disability Certificate (as applicable), Bank Passbook, Income Certificate",
-    "employment": "Aadhaar Card, Educational Certificates, Job Card (if applicable), Bank Details",
-    "business": "Aadhaar Card, Business Plan, PAN Card, Bank Statement, ITR (if applicable)",
-    "women_welfare": "Aadhaar Card, Bank Passbook, Relevant Certificates (Marriage/Birth/Maternity)",
-    "child_welfare": "Birth Certificate, Aadhaar Card of Parents, Ration Card",
-    "infrastructure": "Aadhaar Card, Address Proof, Community Application / Panchayat Approval"
-}
+def fetch_web_content(url: str) -> str:
+    """Fetch text content from the URL to help AI understand documents/eligibility."""
+    if not url or "gov.in" not in url: return ""
+    try:
+        headers = {"User-Agent": "Mozilla/5.0 (CivixAI-Enricher/1.0)"}
+        resp = requests.get(url, headers=headers, timeout=10)
+        if resp.status_code != 200: return ""
+        
+        soup = BeautifulSoup(resp.text, 'lxml')
+        # Remove scripts, styles
+        for s in soup(['script', 'style', 'nav', 'header', 'footer']): s.decompose()
+        
+        # Get target sections if they exist
+        content = ""
+        for heading in soup.find_all(['h1', 'h2', 'h3', 'h4']):
+            text = heading.get_text().lower()
+            if any(k in text for k in ['document', 'eligibility', 'benefit', 'criteria', 'guideline']):
+                content += heading.get_text(separator=' ', strip=True) + "\n"
+                nxt = heading.find_next(['p', 'ul', 'ol', 'div'])
+                if nxt: content += nxt.get_text(separator=' ', strip=True)[:500] + "\n"
+        
+        if len(content) < 50: 
+             content = soup.get_text(separator=' ', strip=True)[:2000]
+             
+        return content
+    except:
+        return ""
 
-# 4. Smart Benefit Description Generators
-BENEFIT_TEMPLATES = {
-    "agriculture": "Provides financial, technical, or resource assistance to farmers to improve agricultural productivity and secure rural livelihood.",
-    "education": "Offers financial support, scholarships, or educational resources to students to encourage higher learning and reduce financial burdens.",
-    "health": "Covers medical expenses, hospitalization, or provides maternity benefits to ensure better, affordable healthcare access.",
-    "housing": "Provides financial aid or subsidies for the construction, purchase, or renovation of houses for eligible working-class beneficiaries.",
-    "pension": "Ensures financial security through regular monthly pension disbursements to vulnerable groups like the elderly, widows, or differently-abled individuals.",
-    "employment": "Facilitates job creation, skill development, or guaranteed wage employment to enhance livelihood opportunities for youth and workers.",
-    "business": "Offers easy credit, subsidies, or institutional support to promote entrepreneurship, MSMEs, and self-reliant small businesses.",
-    "women_welfare": "Aims to empower women and girls through targeted financial, educational, or health-related interventions to promote gender equality.",
-    "child_welfare": "Focuses on the nutrition, health, and well-being of children to ensure their holistic development and early childcare protection.",
-    "infrastructure": "Aims to develop robust rural or urban infrastructure, improving basic amenities like roads, water, and electricity."
-}
+def regex_extract_rules(text: str) -> Dict[str, Any]:
+    """Smart fallback to extract numeric rules from text using Regex."""
+    rules = {"min_age": None, "max_age": None, "income_limit": None, "states": []}
+    text_lower = text.lower()
+    
+    # Extract Age
+    age_matches = re.findall(r"(\d{1,2})\s*-\s*(\d{1,2})\s*years", text_lower)
+    if age_matches:
+        rules["min_age"], rules["max_age"] = age_matches[0]
+    else:
+        min_age = re.search(r"(?:min|minimum|above|age of)\s*(\d{1,2})", text_lower)
+        if min_age: rules["min_age"] = min_age.group(1)
+        max_age = re.search(r"(?:max|maximum|below|upto)\s*(\d{1,2})\s*years", text_lower)
+        if max_age: rules["max_age"] = max_age.group(1)
+        
+    # Extract Income (handles Lakhs and raw numbers)
+    income = re.search(r"(?:income|income limit|up to|Below)\s*(?:rs\.?|₹)?\s*(\d+(?:,\d+)?(?:\.\d+)?)\s*(lakh|lac)?", text_lower)
+    if income:
+        val = income.group(1).replace(",", "")
+        try:
+            num = float(val)
+            if income.group(2): # if 'lakh'
+                rules["income_limit"] = int(num * 100000)
+            else:
+                rules["income_limit"] = int(num)
+        except: pass
+        
+    # Extract States (common Indian states)
+    common_states = ["haryana", "punjab", "delhi", "maharashtra", "bihar", "rajasthan", "gujarat", "karnataka", "kerala", "tamil nadu", "uttar pradesh", "west bengal", "madhya pradesh"]
+    for s in common_states:
+        if s in text_lower:
+            rules["states"].append(s.title())
+            
+    return rules
 
-# 5. Benefit Type Classifiers (Schemes, Loans, Insurance)
-BENEFIT_TYPE_RULES = {
-    "loan": ["loan", "credit", "mudra", "nabard", "financing", "startup funding", "capital", "kcc", "kisan credit card", "pmegp", "stand-up", "standup", "mudra yojana", "svamitva", "home loan", "education loan", "business loan"],
-    "insurance": ["insurance", "bima", "suraksha", "jeevan jyoti", "jeevan bima", "suraksha bima", "ayushman", "health cover", "term life", "life insurance", "health insurance", "pm-jay", "pmjjby", "pmsby", "atal pension", "pension yojana", "annuity"],
-}
+def ai_enrich_scheme(name: str, ministry: str, url: str, current_desc: str) -> Dict[str, str]:
+    """Use Gemini AI to extract real documents and granular categories."""
+    if not model: return {}
+    
+    # Optional crawling for context
+    web_context = fetch_web_content(url) if url else ""
+    
+    prompt = f"""
+    Analyze this Indian Government Scheme and extract precise eligibility rules:
+    Name: {name}
+    Ministry: {ministry}
+    Context: {web_context[:1500]}
+    
+    Extract ONLY these fields in valid JSON:
+    1. category: (Granular, e.g. 'Tertiary Education Loan')
+    2. documents: (Crucial ones, e.g. 'Aadhaar, Caste Cert')
+    3. description: (Exact benefits, 2 sentences)
+    4. min_age: (integer, keep null if not found)
+    5. max_age: (integer, keep null if not found)
+    6. income_limit: (integer annual income, keep null if not found)
+    7. states: (list of strings, use 'ALL' if central)
+    
+    Output JSON ONLY:
+    {{
+        "category": "...",
+        "documents": "...",
+        "description": "...",
+        "min_age": null,
+        "max_age": null,
+        "income_limit": null,
+        "states": []
+    }}
+    """
+    
+    try:
+        response = model.generate_content(prompt)
+        match = re.search(r'\{.*\}', response.text, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+    except Exception as e:
+        print(f"AI Skip for {name}: {e}")
+    return {}
 
-def infer_category(text):
+def infer_category_fallback(text: str) -> str:
     text = text.lower()
     for cat, keywords in CATEGORY_RULES.items():
-        for kw in keywords:
-            if re.search(r'\b' + kw + r'\b', text):
-                return cat
-    return "general_welfare"
-
-def infer_age(text):
-    text = text.lower()
-    for keywords, ages in AGE_RULES:
         if any(re.search(r'\b' + kw + r'\b', text) for kw in keywords):
-            return ages
-    return {"min_age": None, "max_age": None}
-
-def infer_docs(category):
-    return DOC_RULES.get(category, "Aadhaar Card, Residence Proof, Income Certificate, Bank Passbook, Passport Size Photograph")
-
-def infer_benefit(category, scheme_name, ministry):
-    template = BENEFIT_TEMPLATES.get(category, f"The scheme provides targeted benefits under the {ministry}. It is designed to uplift eligible citizens by offering specialized assistance and resources.")
-    return f"This {category.replace('_', ' ')} program aims to support eligible citizens. {template} This specific program is formally mapped as '{scheme_name}'."
-
-def infer_benefit_type(text):
-    text = text.lower()
-    # Check insurance first as it's more specific
-    for kw in BENEFIT_TYPE_RULES["insurance"]:
-        if re.search(r'\b' + kw + r'\b', text):
-            return "insurance"
-            
-    # Then check for loans/credit
-    for kw in BENEFIT_TYPE_RULES["loan"]:
-        if re.search(r'\b' + kw + r'\b', text):
-            return "loan"
-            
-    # Default is a standard scheme
-    return "scheme"
+            return cat
+    return "general_welfare"
 
 def enrich_data():
     if not MASTER_CSV.exists():
@@ -112,64 +187,61 @@ def enrich_data():
 
     df = pd.read_csv(MASTER_CSV, dtype=str)
     
-    # Ensure all columns exist and are of object dtype
-    cols_to_check = ['benefit_description', 'documents_required', 'min_age', 'max_age', 'income_limit', 'scheme_category', 'benefit_type']
-    for col in cols_to_check:
-        if col not in df.columns:
-             df[col] = ''
-        df[col] = df[col].astype('object')
+    # Ensure columns
+    cols = ['benefit_description', 'documents_required', 'scheme_category', 'benefit_type', 'min_age', 'max_age', 'income_limit', 'applicable_states']
+    for c in cols:
+        if c not in df.columns: df[c] = ''
+
+    total = len(df)
+    print(f"Starting NLP Rule Extraction & AI enrichment on {total} schemes...")
     
-    enriched_count = 0
-    
+    # Only enrich schemes that look generic or have missing rules
     for i, row in df.iterrows():
         name = str(row.get('scheme_name', ''))
+        url = str(row.get('application_url', '')) or str(row.get('source_url', ''))
         ministry = str(row.get('ministry', ''))
-        desc = str(row.get('benefit_description', ''))
         
-        # We combine text from name, ministry, and current description to analyze the context
-        combined_text = f"{name} {ministry} {desc}".lower()
+        # Check if we need rule extraction
+        is_missing_rules = pd.isna(row.get('min_age')) or str(row.get('min_age')) == '' or str(row.get('min_age')) == 'nan'
+        is_generic = "provides targeted benefits" in str(row['benefit_description']) or "Aadhaar Card, Residence Proof" in str(row['documents_required'])
         
-        # 1. Always re-infer Category for better accuracy
-        cat = infer_category(combined_text)
-        if cat != 'general_welfare':
-            df.at[i, 'scheme_category'] = cat
-        elif pd.isna(row.get('scheme_category')) or str(row.get('scheme_category')).strip() in ['', 'mixed', 'general', 'nan']:
-            df.at[i, 'scheme_category'] = cat
-        else:
-            cat = str(row.get('scheme_category')).strip()
+        if is_missing_rules or is_generic:
+            print(f"[{i+1}/{total}] Extracting Rules for: {name}")
+            ai_data = ai_enrich_scheme(name, ministry, url, str(row['benefit_description']))
             
-        # 2. Infer Age Limits Dynamically
-        inferred_ages = infer_age(combined_text)
-        if pd.isna(row.get('min_age')) or str(row.get('min_age')).strip() in ['', 'nan']:
-            if inferred_ages['min_age'] is not None:
-                df.at[i, 'min_age'] = inferred_ages['min_age']
+            if ai_data:
+                # ... existing AI save logic ...
+                if ai_data.get('category'): df.at[i, 'scheme_category'] = ai_data['category']
+                if ai_data.get('documents'): df.at[i, 'documents_required'] = ai_data['documents']
+                if ai_data.get('description'): df.at[i, 'benefit_description'] = ai_data['description']
                 
-        if pd.isna(row.get('max_age')) or str(row.get('max_age')).strip() in ['', 'nan']:
-            if inferred_ages['max_age'] is not None:
-                df.at[i, 'max_age'] = inferred_ages['max_age']
+                # Rule Extraction
+                if ai_data.get('min_age') is not None: df.at[i, 'min_age'] = str(ai_data['min_age'])
+                if ai_data.get('max_age') is not None: df.at[i, 'max_age'] = str(ai_data['max_age'])
+                if ai_data.get('income_limit') is not None: df.at[i, 'income_limit'] = str(ai_data['income_limit'])
+                if ai_data.get('states'): 
+                    states_val = ai_data['states']
+                    if isinstance(states_val, list):
+                        df.at[i, 'applicable_states'] = ", ".join(states_val)
+                    else:
+                        df.at[i, 'applicable_states'] = str(states_val)
                 
-        # 3. Infer Documents Dynamically
-        if pd.isna(row.get('documents_required')) or str(row.get('documents_required')).strip() in ['', 'nan']:
-            df.at[i, 'documents_required'] = infer_docs(cat)
-            
-        # 4. Infer description Dynamically
-        if pd.isna(row.get('benefit_description')) or str(row.get('benefit_description')).strip() in ['', 'nan'] or "provides targeted benefits" in desc:
-            df.at[i, 'benefit_description'] = infer_benefit(cat, name, ministry.strip() or 'Government')
-            
-        # 5. Always re-infer Benefit Type for ALL rows (force override)
-        inferred_type = infer_benefit_type(combined_text)
-        if inferred_type != 'scheme':
-            df.at[i, 'benefit_type'] = inferred_type
-        # keep existing if already loan/insurance
-        elif str(row.get('benefit_type')).strip() not in ['loan', 'insurance', 'investment']:
-            df.at[i, 'benefit_type'] = 'scheme'
-             
-        enriched_count += 1
-
-    # Save to CSV
+                time.sleep(1.2) # Avoid rate limits
+            else:
+                # Fallback to Regex Rule Extraction (#27)
+                print(f"[{i+1}/{total}] Regex-Extracting for: {name}")
+                web_context = fetch_web_content(url) if url else ""
+                fallback_rules = regex_extract_rules(f"{name} {ministry} {web_context}")
+                
+                if fallback_rules["min_age"]: df.at[i, 'min_age'] = str(fallback_rules["min_age"])
+                if fallback_rules["max_age"]: df.at[i, 'max_age'] = str(fallback_rules["max_age"])
+                if fallback_rules["income_limit"]: df.at[i, 'income_limit'] = str(fallback_rules["income_limit"])
+                if fallback_rules["states"]: df.at[i, 'applicable_states'] = ", ".join(fallback_rules["states"])
+                
+                df.at[i, 'scheme_category'] = infer_category_fallback(f"{name} {ministry}")
+        
     df.to_csv(MASTER_CSV, index=False)
-    print(f"Successfully ran DYNAMIC NLP enrichment on {enriched_count} schemes based on intelligent heuristics.")
-
+    print(f"Enrichment Complete. Master file saved.")
 
 if __name__ == "__main__":
     enrich_data()

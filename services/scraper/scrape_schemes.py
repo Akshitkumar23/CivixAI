@@ -88,11 +88,15 @@ def slugify(text: str) -> str:
     return text.strip("_")[:60]
 
 
-def fetch_url(url: str, user_agent: str) -> str:
+def fetch_url(url: str, user_agent: str) -> Optional[str]:
     headers = {"User-Agent": user_agent}
-    resp = requests.get(url, headers=headers, timeout=30)
-    resp.raise_for_status()
-    return resp.text
+    try:
+        resp = requests.get(url, headers=headers, timeout=30)
+        resp.raise_for_status()
+        return resp.text
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return None
 
 
 def extract_dbt_haryana(html: str, source: Source) -> List[Dict[str, Any]]:
@@ -340,16 +344,22 @@ def scrape_source(source: Source, user_agent: str) -> List[Dict[str, Any]]:
         if not source.url or not can_fetch(source.url, user_agent):
             return []
         html = fetch_url(source.url, user_agent)
+        if not html:
+            return []
         return extract_dbt_haryana(html, source)
     if source.type == "dbtbharat_central_list":
         if not source.url or not can_fetch(source.url, user_agent):
             return []
         html = fetch_url(source.url, user_agent)
+        if not html:
+            return []
         return extract_dbtbharat_central(html, source)
     if source.type == "generic_gov_page":
         if not source.url or not can_fetch(source.url, user_agent):
             return []
         html = fetch_url(source.url, user_agent)
+        if not html:
+            return []
         return extract_generic_page(html, source)
     if source.type == "data_gov_in_api":
         return extract_data_gov_in(source, user_agent)

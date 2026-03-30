@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink, Building2, CheckCircle, ChevronLeft, SearchX, Globe, MapPin, Download } from 'lucide-react';
 import Link from 'next/link';
 import Chatbot from '@/components/Chatbot';
+import { ClientScrollRestorer } from '@/components/ClientScrollRestorer';
+import { WhatsAppShareButton } from '@/components/WhatsAppShareButton';
+import { MatchLogicReasoning } from '@/components/MatchLogicReasoning';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -153,6 +156,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
 
     return (
         <div className="flex flex-col min-h-screen bg-[#050510] text-white font-sans selection:bg-blue-500/30">
+            <ClientScrollRestorer />
             <Header />
 
             {/* Dynamic Background */}
@@ -287,6 +291,20 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
                                         Apply Officially <ExternalLink className="ml-2 h-5 w-5" />
                                     </a>
                                 </Button>
+                                <WhatsAppShareButton 
+                                    schemeName={scheme_name || 'Scheme Highlights'} 
+                                    schemeId={schemeId} 
+                                    ministry={ministry || 'Government of India'} 
+                                />
+                                <div className="mt-4 pt-4 border-t border-white/10">
+                                    <MatchLogicReasoning schemeCriteria={{
+                                        min_age: min_age || '0',
+                                        max_age: max_age || '100',
+                                        income_limit: income_limit || '10000000',
+                                        applicable_states: applicable_states || 'All',
+                                        category: scheme_category || 'Any'
+                                    }} />
+                                </div>
                                 <p className="text-xs text-center text-slate-400 opacity-80 mt-2 px-2">
                                     You will be redirected to the official government portal to submit your application.
                                 </p>

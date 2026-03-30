@@ -1,0 +1,34 @@
+{
+  "active_directives": [
+    {
+      "keywords": [
+        "women",
+        "business",
+        "msme"
+      ],
+      "target_states": [
+        "maharashtra"
+      ],
+      "target_categories": [
+        "any"
+      ],
+      "boost_factor": 2.0,
+      "description": "Heuristic match for: Boost women-led business and MSME schemes for Maharashtra by 4x.",
+      "expiry_days": 7
+    },
+    {
+      "keywords": [
+        "solar"
+      ],
+      "target_states": [
+        "all"
+      ],
+      "target_categories": [
+        "any"
+      ],
+      "boost_factor": 1.5,
+      "description": "Heuristic match for: Double weight for solar schemes nationwide.",
+      "expiry_days": 7
+    }
+  ]
+}

@@ -21,7 +21,7 @@ def evaluate(
     models_dir: str = "services/ml/models",
 ):
     df = load_dataset(dataset_path)
-    X, y_class, y_reg = split_features_targets(df)
+    X, y_class, y_reg, _ = split_features_targets(df)
 
     models_path = Path(models_dir)
     eligibility_model = joblib.load(models_path / "eligibility_model.pkl")
@@ -52,6 +52,7 @@ def evaluate(
         existing = {}
     existing.update(metrics)
     metrics_path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
+    print(json.dumps(metrics, indent=2))
     return metrics
 
 

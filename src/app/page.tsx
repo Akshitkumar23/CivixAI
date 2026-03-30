@@ -9,10 +9,11 @@ import { FinalCTASection } from '@/components/landing/FinalCTASection';
 import { Footer } from '@/components/landing/Footer';
 import Chatbot from '@/components/Chatbot';
 import { FeaturesHighlightSection } from '@/components/landing/FeaturesHighlightSection';
-
 import { CoreAIHeroBackground } from '@/components/canvas/CoreAIHeroBackground';
+import { useScrollRestoration } from '@/hooks/use-scroll-restoration';
 
 export default function LandingPage() {
+  useScrollRestoration();
   return (
     <div className="flex flex-col min-h-screen relative bg-[#020205] text-slate-200">
       {/* Global 3D Universe Background */}

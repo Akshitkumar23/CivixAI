@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useScrollRestoration } from '@/hooks/use-scroll-restoration';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { SearchX, Loader2, Sparkles, TrendingUp, ShieldCheck, Zap, Info, FileText, Globe, ExternalLink, ChevronDown, ChevronUp, ArrowRight, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ExternalLink, Globe, ArrowRight, Info, Loader2, SearchX, ShieldCheck, Sparkles, ThumbsDown, ThumbsUp, Zap, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +52,8 @@ interface APIResponse {
     application_deadline?: string;
     processing_time?: string;
     popularity_score?: string;
+    path_to_eligibility?: string[];
+    related_schemes?: Array<{ id: string; name: string }>;
   }>;
   topSchemes?: Array<{
     scheme: string;
@@ -168,9 +171,53 @@ function DetailedSchemeCard({
         </CardHeader>
 
         <CardContent className="p-5 pt-2 flex-grow">
-          <p className="text-sm text-slate-400 leading-relaxed line-clamp-3">
+          <p className="text-sm text-slate-400 leading-relaxed line-clamp-3 mb-4">
             {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status.'}
           </p>
+
+          {/* XAI: Reasons Section (#23) */}
+          {details?.reasons && details.reasons.length > 0 && (
+            <div className="mb-4 space-y-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+               <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-1">
+                 <ShieldCheck className="w-3 h-3" /> Match Insights
+               </div>
+               {details.reasons.slice(0, 2).map((reason: string, i: number) => (
+                 <div key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                   <div className="w-1 h-1 rounded-full bg-blue-500 mt-1.5" />
+                   {reason}
+                 </div>
+               ))}
+            </div>
+          )}
+
+          {/* Smart Eligibility Path (#28) */}
+          {details?.path_to_eligibility && details.path_to_eligibility.length > 0 && (
+            <div className="mb-4 p-3 rounded-xl bg-purple-500/5 border border-purple-500/10">
+               <div className="flex items-center gap-1.5 text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1.5">
+                 <Zap className="w-3 h-3 fill-purple-400/20" /> Eligibility Pathway
+               </div>
+               {details.path_to_eligibility.map((path: string, i: number) => (
+                 <div key={i} className="text-[11px] text-purple-300/90 leading-snug">
+                   {path}
+                 </div>
+               ))}
+            </div>
+          )}
+
+          {/* Knowledge Graph: Related Schemes (#21) */}
+          {details?.related_schemes && details.related_schemes.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-white/5">
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Related Opportunities</div>
+              <div className="flex flex-col gap-1.5">
+                {details.related_schemes.slice(0, 2).map((rel: any) => (
+                  <Link key={rel.id} href={`/scheme/${rel.id}`} className="text-[11px] text-blue-300/70 hover:text-blue-200 transition-colors flex items-center gap-2">
+                    <Globe className="w-3 h-3 opacity-50" />
+                    <span className="truncate">{rel.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-2 mt-4 pt-1">
             {details?.application_deadline && (
@@ -201,17 +248,19 @@ function DetailedSchemeCard({
               </div>
             </div>
           )}
+
         </CardContent>
 
         <CardFooter className="p-5 pt-0 mt-auto flex flex-wrap gap-3">
-          <Button className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium border-0" size="sm" asChild>
-            <a href={details?.url || details?.source_url || '#'} target="_blank">
-              Apply Now <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+          <Button className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium border-0 px-2" size="sm" asChild>
+            <a href={details?.url || details?.source_url || '#'} target="_blank" className="flex items-center justify-center w-full whitespace-nowrap">
+              Apply Now <ExternalLink className="ml-1.5 h-3.5 w-3.5 shrink-0" />
             </a>
           </Button>
           <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-[#121214] hover:bg-white/5 text-white" asChild>
             <Link href={`/scheme/${scheme.id}`}>Details</Link>
           </Button>
+
           <Button
             size="sm"
             variant="ghost"
@@ -286,50 +335,68 @@ function TopMatchHero({ scheme, details }: { scheme: any; details?: any }) {
   );
 }
 
-// ─── Compare Modal ───────────────────────────────────────────────────────────
+// ─── Enhanced Compare Modal (Feature 4) ──────────────────────────────────────
 function CompareModal({ items, onClose }: { items: { scheme: any; details?: any }[]; onClose: () => void }) {
+  // Find winner by confidence
+  const winnerIdx = items.reduce((best, item, i) =>
+    (item.scheme.confidence || 0) > (items[best]?.scheme.confidence || 0) ? i : best, 0);
+
+  const rows = [
+    { label: '🎯 Match Score', render: (item: any, i: number) => <span className={`font-black text-2xl ${i === winnerIdx ? 'text-blue-400' : 'text-slate-300'}`}>{Math.round(item.scheme.confidence)}%</span> },
+    { label: '📁 Type', render: (item: any) => <span className="capitalize text-slate-300 font-medium">{item.details?.benefit_type || 'Scheme'}</span> },
+    { label: '🏛️ Ministry', render: (item: any) => <span className="text-slate-400 text-xs leading-snug">{item.details?.ministry || '—'}</span> },
+    { label: '✅ Eligibility', render: (item: any) => item.scheme.eligible ? <span className="text-green-400 font-bold flex items-center gap-1">✓ Eligible</span> : <span className="text-red-400">✗ Check Criteria</span> },
+    { label: '💡 Key Benefits', render: (item: any) => <span className="text-slate-400 text-xs leading-relaxed line-clamp-4">{item.details?.summary || '—'}</span> },
+    { label: '📄 Documents', render: (item: any) => <span className="text-slate-400 text-xs leading-snug">{item.details?.documents_snippets?.[0] || '—'}</span> },
+    { label: '🔗 Apply', render: (item: any) => item.details?.source_url ? <a href={item.details.source_url} target="_blank" className="text-blue-400 hover:underline text-xs flex items-center gap-1 font-semibold">Apply Now <ExternalLink className="h-3 w-3" /></a> : <span className="text-slate-500">—</span> },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-5xl bg-[#0a0a0b] border border-white/10 rounded-3xl shadow-2xl overflow-auto max-h-[90vh] z-10">
-        <div className="sticky top-0 bg-[#0a0a0b]/95 border-b border-white/5 p-5 flex items-center justify-between z-10">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-blue-400">⇄</span> Scheme Comparison
-          </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors text-2xl leading-none">&times;</button>
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+      <div className="relative w-full max-w-5xl bg-[#07070a] border border-white/10 rounded-3xl shadow-[0_32px_80px_rgba(0,0,0,0.8)] overflow-auto max-h-[92vh] z-10 animate-in slide-in-from-bottom-4 duration-300">
+        {/* Header */}
+        <div className="sticky top-0 bg-[#07070a]/98 backdrop-blur border-b border-white/5 p-5 flex items-center justify-between z-10">
+          <div>
+            <h2 className="text-xl font-black text-white flex items-center gap-2">⇄ Side-by-Side Comparison</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Comparing {items.length} schemes • Best match highlighted</p>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-slate-400 hover:text-white flex items-center justify-center text-xl">×</button>
         </div>
 
         <div className="p-5 overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm border-separate border-spacing-x-2">
             <thead>
               <tr>
-                <th className="text-left text-slate-500 font-semibold text-xs uppercase tracking-wide pb-4 w-36">Field</th>
+                <th className="text-left text-slate-500 font-semibold text-xs uppercase tracking-wide pb-4 w-36 pl-2">Field</th>
                 {items.map((item, i) => (
-                  <th key={i} className="text-left pb-4 px-3">
-                    <div className="text-white font-bold line-clamp-2 text-sm">{item.details?.scheme_name || item.scheme.scheme_name}</div>
+                  <th key={i} className={`text-left pb-4 px-4 rounded-t-2xl ${i === winnerIdx ? 'bg-blue-500/10' : 'bg-white/[0.02]'}`}>
+                    {i === winnerIdx && (
+                      <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1 flex items-center gap-1">🏆 Best Match</div>
+                    )}
+                    <div className="text-white font-bold text-sm line-clamp-2">{item.details?.scheme_name || item.scheme.scheme_name}</div>
+                    <div className="text-slate-500 text-[11px] mt-0.5">{item.details?.ministry || ''}</div>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
-              {[
-                { label: 'Match Score', render: (item: any) => <span className={`font-black text-lg ${item.scheme.confidence > 80 ? 'text-blue-400' : 'text-slate-300'}`}>{Math.round(item.scheme.confidence)}%</span> },
-                { label: 'Type', render: (item: any) => <span className="capitalize text-slate-300">{item.details?.benefit_type || 'Scheme'}</span> },
-                { label: 'Ministry', render: (item: any) => <span className="text-slate-400">{item.details?.ministry || '—'}</span> },
-                { label: 'Eligibility', render: (item: any) => item.scheme.eligible ? <span className="text-green-400 font-semibold">✓ Eligible</span> : <span className="text-red-400">✗ Check Criteria</span> },
-                { label: 'Key Benefits', render: (item: any) => <span className="text-slate-400 text-xs leading-snug line-clamp-3">{item.details?.summary || '—'}</span> },
-                { label: 'Documents', render: (item: any) => <span className="text-slate-400 text-xs leading-snug">{item.details?.documents_snippets?.[0] || '—'}</span> },
-                { label: 'Apply', render: (item: any) => item.details?.source_url ? <a href={item.details.source_url} target="_blank" className="text-blue-400 hover:underline text-xs flex items-center gap-1">Apply Now <ExternalLink className="h-3 w-3" /></a> : <span className="text-slate-500">—</span> },
-              ].map(row => (
-                <tr key={row.label}>
-                  <td className="py-4 pr-3 text-slate-500 font-semibold text-xs uppercase tracking-wide align-top">{row.label}</td>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={row.label} className={ri % 2 === 0 ? '' : ''}>
+                  <td className="py-4 pr-3 text-slate-500 font-semibold text-xs tracking-wide align-top pl-2">{row.label}</td>
                   {items.map((item, i) => (
-                    <td key={i} className="py-4 px-3 align-top">{row.render(item)}</td>
+                    <td key={i} className={`py-4 px-4 align-top rounded-none ${i === winnerIdx ? 'bg-blue-500/5' : 'bg-white/[0.01]'}`}>
+                      {row.render(item, i)}
+                    </td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="p-5 border-t border-white/5 flex justify-end gap-3">
+          <button onClick={onClose} className="px-6 py-2.5 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 transition-colors text-sm font-medium">Close</button>
         </div>
       </div>
     </div>
@@ -339,14 +406,19 @@ function CompareModal({ items, onClose }: { items: { scheme: any; details?: any 
 
 function RecommendationsContent() {
   const searchParams = useSearchParams();
+  // Restore scroll position when navigating back to this page
+  useScrollRestoration();
+  const confettiFired = useRef(false);
   const [apiData, setApiData] = useState<APIResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadStep, setLoadStep] = useState(0); // for smart loading animation
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [minConfidence, setMinConfidence] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
   const [compareList, setCompareList] = useState<{ scheme: any; details?: any }[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [showMissingBanner, setShowMissingBanner] = useState(true);
 
   const handleToggleCompare = (scheme: any, details?: any) => {
     setCompareList(prev => {
@@ -440,6 +512,32 @@ function RecommendationsContent() {
     };
 
     fetchData();
+  }, [searchParams]);
+
+  // Smart loading steps animation (Feature 8)
+  useEffect(() => {
+    if (!loading) return;
+    const steps = [0, 1, 2, 3];
+    const timers = steps.map((s) => setTimeout(() => setLoadStep(s), s * 900));
+    return () => timers.forEach(clearTimeout);
+  }, [loading]);
+
+  // Confetti on results (Feature 10)
+  useEffect(() => {
+    if (apiData && !confettiFired.current) {
+      confettiFired.current = true;
+      import('canvas-confetti').then(({ default: confetti }) => {
+        confetti({ particleCount: 90, spread: 80, origin: { y: 0.55 }, colors: ['#60a5fa', '#a78bfa', '#34d399', '#fbbf24'] });
+      });
+    }
+  }, [apiData]);
+
+  const missingFields = useMemo(() => {
+    const missing: string[] = [];
+    if (!searchParams?.get('gender')) missing.push('Gender');
+    if (!searchParams?.get('hasDisability') || searchParams?.get('hasDisability') === 'false') missing.push('Disability Status');
+    if (!searchParams?.get('educationLevel')) missing.push('Education Level');
+    return missing;
   }, [searchParams]);
 
   const latestSources: any[] = []; // Placeholder for now
@@ -698,24 +796,47 @@ function RecommendationsContent() {
   }, [filteredSchemes, activeTab, structuredById]);
 
   if (loading) {
+    const aiSteps = [
+      { icon: '🔍', text: 'Scanning 800+ government schemes...' },
+      { icon: '📊', text: 'Applying eligibility filters to your profile...' },
+      { icon: '🤖', text: 'Running ML model predictions...' },
+      { icon: '🎯', text: 'Ranking and personalizing your matches...' },
+    ];
     return (
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col min-h-screen bg-[#020205] text-white font-sans">
         <Header />
-        <main className="flex-grow bg-muted">
-          <section className="container mx-auto px-4 py-10 sm:py-14">
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-4">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center max-w-md px-4 space-y-8">
+            {/* Animated orb */}
+            <div className="relative mx-auto w-28 h-28">
+              <div className="absolute inset-0 rounded-full bg-blue-600/20 animate-ping" />
+              <div className="absolute inset-2 rounded-full bg-blue-600/30 animate-pulse" />
+              <div className="absolute inset-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-4xl shadow-[0_0_40px_rgba(99,102,241,0.5)]">
+                🧠
               </div>
-              <h1 className="font-headline text-4xl sm:text-5xl font-bold text-primary">Analyzing Your Profile</h1>
-              <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                Our AI is processing your information to find the best government schemes for you...
-              </p>
             </div>
-            <RecommendationsSkeleton />
-          </section>
+
+            <div>
+              <h1 className="text-3xl font-black text-white mb-2">AI is Analyzing</h1>
+              <p className="text-slate-400 text-sm">Scanning 850+ schemes across all of India</p>
+            </div>
+
+            {/* Step-by-step progress */}
+            <div className="space-y-3 text-left">
+              {aiSteps.map((s, i) => (
+                <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-500 ${
+                  i < loadStep ? 'border-green-500/30 bg-green-500/5 opacity-60' :
+                  i === loadStep ? 'border-blue-500/50 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.2)]' :
+                  'border-white/5 bg-white/[0.02] opacity-30'
+                }`}>
+                  <span className="text-xl shrink-0">{i < loadStep ? '✅' : s.icon}</span>
+                  <span className={`text-sm font-medium ${i === loadStep ? 'text-white' : 'text-slate-500'}`}>{s.text}</span>
+                  {i === loadStep && <div className="ml-auto w-4 h-4 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />}
+                </div>
+              ))}
+            </div>
+          </div>
         </main>
-        <Chatbot />
       </div>
     );
   }
@@ -826,6 +947,24 @@ function RecommendationsContent() {
                   </div>
                 </div>
               </div>
+
+              {/* Feature 5: Missing Info Banner */}
+              {showMissingBanner && missingFields.length > 0 && (
+                <div className="mb-6 flex items-start gap-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 animate-in fade-in slide-in-from-top-2 duration-500">
+                  <span className="text-2xl shrink-0">💡</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-amber-300 font-semibold text-sm">Get more personalized schemes!</p>
+                    <p className="text-amber-300/70 text-xs mt-0.5">
+                      You didn't provide: <span className="font-bold text-amber-300">{missingFields.join(', ')}</span>.
+                      Add these details to unlock more matches.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link href="/check-eligibility" className="text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 transition-colors whitespace-nowrap">Fill Now →</Link>
+                    <button onClick={() => setShowMissingBanner(false)} className="text-amber-500/50 hover:text-amber-300 transition-colors text-lg leading-none">×</button>
+                  </div>
+                </div>
+              )}
 
               <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
