@@ -52,7 +52,7 @@ export function Header() {
         )}
 
         {/* Language Translator Widget */}
-        <div className={pathname === '/' ? 'block ml-4' : 'hidden'}>
+        <div className="ml-auto md:ml-4">
           <GoogleTranslate />
         </div>
 

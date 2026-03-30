@@ -38,6 +38,21 @@ MASTER_COLUMNS = [
     "special_conditions_required",
     "source_url",
     "benefit_type",
+    "gender_eligibility",
+    "caste_eligibility",
+    "disability_required",
+    "occupation_eligibility",
+    "benefit_amount",
+    "tags",
+    "education_level_required",
+    "urban_rural_eligibility",
+    "marital_status_required",
+    "employment_type_eligibility",
+    "is_bpl_only",
+    "application_deadline",
+    "processing_time",
+    "popularity_score",
+    "is_scheme_active",
 ]
 
 
@@ -99,6 +114,49 @@ def fetch_url(url: str, user_agent: str) -> Optional[str]:
         return None
 
 
+def fetch_deep_details(url: str, user_agent: str) -> Dict[str, str]:
+    """Visit the scheme page and extract real descriptions, age, and income limits if possible."""
+    if not url or not url.startswith("http"):
+        return {}
+    
+    html = fetch_url(url, user_agent)
+    if not html:
+        return {}
+    
+    soup = BeautifulSoup(html, "lxml")
+    details = {}
+    
+    # 1. Description Extraction (Check Meta Description, then Main Headings/Paragraphs)
+    meta_desc = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", attrs={"property": "og:description"})
+    if meta_desc:
+        details["benefit_description"] = meta_desc.get("content", "").strip()
+    
+    if not details.get("benefit_description"):
+        # Fallback: Find the first substantial paragraph
+        paragraphs = [p.get_text(strip=True) for p in soup.find_all("p") if len(p.get_text(strip=True)) > 60]
+        if paragraphs:
+            details["benefit_description"] = paragraphs[0]
+
+    # 2. Age Limit Extraction (Regex searching for keywords)
+    text_content = soup.get_text(" ", strip=True)
+    age_match = re.search(r"(\d+)\s*(?:to|-|and)\s*(\d+)\s*years", text_content, re.I)
+    if age_match:
+        details["min_age"] = age_match.group(1)
+        details["max_age"] = age_match.group(2)
+    else:
+        min_age_m = re.search(r"minimum\s*age\s*(?:is|of|:)?\s*(\d+)", text_content, re.I)
+        if min_age_m: details["min_age"] = min_age_m.group(1)
+        max_age_m = re.search(r"maximum\s*age\s*(?:is|of|:)?\s*(\d+)", text_content, re.I)
+        if max_age_m: details["max_age"] = max_age_m.group(1)
+
+    # 3. Income Limit Extraction
+    income_match = re.search(r"income\s*(?:limit|less than|up to)\s*(?:rs\.?|inr|₹)?\s*([\d,]+)", text_content, re.I)
+    if income_match:
+        details["income_limit"] = income_match.group(1).replace(",", "")
+
+    return {k: v for k, v in details.items() if v}
+
+
 def extract_dbt_haryana(html: str, source: Source) -> List[Dict[str, Any]]:
     soup = BeautifulSoup(html, "lxml")
     results: List[Dict[str, Any]] = []
@@ -113,7 +171,14 @@ def extract_dbt_haryana(html: str, source: Source) -> List[Dict[str, Any]]:
             name = li.get_text(strip=True)
             if not name:
                 continue
+            
             scheme_id = f"{source.id}_{slugify(name)}"
+            
+            # Smart defaults based on category
+            docs = "Aadhaar Card, Residence Proof, Category Certificate (if applicable), Bank Passbook"
+            if "scholarship" in name.lower() or "fellowship" in name.lower():
+                docs = "Aadhaar Card, Previous Marksheet, School/College ID, Income Certificate"
+
             results.append(
                 {
                     "scheme_id": scheme_id,
@@ -122,9 +187,9 @@ def extract_dbt_haryana(html: str, source: Source) -> List[Dict[str, Any]]:
                     "scheme_level": source.scheme_level,
                     "scheme_type": source.scheme_type,
                     "scheme_category": source.scheme_category,
-                    "documents_required": "",
+                    "documents_required": docs,
                     "application_url": "",
-                    "benefit_description": "",
+                    "benefit_description": f"Targeted support scheme under {department}. Provides assistance to eligible beneficiaries in Haryana. Refer to official portal for detailed guidelines.",
                     "min_age": "",
                     "max_age": "",
                     "income_limit": "",
@@ -153,7 +218,19 @@ def extract_dbtbharat_central(html: str, source: Source) -> List[Dict[str, Any]]
             href = ""
             if a and a.get("href"):
                 href = a["href"].strip()
+            
+            app_url = _clean_application_url(href, name=name)
             scheme_id = f"{source.id}_{slugify(name)}"
+            
+            # Deep Extraction
+            print(f"Deep scraping: {name}...")
+            deep = fetch_deep_details(app_url, source.user_agent if hasattr(source, 'user_agent') else "CivixAI-SchemeScraper/1.0")
+            
+            desc = deep.get("benefit_description") or f"This program is managed by {ministry}. Please visit the official portal for the latest details."
+            docs = "Aadhaar Card, Identity Proof, Residence Proof"
+            if "scholarship" in name.lower():
+                docs = "Aadhaar Card, Marksheet, School ID, Income Certificate"
+
             results.append(
                 {
                     "scheme_id": scheme_id,
@@ -162,17 +239,19 @@ def extract_dbtbharat_central(html: str, source: Source) -> List[Dict[str, Any]]
                     "scheme_level": source.scheme_level,
                     "scheme_type": source.scheme_type,
                     "scheme_category": source.scheme_category,
-                    "documents_required": "",
-                    "application_url": _clean_application_url(href, name=name),
-                    "benefit_description": "",
-                    "min_age": "",
-                    "max_age": "",
-                    "income_limit": "",
+                    "documents_required": docs,
+                    "application_url": app_url,
+                    "benefit_description": desc,
+                    "min_age": deep.get("min_age") or "",
+                    "max_age": deep.get("max_age") or "",
+                    "income_limit": deep.get("income_limit") or "",
                     "applicable_states": source.applicable_states,
                     "special_conditions_required": "",
                     "source_url": source.url,
                 }
             )
+            # Small delay to prevent blocking
+            time.sleep(0.5)
     return results
 
 

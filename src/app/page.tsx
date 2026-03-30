@@ -9,6 +9,7 @@ import { FinalCTASection } from '@/components/landing/FinalCTASection';
 import { Footer } from '@/components/landing/Footer';
 import Chatbot from '@/components/Chatbot';
 import { FeaturesHighlightSection } from '@/components/landing/FeaturesHighlightSection';
+import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import { CoreAIHeroBackground } from '@/components/canvas/CoreAIHeroBackground';
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration';
 
@@ -30,6 +31,7 @@ export default function LandingPage() {
           <HeroSection />
           <ProblemSection />
           <HowItWorksSection />
+          <FeaturesSection />
           <FeaturesHighlightSection />
           <BeforeAfterSection />
           <FinalCTASection />

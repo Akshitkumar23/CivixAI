@@ -16,12 +16,11 @@ type SchemeRow = {
   max_age?: string;
   income_limit?: string;
   benefit_description?: string;
-  real_description?: string;
   documents_required?: string;
   application_url?: string;
   source_url?: string;
   benefit_type?: string;
-  // New enriched columns
+  special_conditions_required?: string;
   gender_eligibility?: string;
   caste_eligibility?: string;
   disability_required?: string;
@@ -530,7 +529,7 @@ async function fallbackEligibility(payload: EligibilityPayload & Record<string, 
     eligible: true,
     confidence: item.confidence * 100,
     threshold: DEFAULT_THRESHOLD,
-    description: item.scheme.real_description || item.scheme.benefit_description,
+    description: item.scheme.benefit_description,
     ministry: item.scheme.ministry,
     level: item.scheme.scheme_level,
     category: item.scheme.scheme_category,

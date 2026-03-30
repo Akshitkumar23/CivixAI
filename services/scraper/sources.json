@@ -171,6 +171,36 @@
       "scheme_category": "mixed",
       "applicable_states": "ALL",
       "notes": "List of major flagship initiatives and schemes by the PMO."
+    },
+    {
+      "id": "skill_india_schemes",
+      "type": "generic_gov_page",
+      "url": "https://www.skillindia.gov.in/schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "education",
+      "applicable_states": "ALL",
+      "notes": "PMKVY and other skill development schemes."
+    },
+    {
+      "id": "startup_india_schemes",
+      "type": "generic_gov_page",
+      "url": "https://www.startupindia.gov.in/content/sih/en/government-schemes.html",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "business",
+      "applicable_states": "ALL",
+      "notes": "Startup India Hub government schemes for entrepreneurs."
+    },
+    {
+      "id": "pm_kisan_details",
+      "type": "generic_gov_page",
+      "url": "https://pmkisan.gov.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "agriculture",
+      "applicable_states": "ALL",
+      "notes": "Direct benefit transfer for farmers."
     }
   ]
 }
