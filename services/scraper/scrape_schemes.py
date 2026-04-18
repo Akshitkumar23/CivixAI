@@ -36,6 +36,7 @@ MASTER_COLUMNS = [
     "income_limit",
     "applicable_states",
     "special_conditions_required",
+    "application_process",
     "source_url",
     "benefit_type",
     "gender_eligibility",
@@ -71,7 +72,7 @@ class Source:
 
 def load_sources() -> Tuple[str, float, List[Source]]:
     raw = json.loads(SOURCES_PATH.read_text(encoding="utf-8"))
-    user_agent = raw.get("user_agent", "CivixAI-SchemeScraper/1.0")
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     rate_limit = float(raw.get("rate_limit_seconds", 1.5))
     sources = [Source(**s) for s in raw.get("sources", [])]
     return user_agent, rate_limit, sources
@@ -105,13 +106,19 @@ def slugify(text: str) -> str:
 
 def fetch_url(url: str, user_agent: str) -> Optional[str]:
     headers = {"User-Agent": user_agent}
-    try:
-        resp = requests.get(url, headers=headers, timeout=30)
-        resp.raise_for_status()
-        return resp.text
-    except Exception as e:
-        print(f"Error fetching {url}: {e}")
-        return None
+    for attempt in range(2): 
+        try:
+            resp = requests.get(url, headers=headers, timeout=8)
+            resp.raise_for_status()
+            return resp.text
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            if attempt < 1:
+                time.sleep(1)
+                continue
+            return None
+        except Exception as e:
+            return None
+    return None
 
 
 def fetch_deep_details(url: str, user_agent: str) -> Dict[str, str]:
@@ -153,6 +160,29 @@ def fetch_deep_details(url: str, user_agent: str) -> Dict[str, str]:
     income_match = re.search(r"income\s*(?:limit|less than|up to)\s*(?:rs\.?|inr|₹)?\s*([\d,]+)", text_content, re.I)
     if income_match:
         details["income_limit"] = income_match.group(1).replace(",", "")
+
+    # 4. Actual Required Documents Extraction (Using NLP Search)
+    docs_found = []
+    doc_keywords = ["aadhaar", "pan card", "income certificate", "caste certificate", "domicile", "photograph", 
+                    "bank passbook", "marksheet", "identity proof", "address proof", "birth certificate", "ration card",
+                    "disability certificate", "voter id", "driving license", "passport"]
+    
+    # Check text for keywords
+    for keyword in doc_keywords:
+        if keyword in text_content.lower():
+            docs_found.append(keyword.title())
+            
+    if docs_found:
+        details["documents_required"] = ", ".join(list(set(docs_found)))
+        
+    # 5. Application Process Extraction (How to apply headers)
+    for h_tag in soup.find_all(["h2", "h3", "h4", "strong", "b"]):
+        text = h_tag.get_text(strip=True).lower()
+        if any(kd in text for kd in ["how to apply", "application process", "steps to apply", "registration process", "apply online"]):
+            next_element = h_tag.find_next_sibling(["p", "ol", "ul"])
+            if next_element:
+                details["application_process"] = next_element.get_text(" ", strip=True)[:450]
+                break
 
     return {k: v for k, v in details.items() if v}
 
@@ -224,12 +254,16 @@ def extract_dbtbharat_central(html: str, source: Source) -> List[Dict[str, Any]]
             
             # Deep Extraction
             print(f"Deep scraping: {name}...")
-            deep = fetch_deep_details(app_url, source.user_agent if hasattr(source, 'user_agent') else "CivixAI-SchemeScraper/1.0")
+            deep = fetch_deep_details(app_url, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
             
             desc = deep.get("benefit_description") or f"This program is managed by {ministry}. Please visit the official portal for the latest details."
-            docs = "Aadhaar Card, Identity Proof, Residence Proof"
-            if "scholarship" in name.lower():
-                docs = "Aadhaar Card, Marksheet, School ID, Income Certificate"
+            
+            # Use real extracted documents, fallback to contextual baseline
+            docs = deep.get("documents_required")
+            if not docs:
+                docs = "Aadhaar Card, Identity Proof, Residence Proof"
+                if "scholarship" in name.lower():
+                    docs = "Aadhaar Card, Marksheet, School ID, Income Certificate"
 
             results.append(
                 {
@@ -247,6 +281,7 @@ def extract_dbtbharat_central(html: str, source: Source) -> List[Dict[str, Any]]
                     "income_limit": deep.get("income_limit") or "",
                     "applicable_states": source.applicable_states,
                     "special_conditions_required": "",
+                    "application_process": deep.get("application_process") or "",
                     "source_url": source.url,
                 }
             )
@@ -341,6 +376,7 @@ def extract_generic_page(html: str, source: Source) -> List[Dict[str, Any]]:
                 "income_limit": "",
                 "applicable_states": source.applicable_states,
                 "special_conditions_required": "",
+                "application_process": "",
                 "source_url": source.url,
             }
         )
@@ -412,6 +448,7 @@ def extract_data_gov_in(source: Source, user_agent: str) -> List[Dict[str, Any]]
                 "income_limit": item.get("income_limit") or "",
                 "applicable_states": item.get("applicable_states") or "",
                 "special_conditions_required": item.get("special_conditions_required") or "",
+                "application_process": "",
                 "source_url": source.url or "https://data.gov.in",
             }
         )

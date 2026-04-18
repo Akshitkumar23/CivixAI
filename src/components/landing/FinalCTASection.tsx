@@ -9,21 +9,18 @@ export function FinalCTASection() {
     <section className="relative py-32 bg-transparent overflow-hidden border-t border-white/10">
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="max-w-4xl mx-auto space-y-12">
-          
+
           <div className="flex flex-col items-center gap-4">
-             <Badge variant="outline" className="px-6 py-2 border-blue-500/30 bg-blue-500/10 text-blue-400 rounded-full font-black tracking-[0.2em] uppercase text-[12px] animate-bounce">
-                Start for free
-             </Badge>
-             <div className="flex items-center gap-2 text-yellow-500/80">
-                {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-current" />)}
-                <span className="text-slate-400 text-sm font-bold ml-2">Trusted by 1,000+ users</span>
-             </div>
+            <Badge variant="outline" className="px-6 py-2 border-blue-500/30 bg-blue-500/10 text-blue-400 rounded-full font-black tracking-[0.2em] uppercase text-[12px] animate-bounce">
+              Start for free
+            </Badge>
+
           </div>
 
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-[1.1] tracking-tight drop-shadow-2xl">
             Claim what's <span className="italic">rightfully</span> yours. <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400">
-               CivixAI is your digital key.
+              CivixAI is your digital key.
             </span>
           </h2>
 
@@ -39,10 +36,10 @@ export function FinalCTASection() {
                 </Link>
               </Button>
             </div>
-            
+
             <div className="flex items-center gap-3 text-slate-500 font-bold uppercase tracking-widest text-[10px]">
-               <Sparkles className="w-4 h-4 text-blue-500" />
-               NO GOVERNMENT VISITS REQUIRED TO START
+              <Sparkles className="w-4 h-4 text-blue-500" />
+              NO GOVERNMENT VISITS REQUIRED TO START
             </div>
           </div>
 

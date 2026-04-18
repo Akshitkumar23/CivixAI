@@ -60,6 +60,8 @@ SCHEME_FEATURES = [
     "employment_type_eligibility",
     "is_bpl_only",
     "popularity_score",
+    "scheme_name",
+    "benefit_description",
 ]
 
 TARGET_CLASS = "eligible"
@@ -155,8 +157,8 @@ def split_features_targets(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, p
 
 def infer_categorical_features(X: pd.DataFrame) -> List[str]:
     cat_cols = []
-    # Force text features out of categorical because CatBoost handles them differently
-    text_cols = ["benefit_description"] 
+    # Force text features out of categorical because CatBoost/LLMs handle them differently
+    text_cols = ["benefit_description", "scheme_name"] 
     for col in X.columns:
         if col in text_cols:
             continue

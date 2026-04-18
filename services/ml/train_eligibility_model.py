@@ -51,7 +51,7 @@ def _build_catboost(X_train, y_train, X_val, y_val):
         raise ImportError("catboost is not installed")
 
     cat_features = infer_categorical_features(X_train)
-    text_features = ["benefit_description"] if "benefit_description" in X_train.columns else None
+    text_features = [c for c in ["benefit_description", "scheme_name"] if c in X_train.columns]
 
     model = CatBoostClassifier(
         iterations=500,
@@ -80,7 +80,7 @@ def _build_xgboost(X_train, y_train, X_val, y_val):
         raise ImportError("xgboost is not installed")
 
     cat_cols = infer_categorical_features(X_train)
-    num_cols = [c for c in X_train.columns if c not in cat_cols and c != "benefit_description"]
+    num_cols = [c for c in X_train.columns if c not in cat_cols and c not in ["benefit_description", "scheme_name"]]
 
     pre = ColumnTransformer(
         transformers=[

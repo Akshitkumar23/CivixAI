@@ -117,14 +117,7 @@ function DetailedSchemeCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.25, delay: Math.min(index * 0.04, 0.4), ease: 'easeOut' }}
-      className="group relative h-full"
-      layout
-    >
+    <div className="group relative h-full">
       <Card className="relative flex flex-col h-full overflow-hidden bg-[#0a0a0b]/80 border-white/5 shadow-none hover:bg-[#121214]/90 transition-all duration-300 rounded-2xl">
         <CardHeader className="p-5 pb-3">
           <div className="flex justify-between items-start gap-4">
@@ -171,12 +164,36 @@ function DetailedSchemeCard({
         </CardHeader>
 
         <CardContent className="p-5 pt-2 flex-grow">
+          {/* Eligibility Summary Badge (new pipeline field) */}
+          {details?.eligibility_summary && (
+            <div className="mb-3 px-3 py-1.5 rounded-xl bg-blue-500/5 border border-blue-500/10 text-[11px] text-blue-300/80 leading-snug">
+              {details.eligibility_summary}
+            </div>
+          )}
+
+          {/* Why You Qualify — main explanation (new 'why' field, falls back to description) */}
           <p className="text-sm text-slate-400 leading-relaxed line-clamp-3 mb-4">
-            {details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status.'}
+            {details?.why || details?.summary || 'AI has analyzed this scheme based on your profile and found a strong correlation with your current status.'}
           </p>
 
-          {/* XAI: Reasons Section (#23) */}
+          {/* TL;DR Bullets (new pipeline field) */}
+          {details?.tldr_bullets && details.tldr_bullets.length > 0 && (
+            <div className="mb-4 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                <Sparkles className="w-3 h-3" /> Quick Facts
+              </div>
+              {details.tldr_bullets.slice(0, 2).map((b: any, i: number) => (
+                <div key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                  <span className="text-base leading-none">{b.icon || '•'}</span>
+                  <span><strong className="text-white">{b.title}:</strong> {b.text}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* XAI: Reasons Section */}
           {details?.reasons && details.reasons.length > 0 && (
+
             <div className="mb-4 space-y-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
                <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-1">
                  <ShieldCheck className="w-3 h-3" /> Match Insights
@@ -283,7 +300,7 @@ function DetailedSchemeCard({
           </div>
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 
@@ -413,6 +430,7 @@ function RecommendationsContent() {
   const [loading, setLoading] = useState(true);
   const [loadStep, setLoadStep] = useState(0); // for smart loading animation
   const [error, setError] = useState<string | null>(null);
+  const [backendStatus, setBackendStatus] = useState<'connected' | 'error' | 'loading'>('loading');
   const [searchQuery, setSearchQuery] = useState('');
   const [minConfidence, setMinConfidence] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
@@ -457,39 +475,42 @@ function RecommendationsContent() {
           return isNaN(n) ? undefined : n;
         };
 
-        // Prepare the request data for ML eligibility API
+        // Prepare the request data for ML eligibility API (field names match InputAgent)
         const requestData = {
-          age: toNum(getParam('age')),
-          income: toNum(getParam('income')),
-          state: getParam('state') || undefined,
-          category: getParam('category') || undefined,
-          occupation: getParam('occupation') || undefined,
-          gender: getParam('gender') || undefined,
-          hasDisability: toBool(getParam('hasDisability')),
-          hasLand: toBool(getParam('hasLand')),
-          familyIncome: toNum(getParam('familyIncome')) || 0,
-          landSize: toNum(getParam('landSize')) || 0,
-          familySize: toNum(getParam('familySize')) || 1,
-          isSingleGirlChild: toBool(getParam('isSingleGirlChild')),
-          isWidowOrSenior: toBool(getParam('isWidowOrSenior')),
-          isTaxPayer: toBool(getParam('isTaxPayer')),
-          isBankLinked: toBool(getParam('isBankLinked')),
-          educationLevel: getParam('educationLevel') || '',
-          digitalLiteracy: getParam('digitalLiteracy') || '',
-          urbanRural: getParam('urbanRural') || '',
-          monthlyExpenses: toNum(getParam('monthlyExpenses')) || 0,
-          hasSmartphone: toBool(getParam('hasSmartphone')),
-          hasInternet: toBool(getParam('hasInternet')),
-          employmentType: getParam('employmentType') || '',
-          skillCertification: getParam('skillCertification') || '',
-          loanRequirement: getParam('loanRequirement') || 'none',
-          monthlySavings: toNum(getParam('monthlySavings')) || 0,
-          hasInsurance: toBool(getParam('hasInsurance')),
-          hasPension: toBool(getParam('hasPension'))
+          age:           toNum(getParam('age')),
+          annualIncome:  toNum(getParam('annualIncome')) ?? toNum(getParam('income')) ?? 0,
+          state:         getParam('state') || undefined,
+          caste:         getParam('caste') || getParam('category') || undefined,
+          occupation:    getParam('occupation') || undefined,
+          gender:        getParam('gender') || undefined,
+          hasDisability:    toBool(getParam('hasDisability')),
+          hasLand:          toBool(getParam('hasLand')),
+          familyIncome:     toNum(getParam('familyIncome')) || 0,
+          landSize:         toNum(getParam('landSize')) || 0,
+          familySize:       toNum(getParam('familySize')) || 1,
+          isSingleGirlChild:toBool(getParam('isSingleGirlChild')),
+          isWidowOrSenior:  toBool(getParam('isWidowOrSenior')),
+          isTaxPayer:       toBool(getParam('isTaxPayer')),
+          isBankLinked:     toBool(getParam('isBankLinked')),
+          educationLevel:    getParam('educationLevel') || '',
+          digitalLiteracy:   getParam('digitalLiteracy') || '',
+          urbanRural:        getParam('urbanRural') || '',
+          maritalStatus:     getParam('maritalStatus') || '',
+          isBPL:          toBool(getParam('isBPL')),
+          isMinority:     toBool(getParam('isMinority')),
+          monthlyExpenses:   toNum(getParam('monthlyExpenses')) || 0,
+          hasSmartphone:     toBool(getParam('hasSmartphone')),
+          hasInternet:       toBool(getParam('hasInternet')),
+          employmentType:    getParam('employmentType') || '',
+          skillCertification:getParam('skillCertification') || '',
+          loanRequirement:   getParam('loanRequirement') || 'none',
+          monthlySavings:    toNum(getParam('monthlySavings')) || 0,
+          hasInsurance:      toBool(getParam('hasInsurance')),
+          hasPension:        toBool(getParam('hasPension')),
         };
 
-        // Call the ML eligibility API
-        const response = await fetch('/api/check-eligibility', {
+        // Call the ML eligibility API (FULL 5-Agent Pipeline)
+        const response = await fetch('/api/recommend', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -514,13 +535,12 @@ function RecommendationsContent() {
     fetchData();
   }, [searchParams]);
 
-  // Smart loading steps animation (Feature 8)
+  // Clean and fast results rendering
   useEffect(() => {
-    if (!loading) return;
-    const steps = [0, 1, 2, 3];
-    const timers = steps.map((s) => setTimeout(() => setLoadStep(s), s * 900));
-    return () => timers.forEach(clearTimeout);
-  }, [loading]);
+    if (!loading && apiData) {
+      setLoadStep(3); // Instant completion
+    }
+  }, [loading, apiData]);
 
   // Confetti on results (Feature 10)
   useEffect(() => {
@@ -661,22 +681,39 @@ function RecommendationsContent() {
 
   const structuredById = useMemo(() => {
     if (!apiData?.schemeDetails) return new Map();
-    const entries = apiData.schemeDetails.map((s): [string, any] => {
+    const entries = (apiData.schemeDetails as any[]).map((s): [string, any] => {
       const id = s.id || toSlug(s.name || '');
       const details = {
-        scheme_name: s.name,
-        summary: s.description,
-        ministry: s.ministry,
-        level: s.level,
-        category: s.category,
-        benefit_type: s.benefit_type || 'scheme',
-        url: s.url,
+        // Identity
+        scheme_name:  s.name,
+        benefit_type: s.type || s.benefit_type || 'scheme',
+        category:     s.category,
+        ministry:     s.ministry,
+        level:        s.level,
+
+        // URLs
+        url:        s.url,
         source_url: s.source_url,
+
+        // ── New pipeline explanation fields ────────────────────────────
+        summary:             s.why || s.description || '',   // 'why' is richer — prefer it
+        why:                 s.why || '',
+        eligibility_summary: s.eligibility_summary || '',
+        tldr_bullets:        s.tldr_bullets || [],
+        how_to_apply:        s.how_to_apply || [],
+        // ──────────────────────────────────────────────────────────────
+
+        // Legacy / extra fields
         application_deadline: s.application_deadline,
-        processing_time: s.processing_time,
-        popularity_score: s.popularity_score,
-        benefits_snippets: s.description ? [s.description] : [],
-        documents_snippets: s.documents ? [s.documents] : []
+        processing_time:      s.processing_time,
+        popularity_score:     s.popularity_score,
+        benefits_snippets:    s.benefits?.length ? s.benefits : (s.description ? [s.description] : []),
+        documents_snippets:   s.documents?.length ? s.documents : [],
+        reasons:              s.reasons || [],
+        path_to_eligibility:  s.path_to_eligibility || [],
+        missing_inputs:       s.missing_inputs || [],
+        benefit_amount:       s.benefit_amount || '',
+        match_score:          s.match_score,
       };
       return [id, details];
     });
@@ -689,6 +726,7 @@ function RecommendationsContent() {
     eligible: boolean;
     confidence?: number;
     benefit_score?: number;
+    match_score?: number;
     rank_score?: number;
     reasons?: string[];
     threshold?: number;
@@ -700,13 +738,14 @@ function RecommendationsContent() {
     popularity_score?: string;
   };
 
-  const modelItems: ModelItem[] =
+      const modelItems: ModelItem[] =
     apiData?.schemeDetails && apiData.schemeDetails.length > 0
       ? apiData.schemeDetails.map(item => ({
         key: item.id || item.name || 'Unknown Scheme',
         name: item.name,
         eligible: item.eligible,
         confidence: item.confidence,
+        match_score: item.match_score,
         benefit_score: item.benefit_score,
         rank_score: item.rank_score,
         reasons: item.reasons,
@@ -874,8 +913,7 @@ function RecommendationsContent() {
       <div className="flex flex-col min-h-screen bg-transparent font-sans text-slate-200">
         <ThreeDBackground />
         <Header />
-        <ScrollWrapper>
-          <main className="flex-grow relative overflow-hidden">
+        <main className="flex-grow relative overflow-hidden">
             {/* Ambient Dark Mode Globs */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
 
@@ -898,7 +936,6 @@ function RecommendationsContent() {
               </div>
             </section>
           </main>
-        </ScrollWrapper>
         <Chatbot />
       </div>
     );
@@ -908,8 +945,7 @@ function RecommendationsContent() {
     <div className="flex flex-col min-h-screen bg-transparent font-sans selection:bg-blue-500/30 text-white">
       <ThreeDBackground />
       <Header />
-      <ScrollWrapper>
-        <main className="flex-grow relative overflow-hidden">
+        <main className="flex-grow relative selection:bg-purple-500/30">
           {/* Glass background blobs removed since we have 3D WebGL */}
           <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
           <div className="fixed top-[40%] right-[10%] w-[30%] h-[30%] bg-cyan-600/10 rounded-full blur-[100px] -z-10" />
@@ -970,16 +1006,16 @@ function RecommendationsContent() {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
                   <TabsList className="h-auto bg-[#0a0a0b]/80 border border-white/5 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
                     <TabsTrigger value="All" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-white transition-all">
-                      All Items
+                      All ({eligibleOnlySchemes.length})
                     </TabsTrigger>
                     <TabsTrigger value="scheme" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-white transition-all">
-                      Govt Schemes
+                      Govt Schemes ({eligibleOnlySchemes.filter(s => (structuredById.get(s.id)?.benefit_type || 'scheme') === 'scheme').length})
                     </TabsTrigger>
                     <TabsTrigger value="loan" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-orange-400 transition-all">
-                      Loans
+                      Loans ({eligibleOnlySchemes.filter(s => structuredById.get(s.id)?.benefit_type === 'loan').length})
                     </TabsTrigger>
                     <TabsTrigger value="insurance" className="rounded-lg py-2 px-6 font-medium text-sm text-slate-400 data-[state=active]:bg-[#222225] data-[state=active]:text-purple-400 transition-all">
-                      Insurance
+                      Insurance ({eligibleOnlySchemes.filter(s => structuredById.get(s.id)?.benefit_type === 'insurance').length})
                     </TabsTrigger>
                   </TabsList>
 
@@ -1071,7 +1107,6 @@ function RecommendationsContent() {
             </div>
           </section>
         </main>
-      </ScrollWrapper>
       <Chatbot context={finalSchemes} />
 
       {/* Compare Sticky Bar */}

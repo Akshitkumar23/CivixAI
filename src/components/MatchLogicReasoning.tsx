@@ -29,30 +29,55 @@ export function MatchLogicReasoning({ schemeCriteria }: MatchLogicReasoningProps
     );
   }
 
+  const parseNum = (val: any, fallback: number) => {
+    if (!val || val === 'NA' || val === 'Any' || val === 'No Limit' || isNaN(Number(val))) return fallback;
+    return Number(val);
+  };
+
   const matches = [
     {
       label: 'Age',
       user: `${profile.age} Years`,
-      criteria: `${schemeCriteria.min_age || 0} - ${schemeCriteria.max_age || 100} Years`,
-      isValid: (Number(profile.age) >= Number(schemeCriteria.min_age || 0)) && (Number(profile.age) <= Number(schemeCriteria.max_age || 100))
+      criteria: `${schemeCriteria.min_age || 'Any'} - ${schemeCriteria.max_age || 'Any'} Years`,
+      isValid: (() => {
+        const min = schemeCriteria.min_age;
+        const max = schemeCriteria.max_age;
+        const userAge = Number(profile.age);
+        const passMin = (!min || min === 'Any' || min === 'NA' || userAge >= Number(min));
+        const passMax = (!max || max === 'Any' || max === 'NA' || userAge <= Number(max));
+        return passMin && passMax;
+      })()
     },
     {
       label: 'Annual Income',
       user: `₹${Number(profile.annualIncome).toLocaleString()}`,
-      criteria: `Max ₹${Number(schemeCriteria.income_limit || 10000000).toLocaleString()}`,
-      isValid: (Number(profile.annualIncome) <= Number(schemeCriteria.income_limit || 10000000))
+      criteria: schemeCriteria.income_limit && schemeCriteria.income_limit !== 'NA' && schemeCriteria.income_limit !== '0' 
+                ? `Max ₹${Number(schemeCriteria.income_limit).toLocaleString()}` 
+                : 'No Income Limit',
+      isValid: (() => {
+        const limit = schemeCriteria.income_limit;
+        if (!limit || limit === 'NA' || limit === 'No Limit' || limit === '0' || limit === '10000000') return true;
+        return Number(profile.annualIncome) <= Number(limit);
+      })()
     },
     {
        label: 'State',
        user: profile.state,
-       criteria: schemeCriteria.applicable_states || 'All',
-       isValid: (schemeCriteria.applicable_states === 'All' || schemeCriteria.applicable_states?.toLowerCase().includes(profile.state.toLowerCase()))
+       criteria: schemeCriteria.applicable_states || 'All India',
+       isValid: (() => {
+         const s = schemeCriteria.applicable_states?.toLowerCase() || 'all';
+         return s === 'all' || s === 'all india' || s.includes(profile.state.toLowerCase());
+       })()
     },
     {
        label: 'Caste',
        user: profile.caste?.toUpperCase(),
        criteria: schemeCriteria.category || 'Any',
-       isValid: (schemeCriteria.category === 'All' || schemeCriteria.category?.toLowerCase() === 'any' || schemeCriteria.category?.toLowerCase().includes(profile.caste?.toLowerCase()))
+       isValid: (() => {
+         const c = schemeCriteria.category?.toLowerCase() || 'any';
+         const userCaste = profile.caste?.toLowerCase() || '';
+         return c === 'any' || c === 'all' || c === 'general' || c === 'mixed' || c.includes(userCaste);
+       })()
     }
   ];
 

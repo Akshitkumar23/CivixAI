@@ -113,7 +113,7 @@ const profileSchema = coreSchema.merge(optionalLevel1Schema).merge(modernLevel2S
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function CheckEligibilityPage() {
+function CheckEligibilityContent() {
   const router = useRouter();
   const { toast } = useToast();
   // Save and restore scroll position when navigating back
@@ -173,10 +173,7 @@ export default function CheckEligibilityPage() {
             form.setValue(key as any, value as any);
           }
         });
-        toast({
-          title: "Profile Restored",
-          description: "We've loaded your last saved information.",
-        });
+        // No toast notification for profile restoration to keep UI clean
       } catch (e) {
         console.error("Failed to parse saved profile", e);
       }
@@ -201,10 +198,7 @@ export default function CheckEligibilityPage() {
       caste: undefined,
       occupation: undefined,
     });
-    toast({
-      title: "Profile Cleared",
-      description: "Your saved data has been deleted.",
-    });
+    // Profile cleared silently
   };
 
   // Get current occupation value for conditional logic
@@ -215,45 +209,46 @@ export default function CheckEligibilityPage() {
   const onSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
     setIsSubmitting(true);
     try {
-      // Convert form data to API format
+      // Convert form data to API format (match InputAgent field names exactly)
       const apiData = {
-        age: data.age!,
-        income: data.annualIncome || 0,
-        state: data.state,
-        category: data.caste,
-        occupation: data.occupation,
-        gender: data.gender || 'other',
+        age:           data.age!,
+        annualIncome:  data.annualIncome || 0,   // was 'income' — FIXED
+        state:         data.state,
+        caste:         data.caste,               // was 'category' — FIXED
+        occupation:    data.occupation,
+        gender:        data.gender || 'other',
         hasDisability: data.hasDisability,
-        hasLand: data.hasLand,
-        familyIncome: data.familyIncome || 0,
+        hasLand:       data.hasLand,
+        familyIncome:  data.familyIncome || 0,
         hasAvailedSimilarScheme: data.hasAvailedSimilarScheme,
-        landSize: data.landSize,
-        familySize: data.familySize,
+        landSize:      data.landSize,
+        familySize:    data.familySize,
         isSingleGirlChild: data.isSingleGirlChild,
-        isWidowOrSenior: data.isWidowOrSenior,
-        isTaxPayer: data.isTaxPayer,
-        isBankLinked: data.isBankLinked,
+        isWidowOrSenior:   data.isWidowOrSenior,
+        isTaxPayer:        data.isTaxPayer,
+        isBankLinked:      data.isBankLinked,
         // Modern intelligent fields
-        educationLevel: data.educationLevel,
-        digitalLiteracy: data.digitalLiteracy,
-        urbanRural: data.urbanRural,
-        maritalStatus: data.maritalStatus,
-        isBPL: data.isBPL,
-        isMinority: data.isMinority,
-        monthlyExpenses: data.monthlyExpenses || 0,
-        hasSmartphone: data.hasSmartphone,
-        hasInternet: data.hasInternet,
-        employmentType: data.employmentType,
-        skillCertification: data.skillCertification,
-        loanRequirement: data.loanRequirement,
-        monthlySavings: data.monthlySavings || 0,
-        hasInsurance: data.hasInsurance,
-        hasPension: data.hasPension,
-        prioritySchemes: data.prioritySchemes
+        educationLevel:    data.educationLevel,
+        digitalLiteracy:   data.digitalLiteracy,
+        urbanRural:        data.urbanRural,
+        maritalStatus:     data.maritalStatus,   // NEW — was missing
+        isBPL:             data.isBPL,
+        isMinority:        data.isMinority,
+        monthlyExpenses:   data.monthlyExpenses || 0,
+        hasSmartphone:     data.hasSmartphone,
+        hasInternet:       data.hasInternet,
+        employmentType:    data.employmentType,
+        skillCertification:data.skillCertification,
+        loanRequirement:   data.loanRequirement,
+        monthlySavings:    data.monthlySavings || 0,
+        hasInsurance:      data.hasInsurance,
+        hasPension:        data.hasPension,
+        prioritySchemes:   data.prioritySchemes,
       };
 
-      // Call the ML-ready API
-      const response = await fetch('/api/check-eligibility', {
+
+      // Call the ML-ready API (Full 5-stage pipeline)
+      const response = await fetch('/api/recommend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -293,11 +288,6 @@ export default function CheckEligibilityPage() {
 
       // Store the exact result schemas to pass forward to the next screen if needed
       setInitialResults(schemes);
-
-      toast({
-        title: "Success! Found Matches",
-        description: `We've identified ${schemes.length} schemes you may be eligible for.`,
-      });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Could not process your request. Please try again.';
       toast({
@@ -1679,4 +1669,8 @@ export default function CheckEligibilityPage() {
       <Chatbot />
     </div>
   );
+}
+
+export default function CheckEligibilityPage() {
+  return <CheckEligibilityContent />;
 }

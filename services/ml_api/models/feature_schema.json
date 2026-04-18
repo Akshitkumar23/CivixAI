@@ -78,15 +78,15 @@
     },
     {
       "name": "maritalStatus",
-      "dtype": "float64"
+      "dtype": "str"
     },
     {
       "name": "isBPL",
-      "dtype": "float64"
+      "dtype": "int64"
     },
     {
       "name": "isMinority",
-      "dtype": "float64"
+      "dtype": "int64"
     },
     {
       "name": "monthlyExpenses",
@@ -142,15 +142,15 @@
     },
     {
       "name": "min_age",
-      "dtype": "int64"
+      "dtype": "float64"
     },
     {
       "name": "max_age",
-      "dtype": "int64"
+      "dtype": "float64"
     },
     {
       "name": "income_limit",
-      "dtype": "int64"
+      "dtype": "float64"
     },
     {
       "name": "applicable_states",
@@ -201,14 +201,6 @@
       "dtype": "float64"
     },
     {
-      "name": "scheme_name",
-      "dtype": "str"
-    },
-    {
-      "name": "benefit_description",
-      "dtype": "str"
-    },
-    {
       "name": "per_capita_income",
       "dtype": "float64"
     },
@@ -225,6 +217,7 @@
     "educationLevel",
     "digitalLiteracy",
     "urbanRural",
+    "maritalStatus",
     "employmentType",
     "skillCertification",
     "loanRequirement",
@@ -244,7 +237,8 @@
     "employment_type_eligibility",
     "is_bpl_only"
   ],
-  "best_model_eligibility": "catboost_hyperscale",
+  "best_model_benefit": "catboost",
+  "best_model_eligibility": "catboost",
   "cat_features_eligibility": [
     "state",
     "caste",
@@ -253,6 +247,7 @@
     "educationLevel",
     "digitalLiteracy",
     "urbanRural",
+    "maritalStatus",
     "employmentType",
     "skillCertification",
     "loanRequirement",
@@ -271,9 +266,5 @@
     "marital_status_required",
     "employment_type_eligibility",
     "is_bpl_only"
-  ],
-  "text_features": [
-    "benefit_description",
-    "scheme_name"
   ]
 }
