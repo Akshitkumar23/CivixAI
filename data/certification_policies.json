@@ -1,0 +1,906 @@
+{
+  "$schema": "https://civix.ai/schemas/certification_policies.v1.json",
+  "schema_version": "1.0.0",
+  "policy_framework_version": "3.8.0",
+  "last_updated": "2026-09-14T00:00:00Z",
+  "description": "CivixAI Declarative Scheme Completeness & Semantic Certification Policies. Defines mandatory statutory inclusions, exclusions, and verification invariants for welfare schemes.",
+  "policies": {
+    "pm-kisan": {
+      "policy_id": "pol-pm-kisan-v1",
+      "scheme_id": "pm-kisan",
+      "canonical_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+      "aliases": [
+        "pm-kisan",
+        "pm_kisan",
+        "dbtbharat_central_schemes_pm_kisan"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2019-02-01",
+      "is_active": true,
+      "description": "Mandatory statutory exclusion completeness policy for PM-KISAN agricultural income support.",
+      "documentation": "Section 2 of PM-KISAN Operational Guidelines (DA&FW). Mandates exclusion of institutional landholders, income tax payees, constitutional post holders, government employees/officers, pensioners earning >= 10,000/month, and registered professionals (doctors, engineers, lawyers, CAs).",
+      "required_exclusion_facts": [
+        "applicant.is_institutional_landholder",
+        "applicant.pays_income_tax",
+        "applicant.is_constitutional_post_holder"
+      ],
+      "required_exclusion_patterns": [],
+      "required_inclusion_facts": [
+        "applicant.is_farmer_family",
+        "applicant.owns_cultivable_land"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pm-vishwakarma": {
+      "policy_id": "pol-pm-vishwakarma-v1",
+      "scheme_id": "pm-vishwakarma",
+      "canonical_name": "PM Vishwakarma Scheme",
+      "aliases": [
+        "pm-vishwakarma",
+        "pm_vishwakarma",
+        "dbtbharat_central_schemes_pm_vishwakarma"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2023-09-17",
+      "is_active": true,
+      "description": "Statutory exclusion policy for PM Vishwakarma traditional artisan trades.",
+      "documentation": "Ministry of MSME & MoSD&E PM Vishwakarma Guidelines Section 3. Restricts benefits to 1 member per family and excludes individuals with active/unpaid credit from central/state credit schemes (PMEGP, PM SVANidhi, Mudra) within past 5 years or government servants.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "family",
+        "credit_scheme"
+      ],
+      "required_inclusion_facts": [
+        "person.age",
+        "artisan.trade_type"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pm-svanidhi": {
+      "policy_id": "pol-pm-svanidhi-v1",
+      "scheme_id": "pm-svanidhi",
+      "canonical_name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+      "aliases": [
+        "pm-svanidhi",
+        "pm_svanidhi",
+        "dbtbharat_central_schemes_pm_street_vendor_atmanirbhar_nidhi_pm_svanidhi"
+      ],
+      "policy_version": "1.2.0",
+      "effective_date": "2025-08-27",
+      "is_active": true,
+      "description": "Completeness policy for PM SVANidhi credit scheme for street vendors.",
+      "documentation": "Union Cabinet Decision 27 August 2025: Continuation & Restructuring of PM SVANidhi up to 31 March 2030. Working capital tranches of \u20b915,000, \u20b925,000, and \u20b950,000 with 7% interest subsidy in urban and peri-urban areas.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [],
+      "required_inclusion_facts": [
+        "occupation.type",
+        "person.age",
+        "location.area_type"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility"
+      ]
+    },
+    "pmuy": {
+      "policy_id": "pol-pmuy-v1",
+      "scheme_id": "pmuy",
+      "canonical_name": "Pradhan Mantri Ujjwala Yojana (PMUY / Ujjwala 2.0)",
+      "aliases": [
+        "pmuy",
+        "pm-ujjwala",
+        "ujjwala",
+        "dbtbharat_central_schemes_pradhan_mantri_ujjwala_yojana"
+      ],
+      "policy_version": "1.1.0",
+      "effective_date": "2021-08-10",
+      "is_active": true,
+      "description": "Completeness policy for Ujjwala 2.0 deposit-free LPG connections.",
+      "documentation": "MoPNG Ujjwala 2.0 Operational Guidelines. Requires adult female applicant and household LPG deduplication (no existing OMC LPG connection in household) and poor/deprived household status.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [],
+      "required_inclusion_facts": [
+        "person.gender",
+        "person.age",
+        "household.has_lpg_connection"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "household_eligibility"
+      ]
+    },
+    "ddrs": {
+      "policy_id": "pol-ddrs-v1",
+      "scheme_id": "ddrs",
+      "canonical_name": "Deen Dayal Disabled Rehabilitation Scheme (DDRS)",
+      "aliases": [
+        "ddrs",
+        "deen_dayal_disabled",
+        "dbtbharat_central_schemes_deen_dayal_disabled_rehabilitation_scheme"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2018-04-01",
+      "is_active": true,
+      "description": "Institutional completeness policy for DDRS NGO grants.",
+      "documentation": "DEPwD Guidelines for Scheme of Deen Dayal Disabled Rehabilitation Scheme (Revised). Institutional grant-in-aid to NGOs/trusts for PwD welfare projects. Gated from individual citizen recommendations.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [],
+      "required_inclusion_facts": [
+        "applicant.entity_type",
+        "applicant.registered_on_darpan_portal",
+        "beneficiary.has_disability_certificate"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "beneficiary_eligibility"
+      ]
+    },
+    "pmay-g": {
+      "policy_id": "pol-pmay-g-v1",
+      "scheme_id": "pmay-g",
+      "canonical_name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+      "aliases": [
+        "pmay-g",
+        "pmay_g",
+        "pmayg",
+        "dbtbharat_central_schemes_pradhan_mantri_awaas_yojana_gramin",
+        "dbtbharat_central_schemes_pradhan_mantri_awas_yojna_grameen"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2016-11-20",
+      "is_active": true,
+      "description": "Statutory exclusion policy for rural housing assistance under PMAY-G.",
+      "documentation": "MoRD PMAY-G Guidelines Section 3: Automatic Exclusion Criteria (13 parameters including motorized vehicles, mechanized agricultural equipment, Kisan Credit Card >= 50k, government employee, income tax payee).",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "pucca_house",
+        "income_tax"
+      ],
+      "required_inclusion_facts": [
+        "household.is_homeless_or_kutcha_house"
+      ],
+      "mandatory_rule_scopes": [
+        "household_eligibility",
+        "exclusion"
+      ]
+    },
+    "ab-pmjay": {
+      "policy_id": "pol-ab-pmjay-v1",
+      "scheme_id": "ab-pmjay",
+      "canonical_name": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
+      "aliases": [
+        "ab-pmjay",
+        "pmjay",
+        "ayushman_bharat",
+        "dbtbharat_central_schemes_ayushman_bharat_pradhan_mantri_jan_arogya_yojana",
+        "dbtbharat_central_schemes_ayushman_bharat_pradhan_mantri_jan_arogya_yojana_ab_pmjay",
+        "ayushman_bharat_v2"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2018-09-23",
+      "is_active": true,
+      "description": "Completeness policy for national health protection scheme.",
+      "documentation": "NHA PM-JAY Operational Guidelines. Covers deprived rural and identified occupational urban households per SECC 2011, and expanded coverage for all senior citizens aged 70+.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "govt_healthcare"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility"
+      ]
+    },
+    "pmay-u": {
+      "policy_id": "pol-pmay-u-v1",
+      "scheme_id": "pmay-u",
+      "canonical_name": "Pradhan Mantri Awas Yojana - Urban 2.0 (PMAY-U 2.0 - Interest Subsidy Scheme)",
+      "aliases": [
+        "pmay-u",
+        "pmay_u",
+        "pmayu",
+        "pmay_home_loan",
+        "pradhan_mantri_awas_yojana_urban"
+      ],
+      "policy_version": "2.0.0",
+      "effective_date": "2024-09-01",
+      "is_active": true,
+      "description": "Statutory exclusion policy for urban housing and interest subsidy under PMAY-U 2.0 Interest Subsidy Scheme (ISS).",
+      "documentation": "MoHUA PMAY-U 2.0 Guidelines (September 2024). Eligible home loans sanctioned/disbursed on or after 1 Sept 2024. Household income ceiling up to Rs. 9,00,000, loan up to Rs. 25,00,000, property value up to Rs. 35,00,000. 4.0% interest subsidy on first Rs. 8,00,000 (max actual subsidy Rs. 1,80,000, max NPV Rs. 1,50,000) over 5 annual DBT installments. Excludes families owning a pucca house in India.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "pucca_house",
+        "income_cap"
+      ],
+      "required_inclusion_facts": [
+        "location.area_type"
+      ],
+      "mandatory_rule_scopes": [
+        "household_eligibility",
+        "exclusion"
+      ]
+    },
+    "apy": {
+      "policy_id": "pol-apy-v1",
+      "scheme_id": "apy",
+      "canonical_name": "Atal Pension Yojana (APY)",
+      "aliases": [
+        "apy",
+        "atal_pension_yojana",
+        "atal-pension",
+        "dbtbharat_central_schemes_atal_pension_yojana"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2015-05-09",
+      "is_active": true,
+      "description": "Statutory exclusion policy for Atal Pension Yojana unorganized sector pension scheme.",
+      "documentation": "PFRDA APY Guidelines & Gazette Notification 2022. Excludes any citizen who is or has been an income tax payer under the Income-tax Act from 1st October 2022. Eligible entry age strictly 18 to 40 years with auto-debit savings bank account.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "income_tax"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pm-sym": {
+      "policy_id": "pol-pm-sym-v1",
+      "scheme_id": "pm-sym",
+      "canonical_name": "Pradhan Mantri Shram Yogi Maan-dhan (PM-SYM)",
+      "aliases": [
+        "pm-sym",
+        "pm_sym",
+        "pm-shram-yogi",
+        "dbtbharat_central_schemes_pradhan_mantri_shram_yogi_maan_dhan_pm_sym"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2019-02-15",
+      "is_active": true,
+      "description": "Statutory exclusion and completeness policy for PM-SYM unorganized workers voluntary pension scheme.",
+      "documentation": "Ministry of Labour and Employment PM-SYM Operational Guidelines. Strictly excludes workers covered under EPFO, ESIC, NPS, or those paying income tax. Income must not exceed Rs. 15,000 per month.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "epfo",
+        "income_tax"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "ignwps": {
+      "policy_id": "pol-ignwps-v1",
+      "scheme_id": "ignwps",
+      "canonical_name": "Indira Gandhi National Widow Pension Scheme (IGNWPS)",
+      "aliases": [
+        "ignwps",
+        "indira_gandhi_widow_pension",
+        "dbtbharat_central_schemes_indira_gandhi_national_widow_pension_scheme_ignwps"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2009-02-01",
+      "is_active": true,
+      "description": "Statutory exclusion policy for national widow pension assistance under NSAP.",
+      "documentation": "Ministry of Rural Development NSAP Guidelines Section 3. Restricts benefits to BPL widows aged 40-79 years. Mandates immediate exclusion/cessation upon remarriage.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "remarriage"
+      ],
+      "required_inclusion_facts": [
+        "person.age",
+        "person.marital_status"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pmvvy": {
+      "policy_id": "pol-pmvvy-v1",
+      "scheme_id": "pmvvy",
+      "canonical_name": "Pradhan Mantri Vaya Vandana Yojana (PMVVY)",
+      "aliases": [
+        "pmvvy",
+        "pradhan_mantri_vaya_vandana_yojana",
+        "dbtbharat_central_schemes_pradhan_mantri_vaya_vandana_yojana"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2017-05-04",
+      "is_active": false,
+      "description": "WITHDRAWN: Pradhan Mantri Vaya Vandana Yojana was formally withdrawn on 31 March 2023 per LIC/MoF official notification. Historical policy archive.",
+      "documentation": "LIC and MoF DFS Guidelines. Withdrawn from sale on 31 March 2023. Preserved strictly as historical reference. No new subscriptions accepted.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "investment_cap"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "eps-95": {
+      "policy_id": "pol-eps-95-v1",
+      "scheme_id": "eps-95",
+      "canonical_name": "Employees' Pension Scheme 1995 (EPS 95)",
+      "aliases": [
+        "eps-95",
+        "eps_95",
+        "employees_pension_scheme",
+        "dbtbharat_central_schemes_employees_pension_scheme_for_epf_members"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "1995-11-16",
+      "is_active": true,
+      "description": "Statutory pension eligibility policy under Employees' Provident Funds and Miscellaneous Provisions Act.",
+      "documentation": "EPFO EPS-95 Rules. Superannuation pension at age 58 requires a minimum of 10 years of eligible contributory service; individuals with under 10 years service tenure receive scheme certificates or withdrawal benefits rather than monthly pension.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "epf_service"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pmjjby": {
+      "policy_id": "pol-pmjjby-v1",
+      "scheme_id": "pmjjby",
+      "canonical_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY)",
+      "aliases": [
+        "pmjjby",
+        "pm_jeevan_jyoti_bima_v2",
+        "pradhan_mantri_jeevan_jyoti_bima_yojana"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2015-05-09",
+      "is_active": true,
+      "description": "Statutory life insurance coverage rules for PMJJBY.",
+      "documentation": "DFS Guidelines for Pradhan Mantri Jeevan Jyoti Bima Yojana. Covers life risk from 18 to 50 years of age up to Rs. 2 Lakhs. Enrolment strictly excluded for individuals outside age bracket 18-50.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "age_bracket"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pmsby": {
+      "policy_id": "pol-pmsby-v1",
+      "scheme_id": "pmsby",
+      "canonical_name": "Pradhan Mantri Suraksha Bima Yojana (PMSBY)",
+      "aliases": [
+        "pmsby",
+        "pm_suraksha_bima",
+        "pradhan_mantri_suraksha_bima_yojana"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2015-05-09",
+      "is_active": true,
+      "description": "Statutory accidental death and disability insurance coverage policy for PMSBY.",
+      "documentation": "DFS Guidelines for Pradhan Mantri Suraksha Bima Yojana. Accidental death and disability cover up to Rs. 2 Lakhs for citizens aged 18 to 70 years with bank account auto-debit consent.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "age_bracket"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pm-mudra": {
+      "policy_id": "pol-pm-mudra-v1",
+      "scheme_id": "pm-mudra",
+      "canonical_name": "Pradhan Mantri Mudra Yojana (PMMY)",
+      "aliases": [
+        "pm-mudra",
+        "pm_mudra",
+        "mudra",
+        "pmmy",
+        "js_mudra_all"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2015-04-08",
+      "is_active": true,
+      "description": "Statutory micro-enterprise credit policy for PMMY loans.",
+      "documentation": "MUDRA / DFS Guidelines. Collateral-free loans for non-farm income-generating enterprises up to Rs. 10 Lakhs (Tarun Plus up to Rs. 20 Lakhs). Excludes bank defaulters and non-business consumption credit.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "defaulter"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "smam": {
+      "policy_id": "pol-smam-v1",
+      "scheme_id": "smam",
+      "canonical_name": "Sub Mission on Agriculture Mechanization (SMAM)",
+      "aliases": [
+        "smam",
+        "sub_mission_agriculture_mechanization",
+        "dbtbharat_central_schemes_sub_mission_on_agriculture_mechanization_central_sector"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2014-04-01",
+      "is_active": true,
+      "description": "Statutory completeness policy for farm machinery and equipment subsidy under SMAM.",
+      "documentation": "DA&FW SMAM Operational Guidelines Section 4. Excludes beneficiaries who have already availed government subsidy on the same agricultural machinery/implement within the previous 5 years.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "prior_subsidy"
+      ],
+      "required_inclusion_facts": [
+        "applicant.is_farmer"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pmmsy": {
+      "policy_id": "pol-pmmsy-v1",
+      "scheme_id": "pmmsy",
+      "canonical_name": "Pradhan Mantri Matsya Sampada Yojana (PMMSY)",
+      "aliases": [
+        "pmmsy",
+        "pradhan_mantri_matsya_sampada_yojana",
+        "dbtbharat_central_schemes_pradhan_mantri_matsya_sampada_yojana"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2020-05-20",
+      "is_active": true,
+      "description": "Statutory completeness policy for fisheries and aquaculture development under PMMSY.",
+      "documentation": "Department of Fisheries PMMSY Operational Guidelines. Financial assistance for fishers, fish farmers, and fisheries SHGs. Excludes duplicate claims on identical assets or individuals with active fisheries regulatory violations.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "duplicate_claim"
+      ],
+      "required_inclusion_facts": [
+        "applicant.is_fish_farmer_or_worker"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "nmmss": {
+      "policy_id": "pol-nmmss-v1",
+      "scheme_id": "nmmss",
+      "canonical_name": "National Means-cum-Merit Scholarship Scheme (NMMSS)",
+      "aliases": [
+        "nmmss",
+        "national_means_cum_merit",
+        "dbtbharat_central_schemes_national_means_cum_merit_scholarship_scheme"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2008-05-01",
+      "is_active": true,
+      "description": "Statutory exclusion policy for secondary school students under NMMSS.",
+      "documentation": "Department of School Education & Literacy NMMSS Guidelines Section 2. Restricts to government/aided school students studying in classes 9 to 12. Excludes students of residential schools run by Government and applicants with parental income exceeding Rs. 3,50,000 p.a.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "residential_school",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "student.current_grade"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "begum-hazrat-mahal": {
+      "policy_id": "pol-begum-hazrat-mahal-v1",
+      "scheme_id": "begum-hazrat-mahal",
+      "canonical_name": "Begum Hazrat Mahal National Scholarship Scheme",
+      "aliases": [
+        "begum-hazrat-mahal",
+        "begum_hazrat_mahal",
+        "dbtbharat_central_schemes_begum_hazrat_mahal_national_scholarship_scheme"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2016-09-01",
+      "is_active": false,
+      "description": "SUBSUMED: Subsumed into Pre-Matric and Post-Matric Scholarship schemes for Minorities from 2022-23 onwards per MoMA. Historical policy archive.",
+      "documentation": "Ministry of Minority Affairs Guidelines. Subsumed into Pre-Matric (classes 9-10) and Post-Matric (classes 11-12) minority scholarship schemes. Preserved as historical reference.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "duplicate_scholarship",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "person.gender",
+        "social.community"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pg-indira-gandhi": {
+      "policy_id": "pol-pg-indira-gandhi-v1",
+      "scheme_id": "pg-indira-gandhi",
+      "canonical_name": "P.G. Indira Gandhi Scholarship For Single Girl Child",
+      "aliases": [
+        "pg-indira-gandhi",
+        "pg_indira_gandhi",
+        "dbtbharat_central_schemes_p_g_indira_gandhi_scholarship_for_single_girl_child"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2005-08-15",
+      "is_active": true,
+      "description": "Statutory policy for single girl child post-graduate education support.",
+      "documentation": "UGC Guidelines for Post Graduate Indira Gandhi Scholarship for Single Girl Child. Excludes applicants enrolled in distance education programs or having siblings, restricting to single girl child admitted to regular full-time PG first year courses.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "distance_education"
+      ],
+      "required_inclusion_facts": [
+        "applicant.is_single_girl_child"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pragati": {
+      "policy_id": "pol-pragati-v1",
+      "scheme_id": "pragati",
+      "canonical_name": "Pragati Scholarship for Girls (Technical Degree)",
+      "aliases": [
+        "pragati",
+        "pragati_degree",
+        "dbtbharat_central_schemes_pragati_scholarship_for_girls_in_degree_colleges"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2014-11-11",
+      "is_active": true,
+      "description": "Statutory family quota and income cap policy for AICTE Pragati Scholarship for girls.",
+      "documentation": "AICTE Pragati Scheme Guidelines. Maximum two girl children per family eligible. Family annual income ceiling Rs. 8 Lakhs. Admitted to 1st year of AICTE approved technical degree/diploma program.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "family_limit",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "person.gender"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "saksham": {
+      "policy_id": "pol-saksham-v1",
+      "scheme_id": "saksham",
+      "canonical_name": "Saksham Scholarship for Differently Abled Students (Degree)",
+      "aliases": [
+        "saksham",
+        "saksham_degree",
+        "dbtbharat_central_schemes_saksham_scholarship_for_differently_abled_students_of_degree"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2014-11-11",
+      "is_active": true,
+      "description": "Statutory disability threshold and income cap policy for AICTE Saksham Scheme.",
+      "documentation": "AICTE Saksham Scheme Guidelines. Mandates disability of not less than 40% certified by competent authority. Family annual income ceiling Rs. 8 Lakhs. Enrolled in 1st year of AICTE approved technical degree program.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "disability_threshold",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "applicant.has_disability_certificate"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "ishan-uday": {
+      "policy_id": "pol-ishan-uday-v1",
+      "scheme_id": "ishan-uday",
+      "canonical_name": "Ishan Uday Special Scholarship Scheme for NER",
+      "aliases": [
+        "ishan-uday",
+        "ishan_uday",
+        "dbtbharat_central_schemes_ishan_uday_special_scholarship_scheme_for_north_eastern_regi"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2014-06-01",
+      "is_active": true,
+      "description": "Statutory domicile and income ceiling policy for North Eastern Region students.",
+      "documentation": "UGC Ishan Uday Guidelines Section 2. Restricts exclusively to students having domicile of North Eastern Region (NER) admitted to first year of general or professional degree courses. Family income ceiling Rs. 4.5 Lakhs.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "domicile",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "applicant.is_ner_domicile"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pre-matric-st": {
+      "policy_id": "pol-pre-matric-st-v1",
+      "scheme_id": "pre-matric-st",
+      "canonical_name": "Pre-Matric Scholarship Scheme for ST Students",
+      "aliases": [
+        "pre-matric-st",
+        "pre_matric_st",
+        "dbtbharat_central_schemes_pre_matric_scholarship_scheme_for_st_students"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2012-07-01",
+      "is_active": true,
+      "description": "Statutory social category and income ceiling policy for ST students under MoTA.",
+      "documentation": "Ministry of Tribal Affairs Pre-Matric Scholarship Guidelines. Restricts to ST students studying in classes 9 and 10 with parental annual income not exceeding Rs. 2.5 Lakhs.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "caste",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "social.caste",
+        "student.current_grade"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "post-matric-minority": {
+      "policy_id": "pol-post-matric-minority-v1",
+      "scheme_id": "post-matric-minority",
+      "canonical_name": "Post-Matric Scholarship for Minorities",
+      "aliases": [
+        "post-matric-minority",
+        "post_matric_minority",
+        "dbtbharat_central_schemes_post_matric_scholarship_for_minorities"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2007-11-01",
+      "is_active": true,
+      "description": "Statutory completeness policy for minority community post-matric education assistance.",
+      "documentation": "Ministry of Minority Affairs Post-Matric Scholarship Guidelines. Requires applicant from notified minority community with minimum 50% marks in previous final exam and parental income <= Rs. 2 Lakhs.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "minority_community",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "social.community",
+        "student.current_grade"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "sbm-u": {
+      "policy_id": "pol-sbm-u-v1",
+      "scheme_id": "sbm-u",
+      "canonical_name": "Swachh Bharat Mission Urban (Individual Household Latrines - IHHL)",
+      "aliases": [
+        "sbm-u",
+        "sbm_u",
+        "swachh_bharat_urban",
+        "dbtbharat_central_schemes_swachh_bharat_mission_urban"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2014-10-02",
+      "is_active": true,
+      "description": "Statutory completeness policy for urban sanitation and household latrine incentive.",
+      "documentation": "MoHUA Swachh Bharat Mission Urban Guidelines Section 4: Individual Household Latrines (IHHL). Targets urban households without sanitary latrines. Excludes households with existing functional toilets or outside urban local body jurisdiction.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "existing_toilet",
+        "urban_jurisdiction"
+      ],
+      "required_inclusion_facts": [
+        "location.area_type"
+      ],
+      "mandatory_rule_scopes": [
+        "household_eligibility",
+        "exclusion"
+      ]
+    },
+    "pm-daksh": {
+      "policy_id": "pol-pm-daksh-v1",
+      "scheme_id": "pm-daksh",
+      "canonical_name": "PM DAKSH Scheme",
+      "aliases": [
+        "pm-daksh",
+        "pm_daksh",
+        "dbtbharat_central_schemes_pm_daksh_scheme"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2020-04-01",
+      "is_active": true,
+      "description": "Statutory exclusion policy for marginalized skill trainees under PM-DAKSH.",
+      "documentation": "MoSJ&E PM-DAKSH Guidelines. Beneficiaries must belong to SC, OBC, EBC, DNT, or Safai Karamchari categories aged 18 to 45 years. Excludes repeat training under the scheme and OBC/EBC families with income > Rs. 3 Lakhs.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "prior_training",
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "ddu-gky": {
+      "policy_id": "pol-ddu-gky-v1",
+      "scheme_id": "ddu-gky",
+      "canonical_name": "Deen Dayal Upadhyaya Grameen Kaushalya Yojana (DDU-GKY)",
+      "aliases": [
+        "ddu-gky",
+        "ddu_gky",
+        "deen_dayal_upadhyaya_grameen_kaushalya",
+        "dbtbharat_central_schemes_deen_dayal_upadhyay_grameen_kaushalya_yojna"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2014-09-25",
+      "is_active": true,
+      "description": "Statutory rural youth skill development completeness policy under MoRD.",
+      "documentation": "MoRD DDU-GKY Standard Operating Procedures. Placement-linked skill training for rural poor youth aged 15 to 35 years (up to 45 years for women/PwD). Strictly excludes urban residents and individuals outside eligible age brackets.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "rural_domicile",
+        "age_bracket"
+      ],
+      "required_inclusion_facts": [
+        "location.area_type",
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "mission-vatsalya": {
+      "policy_id": "pol-mission-vatsalya-v1",
+      "scheme_id": "mission-vatsalya",
+      "canonical_name": "Mission Vatsalya - Child Protection Institutional & Sponsorship Support",
+      "aliases": [
+        "mission-vatsalya",
+        "mission_vatsalya",
+        "vatsalya",
+        "dbtbharat_central_schemes_mission_vatsalya_facilities_to_beneficiaries_sponsorship",
+        "dbtbharat_central_schemes_mission_vatsalya_facilities_to_beneficiaries"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2021-04-01",
+      "is_active": true,
+      "description": "Institutional grant completeness policy for child protection institutions under MWCD.",
+      "documentation": "MWCD Mission Vatsalya Operational Guidelines. Institutional grant-in-aid to registered Child Care Institutions (CCIs), state/district child protection units, and open shelters for care of children in need of care and protection under JJ Act. Strictly gated from individual citizen recommendations.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "institutional_registration"
+      ],
+      "required_inclusion_facts": [
+        "applicant.entity_type"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "ignoaps": {
+      "policy_id": "pol-ignoaps-v1",
+      "scheme_id": "ignoaps",
+      "canonical_name": "Indira Gandhi National Old Age Pension Scheme (IGNOAPS)",
+      "aliases": [
+        "ignoaps",
+        "indira_gandhi_old_age_pension",
+        "dbtbharat_central_schemes_indira_gandhi_national_old_age_pension_scheme_ignoaps"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2007-11-19",
+      "is_active": true,
+      "description": "Statutory exclusion policy for national old age pension assistance under NSAP.",
+      "documentation": "MoRD NSAP Guidelines Section 2: Non-contributory monthly pension for elderly persons aged 60+ living below the poverty line (BPL).",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "bpl_status"
+      ],
+      "required_inclusion_facts": [
+        "person.age"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "igndps": {
+      "policy_id": "pol-igndps-v1",
+      "scheme_id": "igndps",
+      "canonical_name": "Indira Gandhi National Disability Pension Scheme (IGNDPS)",
+      "aliases": [
+        "igndps",
+        "indira_gandhi_disability_pension",
+        "dbtbharat_central_schemes_indira_gandhi_national_disability_pension_scheme_igndps"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2009-02-01",
+      "is_active": true,
+      "description": "Statutory exclusion policy for national disability pension assistance under NSAP.",
+      "documentation": "MoRD NSAP Guidelines Section 4: Monthly pension for BPL persons aged 18-79 with severe or multiple disabilities (80% or higher).",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "disability_threshold"
+      ],
+      "required_inclusion_facts": [
+        "person.age",
+        "person.disability_percentage"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    },
+    "pre-matric-minority": {
+      "policy_id": "pol-pre-matric-minority-v1",
+      "scheme_id": "pre-matric-minority",
+      "canonical_name": "Pre-Matric Scholarship Scheme for Minorities",
+      "aliases": [
+        "pre-matric-minority",
+        "pre_matric_minorities",
+        "dbtbharat_central_schemes_pre_matric_scholarship_for_minorities"
+      ],
+      "policy_version": "1.0.0",
+      "effective_date": "2008-01-30",
+      "is_active": true,
+      "description": "Income ceiling and academic performance policy for minority pre-matric scholarships.",
+      "documentation": "MoMA Pre-Matric Scholarship Guidelines. Restricts to classes IX-X minority students with family income <= Rs. 1 Lakh and >= 50% marks in previous final exam.",
+      "required_exclusion_facts": [],
+      "required_exclusion_patterns": [
+        "income_ceiling"
+      ],
+      "required_inclusion_facts": [
+        "student.class_level"
+      ],
+      "mandatory_rule_scopes": [
+        "applicant_eligibility",
+        "exclusion"
+      ]
+    }
+  }
+}

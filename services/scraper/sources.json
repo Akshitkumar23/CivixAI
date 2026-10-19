@@ -1,0 +1,206 @@
+{
+  "user_agent": "CivixAI-SchemeScraper/1.0",
+  "rate_limit_seconds": 1.5,
+  "sources": [
+    {
+      "id": "dbt_haryana_schemelist",
+      "type": "dbt_haryana_list",
+      "url": "https://www.dbtharyana.gov.in/scheme/schemelist",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Haryana",
+      "notes": "Extracts scheme names grouped by department from DBT Haryana."
+    },
+    {
+      "id": "dbtbharat_central_schemes",
+      "type": "dbtbharat_central_list",
+      "url": "https://dbtbharat.gov.in/central-scheme/list",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "Extracts central DBT schemes grouped by ministry."
+    },
+    {
+      "id": "puducherry_restructured_css",
+      "type": "generic_gov_page",
+      "url": "https://pandr.py.gov.in/restructured-css-list",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Puducherry",
+      "notes": "Restructured CSS list from Puducherry Planning and Research Department."
+    },
+    {
+      "id": "india_gov_schemes_hub",
+      "type": "generic_gov_page",
+      "url": "https://www.india.gov.in/my-government/schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "India.gov scheme hub and category links."
+    },
+    {
+      "id": "my_scheme_gov",
+      "type": "generic_gov_page",
+      "url": "https://www.myscheme.gov.in/search",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "MyScheme Central Search Portal."
+    },
+    {
+      "id": "up_gov_schemes",
+      "type": "generic_gov_page",
+      "url": "https://up.gov.in/en/page/schemes",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Uttar Pradesh",
+      "notes": "List of schemes from UP Government."
+    },
+    {
+      "id": "mp_gov_schemes",
+      "type": "generic_gov_page",
+      "url": "https://mp.gov.in/en/schemes",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Madhya Pradesh",
+      "notes": "List of schemes from MP Government."
+    },
+    {
+      "id": "maha_gov_schemes",
+      "type": "generic_gov_page",
+      "url": "https://mahaschemes.maharashtra.gov.in/",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "mixed",
+      "applicable_states": "Maharashtra",
+      "notes": "Schemes from Maha Government."
+    },
+    {
+      "id": "msme_schemes",
+      "type": "generic_gov_page",
+      "url": "https://msme.gov.in/all-schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "business",
+      "applicable_states": "ALL",
+      "notes": "Ministry of Micro, Small and Medium Enterprises schemes."
+    },
+    {
+      "id": "agricoop_schemes",
+      "type": "generic_gov_page",
+      "url": "https://agricoop.nic.in/en/major-schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "agriculture",
+      "applicable_states": "ALL",
+      "notes": "Department of Agriculture and Farmers Welfare schemes."
+    },
+    {
+      "id": "scholarships_gov",
+      "type": "generic_gov_page",
+      "url": "https://scholarships.gov.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "education",
+      "applicable_states": "ALL",
+      "notes": "National Scholarship Portal."
+    },
+    {
+      "id": "vidyalakshmi_loans",
+      "type": "generic_gov_page",
+      "url": "https://www.vidyalakshmi.co.in/Students/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "education",
+      "applicable_states": "ALL",
+      "notes": "Vidya Lakshmi Education Loans Portal."
+    },
+    {
+      "id": "jansamarth_loans",
+      "type": "generic_gov_page",
+      "url": "https://www.jansamarth.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "business",
+      "applicable_states": "ALL",
+      "notes": "Jan Samarth credit-linked portal."
+    },
+    {
+      "id": "pmjay_insurance",
+      "type": "generic_gov_page",
+      "url": "https://pmjay.gov.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "health",
+      "applicable_states": "ALL",
+      "notes": "Ayushman Bharat PMJAY Health Insurance."
+    },
+    {
+      "id": "manage_state_repo",
+      "type": "generic_gov_page",
+      "url": "https://www.manage.gov.in/fpoacademy/SGSchemes/state-schemes.asp",
+      "scheme_level": "state",
+      "scheme_type": "state",
+      "scheme_category": "agriculture",
+      "applicable_states": "ALL",
+      "notes": "Comprehensive state-wise repository for agricultural and rural schemes."
+    },
+    {
+      "id": "financial_services_central",
+      "type": "generic_gov_page",
+      "url": "https://financialservices.gov.in/beta/en/schemes-overview",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "finance",
+      "applicable_states": "ALL",
+      "notes": "Overview of major financial and social security schemes of India."
+    },
+    {
+      "id": "pm_india_initiatives",
+      "type": "generic_gov_page",
+      "url": "https://www.pmindia.gov.in/en/major-initiatives/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "mixed",
+      "applicable_states": "ALL",
+      "notes": "List of major flagship initiatives and schemes by the PMO."
+    },
+    {
+      "id": "skill_india_schemes",
+      "type": "generic_gov_page",
+      "url": "https://www.skillindia.gov.in/schemes",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "education",
+      "applicable_states": "ALL",
+      "notes": "PMKVY and other skill development schemes."
+    },
+    {
+      "id": "startup_india_schemes",
+      "type": "generic_gov_page",
+      "url": "https://www.startupindia.gov.in/content/sih/en/government-schemes.html",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "business",
+      "applicable_states": "ALL",
+      "notes": "Startup India Hub government schemes for entrepreneurs."
+    },
+    {
+      "id": "pm_kisan_details",
+      "type": "generic_gov_page",
+      "url": "https://pmkisan.gov.in/",
+      "scheme_level": "central",
+      "scheme_type": "central",
+      "scheme_category": "agriculture",
+      "applicable_states": "ALL",
+      "notes": "Direct benefit transfer for farmers."
+    }
+  ]
+}

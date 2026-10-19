@@ -1,0 +1,3717 @@
+{
+  "schemes": [
+    {
+      "id": "pm_jeevan_jyoti_bima_v2",
+      "name": "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY)",
+      "description": "Ultra-cheap life insurance scheme offering a coverage of ₹2 lakh for death due to any reason at a premium of just ₹436 per annum.",
+      "ministry": "Ministry of Finance",
+      "category": "Health",
+      "benefitType": "insurance",
+      "applicationUrl": "https://nationalinsurance.nic.co.in",
+      "documentsRequired": [
+        "Aadhaar",
+        "Bank Account passbook"
+      ],
+      "eligibility": {
+        "minAge": 18,
+        "maxAge": 50,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_deen_dayal_disabled_rehabilitation_scheme",
+      "name": "Deen Dayal Disabled Rehabilitation Scheme",
+      "description": "During this period, the e-Anudaan portal will not be accessible.",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "category": "Finance",
+      "benefitType": "grant_in_aid",
+      "applicationUrl": "http://www.grants-msje.gov.in/bo-login#",
+      "documentsRequired": [
+        "NGO Darpan Registration Certificate",
+        "Audited Accounts for last 2 years"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_mission_vatsalya_facilities_to_beneficiaries_sponsorship",
+      "name": "Mission Vatsalya - Facilities to Beneficiaries (Sponsorship)",
+      "description": "This program is managed by Ministry of Women and Child Development. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Women and Child Development",
+      "category": "Women",
+      "benefitType": "welfare",
+      "applicationUrl": "http://wcd-icps.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_overseas_scholarship_nos",
+      "name": "National Overseas Scholarship (NOS)",
+      "description": "This program is managed by Department of Social Justice and Empowerment. Please visit the official portal for the latest details.",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://nosmsje.gov.in/?AspxAutoDetectCookieSupport=1",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_ic_international_youth_exchange_programmes",
+      "name": "IC-International Youth Exchange Programmes",
+      "description": "This program is managed by Department of Youth Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Department of Youth Affairs",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.dbtyas-youth.gov.in/scheme/commonform.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_matsya_sampada_yojana",
+      "name": "Pradhan Mantri Matsya Sampada Yojana",
+      "description": "The Department of Fisheries, Ministry of Fisheries, Animal Husbandry and Dairying, Government of India is implementing Pradhan Mantri Matsya Sampada Yojana â A scheme to bring about Blue Revolution through sustainable and responsible development of fisheries sector in India at an estimated investment of Rs. 20050 crores for holistic development of fisheries sector including welfare of fishers. PMMSY is being implemented in all the States and Union Territories for a period of 5 years from FY 2020-21 to FY 2024-25.",
+      "ministry": "Department of Fisheries",
+      "category": "Finance",
+      "benefitType": "loan",
+      "applicationUrl": "https://pmmsy.dof.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Land / Water Body Lease or Ownership Documents",
+        "Detailed Project Report (DPR)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_employees_pension_scheme_for_epf_members",
+      "name": "Employees Pension Scheme for EPF Members (EPS 95)",
+      "description": "This program is managed by Ministry of Labour and Employment. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Labour and Employment",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://unifiedportal-mem.epfindia.gov.in/memberinterface/",
+      "documentsRequired": [
+        "Universal Account Number (UAN) / Aadhaar",
+        "EPFO Form 10D (for Pension Claim)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_alliance_and_r_and_d_mission_inspire_faculty_award",
+      "name": "Alliance and R and D Mission - INSPIRE Faculty Award",
+      "description": "This program is managed by Department of Science and Technology. Please visit the official portal for the latest details.",
+      "ministry": "Department of Science and Technology",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://online-inspire.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_as_ivri_institute_scholarship_for_m_v_sc_and_ph_d",
+      "name": "AS_IVRI_Institute Scholarship for M.V.Sc. and Ph.D.",
+      "description": "This program is managed by Department of Agricultural Research and Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://www.ivri.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_saksham_scholarship_for_differently_abled_students_of_degree",
+      "name": "Saksham Scholarship for Differently Abled Students of Degree",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Disability Certificate / UDID showing >=40% disability",
+        "Family Income Certificate (<= ₹8 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_green_india_mission_national_afforestation_programme",
+      "name": "Green India Mission National Afforestation Programme",
+      "description": "This program is managed by Ministry of Environment Forest and Climate Change. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Environment Forest and Climate Change",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "http://moef.gov.in/division/forest-divisions-2/green-india-mission-gim/about-the-mission/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pre_matric_scholarship_scheme_for_st_students",
+      "name": "Pre-Matric Scholarship Scheme for ST students",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Ministry of Tribal Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_indira_gandhi_national_widow_pension_scheme_ignwps",
+      "name": "Indira Gandhi National Widow Pension Scheme (IGNWPS)",
+      "description": "This program is managed by Department of Rural Development. Please visit the official portal for the latest details.",
+      "ministry": "Department of Rural Development",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://nsap.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Death Certificate of Husband",
+        "BPL Certificate / Ration Card"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_vikram_sarabhai_space_centre_scholarships_and_stipends",
+      "name": "Vikram Sarabhai Space Centre - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_post_matric_scholarship_for_minorities",
+      "name": "Post-Matric Scholarship for Minorities",
+      "description": "This program is managed by Ministry of Minority Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Minority Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Minority Community Self-Declaration",
+        "Parental Income Certificate (<= ₹2 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_post_matric_scholarship_scheme_for_st_students",
+      "name": "Post-Matric Scholarship Scheme for ST students",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Ministry of Tribal Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_mission_organic_value_chain_development_for_north_east_regio",
+      "name": "Mission Organic Value Chain Development for North East Region",
+      "description": "This program is managed by Department of Agriculture and Farmers Welfare. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Agriculture",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtbharat.gov.in/central-scheme/list",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "js_mudra_all",
+      "name": "Pradhan Mantri Mudra Yojana (PMMY)",
+      "description": "Easy collateral-free loans up to Rs. 10 Lakhs (Shishu, Kishor, Tarun) to quickly kickstart or expand highly profitable micro-enterprises.",
+      "ministry": "Ministry of Finance",
+      "category": "Business",
+      "benefitType": "loan",
+      "applicationUrl": "https://www.jansamarth.in",
+      "documentsRequired": [
+        "Identity Proof (Aadhaar / Voter ID / PAN)",
+        "Business Address and Registration Proof / Udyam Certificate",
+        "Bank Statement for past 6 months"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "pmay_home_loan",
+      "name": "Pradhan Mantri Awas Yojana - Urban (PMAY-U / CLSS)",
+      "description": "Interest subsidy up to ₹2.67 Lakhs on home loans for purchasing or constructing your first house.",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "category": "Housing",
+      "benefitType": "loan",
+      "applicationUrl": "https://pmay-urban.gov.in/pma-online-application",
+      "documentsRequired": [
+        "Aadhaar Card of all Family Members",
+        "Income Certificate / Salary Slip / ITR",
+        "Affidavit certifying no pucca house ownership in India"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pm_yasasvi_post_matric_scholarship_to_obc_ebc_and_dnt",
+      "name": "PM YASASVI - Post-Matric Scholarship to OBC, EBC and DNT",
+      "description": "This program is managed by Department of Social Justice and Empowerment. Please visit the official portal for the latest details.",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://socialjustice.nic.in/SchemeList/Send/4?mid=32549#:~:text=The%20objective%20of%20the%20scheme,",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_means_cum_merit_scholarship_scheme",
+      "name": "National Means-cum-Merit Scholarship Scheme",
+      "description": "This program is managed by Department of School Education and Literacy. Please visit the official portal for the latest details.",
+      "ministry": "Department of School Education and Literacy",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Class VII/VIII Marksheet showing >= 55% marks",
+        "Parental Income Certificate (<= ₹3.5 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_s_and_t_human_resource_development",
+      "name": "National S and T Human Resource Development",
+      "description": "Help Desk Contact Details (weekdays 10:00-17:00 hrs.):011-25841592 / 011-25842532 / 011-25846077   Email-helpdeskemr@csirhrdg.res.in",
+      "ministry": "Department of Scientific and Industrial Research",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://newfms.ncl.res.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_anusuchit_jati_abhyuday_yojana",
+      "name": "Pradhan Mantri Anusuchit Jati Abhyuday Yojana",
+      "description": "Home Pradhan Mantri Anusuchit Jaati Abhyuday Yojana",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Housing",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmajay.dosje.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pre_matric_scholarship_for_persons_with_disabilities",
+      "name": "Pre-matric scholarship for Persons with disabilities",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_p_g_indira_gandhi_scholarship_for_single_girl_child",
+      "name": "P.G. Indira Gandhi Scholarship For Single Girl Child",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Affidavit on Stamp Paper by Parents certifying Single Girl Child status",
+        "Admission Verification Certificate in Regular PG 1st year"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_swachh_bharat_mission_urban",
+      "name": "Swachh Bharat Mission Urban (IHHL)",
+      "description": "This program is managed by Ministry of Housing and Urban Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "category": "Housing",
+      "benefitType": "welfare",
+      "applicationUrl": "http://swachhbharaturban.gov.in/ihhl/InvestorRegistration.aspx",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Bank Passbook with IFSC",
+        "Photograph of applicant with toilet construction site / Geo-tagged photo"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_iasri_scholarship_for_msc_and_phd",
+      "name": "IASRI Scholarship for MSc and PhD",
+      "description": "This program is managed by Department of Agricultural Research and Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://iasri.icar.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_agedn_national_talent_scholarship_pg",
+      "name": "AgEdn - National Talent Scholarship PG",
+      "description": "This program is managed by Department of Agricultural Research and Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://education.icar.gov.in/Event_details.aspx?component=NTS&DegProg=UG&SchemeCode=NTSU",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pm_street_vendor_atmanirbhar_nidhi_pm_svanidhi",
+      "name": "PM STREET VENDOR ATMANIRBHAR NIDHI (PM SVANidhi)",
+      "description": "This program is managed by Ministry of Housing and Urban Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Housing and Urban Affairs",
+      "category": "Housing",
+      "benefitType": "loan",
+      "applicationUrl": "https://www.pmsvanidhi.mohua.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Vending Certificate / Identity Card / Letter of Recommendation (LoR)",
+        "Bank Account Passbook (Aadhaar linked)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_p_g_scholarship_for_university_rank_holders",
+      "name": "P.G. Scholarship for University Rank Holders",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_space_applications_centre_scholarships_and_stipends",
+      "name": "Space Applications Centre - Scholarships and Stipends",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_food_security_mission_nfsm",
+      "name": "National Food Security Mission - NFSM",
+      "description": "The National Development Council (NDC) in its 53rd meeting held on 29th May 2007 adopted a resolution to launch a Food Security Mission comprising Rice, Wheat and Pulses to increase the annual production of Rice by 10 Million Tonnes, Wheat by 8 Million Tonnes and Pulses by 2 Million Tonnes by the end of the Eleventh Plan (2011-12). Accordingly, a Centrally Sponsored Scheme, “National Food Security Mission (NFSM)”, was launched in October-2007. The mission was met with overwhelming success, and the targeted additional production of Rice, Wheat and Pulses was achieved. Based on the experience and performance, the mission was continued and Coarse Cereals (Maize, Barley & Millets) & Commercial Crops (Cotton, Sugarcane & Jute) were included from 2014-15 under NFSM. From 2018-19, NFSM-Coarse Cereals were divided into two parts i.e. “NFSM-Coarse Cereals (Maize & Barley)” and “Sub-Mission on Nutri-Cereals”.",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://nfsm.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_deen_dayal_upadhyay_grameen_kaushalya_yojna",
+      "name": "Deen Dayal Upadhyay Grameen Kaushalya Yojna",
+      "description": "This program is managed by Department of Rural Development. Please visit the official portal for the latest details.",
+      "ministry": "Department of Rural Development",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://kaushal.rural.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "BPL Card / MGNREGA Job Card (of parent with >= 15 days work)",
+        "Age & Educational Qualification Certificates"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pm_daksh_scheme",
+      "name": "PM DAKSH Scheme",
+      "description": "This program is managed by Department of Social Justice and Empowerment. Please visit the official portal for the latest details.",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmdaksh.dosje.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Caste / Category Certificate (SC/OBC/EBC/DNT) or Safai Karamchari ID",
+        "Income Certificate (for OBC/EBC <= ₹3 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_special_cash_awards_to_medal_winners_in_international_sports",
+      "name": "Special cash awards to medal winners in international sports events",
+      "description": "Copyright © 2024 Ministry Of Youth Affairs And Sports, Govt. of India",
+      "ministry": "Department of Sports",
+      "category": "Disability",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtyas-sports.gov.in/Registration",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_prime_minister_scholarship_scheme",
+      "name": "Prime Minister scholarship scheme",
+      "description": "This program is managed by Department of Internal Security. Please visit the official portal for the latest details.",
+      "ministry": "Department of Internal Security",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_prime_ministers_scholarship_scheme_pmss",
+      "name": "Prime Ministers Scholarship Scheme PMSS",
+      "description": "This program is managed by Department of Ex Servicemen Welfare. Please visit the official portal for the latest details.",
+      "ministry": "Department of Ex Servicemen Welfare",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://164.100.158.73/registration.htm",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_sub_mission_on_agriculture_mechanization_centrally_sponsored",
+      "name": "Sub Mission on Agriculture Mechanization-Centrally Sponsored",
+      "description": "DIRECT BENEFIT TRANSFER (DBT)",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Agriculture",
+      "benefitType": "welfare",
+      "applicationUrl": "https://agrimachinery.nic.in/Farmer/Management/Index",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_scholarship_for_post_graduate_studies",
+      "name": "National Scholarship for Post-Graduate Studies",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_atal_pension_yojana",
+      "name": "Atal Pension Yojana (APY)",
+      "description": "This program is managed by Department of Financial Services. Please visit the official portal for the latest details.",
+      "ministry": "Department of Financial Services",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://www.npscra.nsdl.co.in/scheme-details.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Savings Bank / Post Office Account with auto-debit facility"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_remote_sensing_centre_scholarships_and_stipends",
+      "name": "National Remote Sensing Centre - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pm_vishwakarma",
+      "name": "PM Vishwakarma",
+      "description": "“Traditionally, crores of 'Vishwakarmas' who create something or the other by working hard with their hands, tools and equipment are the builders of this country. We have a huge list of countless people like the blacksmiths, goldsmiths, potters, carpenters, sculptors, artisans, masons etc. The country has brought various incentive schemes for the first time to support the hard work of all these Vishwakarmas. Provisions have been made for training, technology, credit and market support for such people. PM Vishwakarma Kaushal Samman i.e., PM Vishwakarma will bring a sea change in the lives of crores of Vishwakarmas”-Hon’ble Prime Minister, 1stFebruary, 2023",
+      "ministry": "Ministry of Micro Small and Medium Enterprises",
+      "category": "Finance",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmvishwakarma.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Active Mobile linked to Aadhaar",
+        "Bank Passbook with IFSC",
+        "Ration Card / Family Composition Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_mission_vatsalya_salary_of_staff",
+      "name": "Mission Vatsalya-Salary of staff",
+      "description": "This program is managed by Ministry of Women and Child Development. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Women and Child Development",
+      "category": "Women",
+      "benefitType": "welfare",
+      "applicationUrl": "http://wcd-icps.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_awas_yojna_grameen",
+      "name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+      "description": "This program is managed by Department of Rural Development. Please visit the official portal for the latest details.",
+      "ministry": "Department of Rural Development",
+      "category": "Housing",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmayg.nic.in/netiay/home.aspx",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "MGNREGA Job Card (for 90/95 days unskilled labour wages)",
+        "Bank Account Passbook (Aadhaar linked)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_alliance_and_r_and_d_mission_inspire_award",
+      "name": "Alliance and R and D Mission - INSPIRE Award",
+      "description": "INSPIRE Awards-MANAK, Innovation in Science Pursuit for Inspired Research (INSPIRE) scheme is one of the flagship programmes of Department of Science & Technology (DST), Government of India. The INSPIRE Awards - MANAK (Million Minds Augmenting National Aspirations and Knowledge), being executed by DST with National Innovation Foundation – India (NIF), an autonomous body of DST, aims to motivate students in the age group of 10-17 years and studying in classes 6 to 12.",
+      "ministry": "Department of Science and Technology",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://www.inspireawards-dst.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_post_matric_scholarship_for_persons_with_disabilities",
+      "name": "Post-matric Scholarship for Persons with Disabilities",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_shram_yogi_maan_dhan_pm_sym",
+      "name": "Pradhan Mantri Shram Yogi Maan-dhan (PM-SYM)",
+      "description": "This program is managed by Ministry of Labour and Employment. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Labour and Employment",
+      "category": "Employment",
+      "benefitType": "welfare",
+      "applicationUrl": "https://maandhan.in/maandhan/login",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Savings Bank Account / Jan Dhan Account with IFSC"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_ayushman_bharat_pradhan_mantri_jan_arogya_yojana_ab_pmjay",
+      "name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
+      "description": "Get your PM-JAY card registered online to get a universal health insurance scheme from NHA. Visit Ayushman Bharat website for an empanelled hospital list and toll-free number.",
+      "ministry": "Department of Health and Family Welfare",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://www.pmjay.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card / Ayushman Card",
+        "Ration Card / Family ID"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_rgniyd_scholarships_to_students",
+      "name": "RGNIYD-Scholarships to Students",
+      "description": "This program is managed by Department of Youth Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Department of Youth Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.dbtyas-youth.gov.in/scheme/commonform.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_varishtha_pension_bima_yojana",
+      "name": "Varishtha Pension Bima Yojana",
+      "description": "This program is managed by Department of Financial Services. Please visit the official portal for the latest details.",
+      "ministry": "Department of Financial Services",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://www.licindia.in/Products/Withdrawn-Plans/VARISHTHA-PENSION-BIMA-YOJANA-(UIN-512G291V01)",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_family_pension_cum_life_assurance_and_deposit_linked_insuran",
+      "name": "Family Pension-cum-Life Assurance and Deposit Linked Insurance Schemes for the Plantation Workers in Assam",
+      "description": "This program is managed by Ministry of Labour and Employment. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Labour and Employment",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://atepfo.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_family_benefit_scheme",
+      "name": "National Family Benefit Scheme",
+      "description": "This program is managed by Department of Rural Development. Please visit the official portal for the latest details.",
+      "ministry": "Department of Rural Development",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://nsap.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_agedn_national_talent_scholarship_ug",
+      "name": "AgEdn - National Talent Scholarship UG",
+      "description": "This program is managed by Department of Agricultural Research and Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://education.icar.gov.in/Event_details.aspx?component=NTS&DegProg=UG&SchemeCode=NTSU",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_fasal_bima_yojna",
+      "name": "Pradhan Mantri Fasal Bima Yojna",
+      "description": "Pradhan Mantri Fasal Bima Yojana (PMFBY) is the government sponsored crop insurance scheme that integrates multiple stakeholders on a single platform.",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://pmfby.gov.in/farmerRegistrationForm",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_satish_dhawan_space_centre_shar_scholarships_and_stipends",
+      "name": "Satish Dhawan Space Centre-SHAR - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_sports_development_fund",
+      "name": "National sports development fund",
+      "description": "Copyright © 2024 Ministry Of Youth Affairs And Sports, Govt. of India",
+      "ministry": "Department of Sports",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtyas-sports.gov.in/Registration",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_ur_rao_satellite_centre_scholarships_and_stipends",
+      "name": "UR Rao Satellite Centre-Scholarships and Stipends",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pm_yasasvi_pre_matric_scholarship_to_obc_ebc_and_dnt",
+      "name": "PM YASASVI - Pre-Matric Scholarship to OBC, EBC and DNT",
+      "description": "This program is managed by Department of Social Justice and Empowerment. Please visit the official portal for the latest details.",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://socialjustice.nic.in/SchemeList/Send/2?mid=32549#:~:text=Pre%2DMatric%20Scholarship%20to%20OB",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_iccr_scholarship",
+      "name": "ICCR Scholarship",
+      "description": "The Indian Council for Cultural Relations (ICCR) was founded in 1950 by Maulana Abul Kalam Azad, independent India’s first Education Minister. Its objectives are to actively participate in the formulation and implementation of policies and programs pertaining to India’s external cultural relations",
+      "ministry": "Ministry of External Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://a2ascholarships.iccr.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_promotion_of_international_co_operation_in_ayush",
+      "name": "Promotion of International Co-operation in AYUSH",
+      "description": "This program is managed by Ministry of AYUSH. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of AYUSH",
+      "category": "Health",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtbharat.gov.in/central-scheme/list",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_swatantrata_sainik_samman_pension_scheme",
+      "name": "Swatantrata sainik samman pension scheme",
+      "description": "This program is managed by Department of Home. Please visit the official portal for the latest details.",
+      "ministry": "Department of Home",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://www.mha.gov.in/division_of_mha/freedom-fighters-rehabilitation-division",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_mission_vatsalya_facilities_to_beneficiaries",
+      "name": "Mission Vatsalya- Facilities to Beneficiaries",
+      "description": "This program is managed by Ministry of Women and Child Development. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Women and Child Development",
+      "category": "Women",
+      "benefitType": "welfare",
+      "applicationUrl": "http://wcd-icps.nic.in/",
+      "documentsRequired": [
+        "Registration Certificate under Juvenile Justice Act 2015",
+        "Inspection Report by Child Welfare Committee (CWC)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_overseas_scholarship_for_students_with_disabilities",
+      "name": "National Overseas Scholarship for students with disabilities",
+      "description": "Department of Empowerment of Persons with Disabilities",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://disabilityaffairs.gov.in/content/page/scholarship.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_janani_suraksha_yojana",
+      "name": "Janani suraksha yojana",
+      "description": "This program is managed by Department of Health and Family Welfare. Please visit the official portal for the latest details.",
+      "ministry": "Department of Health and Family Welfare",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://rch.nhm.gov.in/citizen/register.aspx",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_uchchatar_shiksha_protsahan_pm_usp_special_sc",
+      "name": "Pradhan Mantri Uchchatar Shiksha Protsahan (PM -USP) Special Scholarship Scheme for Jammu & Kashmir and Ladakh",
+      "description": "Students who are already availing benefit of any other scholarship scheme including the ones on-boarded National Scholarship Portal are not eligible under Special Scholarship Scheme for the UTs of J&K and Ladakh. For students found applying for or availing any other scholarship during the entire period of SSSJK&L, AICTE shall be free to forfeit their scholarship, admission and take any other administrative and legal action as deemed fit.",
+      "ministry": "Department of Higher Education",
+      "category": "Finance",
+      "benefitType": "loan",
+      "applicationUrl": "https://www.aicte-jk-scholarship-gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "nps_india",
+      "name": "National Pension System (NPS)",
+      "description": "Market-linked retirement savings scheme offering huge tax savings (up to ₹2L) and substantial wealth corpus on retirement.",
+      "ministry": "PFRDA / Ministry of Finance",
+      "category": "Pension",
+      "benefitType": "welfare",
+      "applicationUrl": "https://enps.nsdl.com/",
+      "documentsRequired": [
+        "Aadhaar",
+        "PAN",
+        "Bank Details"
+      ],
+      "eligibility": {
+        "minAge": 18,
+        "maxAge": 70,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_action_plan_for_skill_development_for_persons_with_",
+      "name": "National Action Plan for skill development for persons with disabilities",
+      "description": "Department of Empowerment of Persons with Disabilities",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "category": "Employment",
+      "benefitType": "welfare",
+      "applicationUrl": "http://disabilityaffairs.gov.in/content/page/skill-development-of-pwd.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_master_control_facility_scholarships_and_stipends",
+      "name": "Master Control Facility - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_indira_gandhi_national_disability_pension_scheme_igndps",
+      "name": "Indira Gandhi National Disability Pension Scheme (IGNDPS)",
+      "description": "This program is managed by Department of Rural Development. Please visit the official portal for the latest details.",
+      "ministry": "Department of Rural Development",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://nsap.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "UDID Card / Disability Certificate from Medical Board showing >=80% disability",
+        "BPL Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_agedn_merit_cum_means_scholarship",
+      "name": "AgEdn - Merit Cum Means scholarship",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_awards",
+      "name": "National Awards",
+      "description": "This program is managed by Ministry of Micro Small and Medium Enterprises. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Micro Small and Medium Enterprises",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://msmedi.dcmsme.gov.in/na/Ent_NA_Admin/Ent_NA_Ent.aspx",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_scholarship_scheme_of_satyajit_ray_film_and_television_insti",
+      "name": "Scholarship Scheme Of Satyajit Ray Film And Television Institute Kolkata",
+      "description": "This program is managed by Ministry of Information and Broadcasting. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Information and Broadcasting",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://srfti.ac.in/?page_id=20",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_mission_for_integrated_development_of_horticulture",
+      "name": "Mission for Integrated Development of Horticulture",
+      "description": "This application requires JavaScript to run properly.\n        Your browser appears to have JavaScript turned off or does not support it.",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://midh.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_janani_shishu_suraksha_karyakram",
+      "name": "Janani Shishu Suraksha Karyakram",
+      "description": "This program is managed by Department of Health and Family Welfare. Please visit the official portal for the latest details.",
+      "ministry": "Department of Health and Family Welfare",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://www.nhp.gov.in/janani-shishu-suraksha-karyakaram-jssk_pg",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_ishan_uday_special_scholarship_scheme_for_north_eastern_regi",
+      "name": "Ishan Uday Special Scholarship Scheme for North Eastern Region",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Permanent Resident Certificate (PRC) of North Eastern State",
+        "Family Income Certificate (<= ₹4.5 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_isro_telemetry_tracking_and_command_network_scholarships_and",
+      "name": "ISRO Telemetry, Tracking and Command Network - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_aicte_swanath_scholarship_scheme_diploma",
+      "name": "AICTE - Swanath Scholarship Scheme - Diploma",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_new_national_biogas_and_organic_manure_programme_nnbomp",
+      "name": "New National Biogas and Organic Manure Programme (NNBOMP)",
+      "description": "This program is managed by Ministry of New and Renewable Energy. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of New and Renewable Energy",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://biogas.mnre.gov.in/consumer-interest-form",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_virasat_ka_samvardhan",
+      "name": "Pradhan Mantri Virasat Ka Samvardhan",
+      "description": "PM VIKAS by Ministry of Minority Affairs supports minority artisans via skill training, entrepreneurship, education & heritage preservation.",
+      "ministry": "Ministry of Minority Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmvikas.minorityaffairs.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_prime_minister_s_scholarship_scheme_for_railway_protection_f",
+      "name": "Prime Minister's Scholarship Scheme for Railway Protection Force (RPF)",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Ministry of Railways",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "stand_up_india",
+      "name": "Stand-Up India Scheme",
+      "description": "Bank loans between ₹10 lakh and ₹1 Crore for SC/ST and women entrepreneurs for greenfield enterprises.",
+      "ministry": "Ministry of Finance",
+      "category": "Business",
+      "benefitType": "loan",
+      "applicationUrl": "https://www.standupmitra.in/",
+      "documentsRequired": [
+        "Aadhaar",
+        "PAN",
+        "Project Report",
+        "SC/ST Certificate"
+      ],
+      "eligibility": {
+        "minAge": 18,
+        "maxAge": 65,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_credit_scheme_for_powerloom_weavers",
+      "name": "Pradhan Mantri Credit Scheme for Powerloom Weavers",
+      "description": "Note : User has to register only one time under the scheme for which they would apply under iPowerTex Software. After successful registration, user can apply for any schemes using their login credentials.",
+      "ministry": "Ministry of Textiles",
+      "category": "Finance",
+      "benefitType": "loan",
+      "applicationUrl": "https://ipowertexindia.gov.in/iPowerTex/Login/SchemeRegister",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_vidyalaxmi_pm_vidyalaxmi_scheme",
+      "name": "PRADHAN MANTRI VIDYALAXMI (PM-Vidyalaxmi) SCHEME",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmvidyalaxmi.co.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_poshan_shakti_nirman_pm_poshan",
+      "name": "Pradhan Mantri Poshan Shakti Nirman (PM-POSHAN)",
+      "description": "Pradhan Mantri Poshan Shakti Nirman (PM POSHAN) in India",
+      "ministry": "Department of School Education and Literacy",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmposhan.education.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_cs_iari_scholarship",
+      "name": "CS- IARI Scholarship",
+      "description": "Type a query and press Search. Results are limited to iari.res.in.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.iari.res.in/index.php?option=com_content&view=article&id=113&Itemid=1208",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_liquid_propulsion_systems_centre_scholarships_and_stipends",
+      "name": "Liquid Propulsion Systems Centre - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_mission_on_natural_farming",
+      "name": "National Mission on Natural Farming",
+      "description": "राष्ट्रीय जैविक खेती केंद्र",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://naturalfarming.dac.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_alliance_and_r_and_d_mission_inspire_scholarship",
+      "name": "Alliance and R and D Mission - INSPIRE Scholarship",
+      "description": "This program is managed by Department of Science and Technology. Please visit the official portal for the latest details.",
+      "ministry": "Department of Science and Technology",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://online-inspire.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "ayushman_bharat_v2",
+      "name": "Ayushman Bharat PM-JAY (Government Top-Tier Cover)",
+      "description": "India's largest health assurance scheme covering up to ₹5 lakh per family per year for most severe medical conditions entirely free.",
+      "ministry": "Ministry of Health and Family Welfare",
+      "category": "Health",
+      "benefitType": "insurance",
+      "applicationUrl": "https://beneficiary.nha.gov.in/",
+      "documentsRequired": [
+        "Aadhaar",
+        "Ration Card",
+        "PMJAY Card"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": 500000.0,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_overseas_scholarship_scheme",
+      "name": "National Overseas Scholarship Scheme",
+      "description": "This program is managed by Ministry of Tribal Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Tribal Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://overseas.tribal.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_welfare_fund_for_sportspersons",
+      "name": "National welfare fund for sportspersons",
+      "description": "Copyright © 2024 Ministry Of Youth Affairs And Sports, Govt. of India",
+      "ministry": "Department of Sports",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtyas-sports.gov.in/Registration",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_p_g_scholarship_for_gate_gpat_qualified_students_for_pursuin",
+      "name": "P.G. Scholarship for GATE/GPAT qualified students for pursuing M.Tech/ M.E./M.Pharma- UGC",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarship.canarabank.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_lakshmibai_national_institute_of_physical_education",
+      "name": "Lakshmibai National Institute of Physical Education",
+      "description": "Copyright © 2024 Ministry Of Youth Affairs And Sports, Govt. of India",
+      "ministry": "Department of Sports",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtyas-sports.gov.in/Registration",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_alliance_and_r_and_d_mission_inspire_internship",
+      "name": "Alliance and R and D Mission - INSPIRE Internship",
+      "description": "This program is managed by Department of Science and Technology. Please visit the official portal for the latest details.",
+      "ministry": "Department of Science and Technology",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://online-inspire.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pre_matric_scholarship_scheme_for_scheduled_castes_and_other",
+      "name": "Pre-Matric Scholarship Scheme for Scheduled Castes and Others",
+      "description": "This program is managed by Department of Social Justice and Empowerment. Please visit the official portal for the latest details.",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://socialjustice.nic.in/SchemeList/Send/23?mid=24541#:~:text=Pre%2DMatric%20Scholarship%20to%20t",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pragati_scholarship_for_girls_diploma_institutes",
+      "name": "Pragati Scholarship for girls Diploma Institutes",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pm_kisan",
+      "name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+      "description": "The Hon’ble Prime Minister will release the 22nd installment of the PM-KISAN on 13th March 2026 from Guwahati, Assam.",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Agriculture",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.india.gov.in/search/site/PM+KISAN",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Land Ownership Record / RoR / Khatauni",
+        "Aadhaar-seeded Bank Account with IFSC"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_employees_pension_scheme_for_epf_pensioners",
+      "name": "Employees Pension Scheme for EPF Pensioners",
+      "description": "This program is managed by Ministry of Labour and Employment. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Labour and Employment",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://unifiedportal-mem.epfindia.gov.in/memberinterface/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_saksham_scholarship_for_differently_abled_students_of_diplom",
+      "name": "Saksham scholarship for differently abled students of Diploma Institutes",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_swachh_bharat_mission_gramin",
+      "name": "Swachh Bharat Mission Gramin",
+      "description": "जल शक्ति मंत्रालय  /पेयजल और स्‍वच्‍छता विभागMinistry of Jal Shakti /Department of Drinking Water & Sanitation",
+      "ministry": "Department of Drinking Water and Sanitation",
+      "category": "Finance",
+      "benefitType": "loan",
+      "applicationUrl": "https://swachhbharatmission.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pragati_scholarship_for_girls_in_degree_colleges",
+      "name": "Pragati Scholarship for Girls in Degree Colleges",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "AICTE Allotment Letter / College ID",
+        "Family Income Certificate (<= ₹8 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_isro_propulsion_complex_scholarships_and_stipends",
+      "name": "ISRO Propulsion Complex - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pre_matric_scholarship_for_minorities",
+      "name": "Pre-Matric Scholarship for Minorities",
+      "description": "This program is managed by Ministry of Minority Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Minority Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Minority Community Certificate / Self-declaration",
+        "Family Income Certificate (<= ₹1 Lakh)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_as_ndri_institute_scholarship_for_m_sc_and_ph_d",
+      "name": "AS_NDRI_Institute Scholarship for M.Sc. and Ph.D.",
+      "description": "This program is managed by Department of Agricultural Research and Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://ndri.res.in/education/scholarships-fellowships",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_apprenticeship_promotion_scheme",
+      "name": "National Apprenticeship Promotion Scheme",
+      "description": "This program is managed by Ministry of Skill Development and Entrepreneurship. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Skill Development and Entrepreneurship",
+      "category": "Business",
+      "benefitType": "welfare",
+      "applicationUrl": "https://apprenticeshipindia.org/candidate-registration",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_scholarship_for_pm_care_children",
+      "name": "Scholarship for PM care Children",
+      "description": "The PM CARES for Children Scheme was launched by The Hon'ble Prime Minister of India on 29th May 2021 for the Children. It aims to support children who have lost both the Parents or legal Guardian or Adoptive Parents or Surviving Parent to COVID-19 pandemic during the period starting from 11th March 2020.",
+      "ministry": "Department of Social Justice and Empowerment",
+      "category": "Finance",
+      "benefitType": "loan",
+      "applicationUrl": "https://pmcaresforchildren.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_indian_institute_of_remote_sensing_scholarships_and_stipends",
+      "name": "Indian Institute of Remote Sensing - Scholarships and Stipends",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_kaushal_vikas_yojana",
+      "name": "Pradhan Mantri Kaushal Vikas Yojana",
+      "description": "Skill India Digital (An initiative by MSDE) A unified Admin portal for all partners working with Skill India Digital.",
+      "ministry": "Ministry of Skill Development and Entrepreneurship",
+      "category": "Employment",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.skillindia.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_youth_corps",
+      "name": "National Youth Corps",
+      "description": "This program is managed by Department of Youth Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Department of Youth Affairs",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.dbtyas-youth.gov.in/scheme/Nyc_scheme.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_p_g_scholarship_for_professional_courses_for_sc_st_candidate",
+      "name": "P. G. Scholarship for Professional Courses for SC/ST candidates",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_database_for_unorganised_workers",
+      "name": "National Database for Unorganised Workers",
+      "description": "The Ministry of Labour & Employment is one of the oldest and important Ministries of the Government of India.",
+      "ministry": "Ministry of Labour and Employment",
+      "category": "Employment",
+      "benefitType": "welfare",
+      "applicationUrl": "https://eShram.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_sub_mission_on_agriculture_mechanization_central_sector",
+      "name": "Sub-Mission on Agricultural Mechanization (SMAM)",
+      "description": "DIRECT BENEFIT TRANSFER (DBT)",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Agriculture",
+      "benefitType": "welfare",
+      "applicationUrl": "https://agrimachinery.nic.in/Farmer/Management/Index",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Land Record (RoR / 7-12 / Khatauni)",
+        "Valid Quotation / Invoice from Authorized Machinery Dealer"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_handicrafts_development_programme",
+      "name": "National Handicrafts Development Programme",
+      "description": "This program is managed by Ministry of Textiles. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Textiles",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtbharat.gov.in/central-scheme/list",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_agedn_post_matric_scholarship",
+      "name": "AgEdn - Post Matric Scholarship",
+      "description": "This program is managed by Department of Agricultural Research and Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Agricultural Research and Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://education.icar.gov.in/Event_details.aspx?component=NTS&DegProg=PMS&SchemeCode=PMS",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_award_of_scholarships_to_young_artists_in_different_cultural",
+      "name": "Award of Scholarships to Young Artists in different cultural fields",
+      "description": "This program is managed by Ministry of Culture. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Culture",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://csms.nic.in/registration/registration_individual.php",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_uchchatar_shiksha_protsahan_pm_usp_central_se",
+      "name": "Pradhan Mantri Uchchatar Shiksha Protsahan (PM -USP) Central Sector Interest Subsidy Scheme",
+      "description": "This program is managed by Department of Higher Education. Please visit the official portal for the latest details.",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://www.vidyalakshmi.co.in/Students/signup",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_coal_mines_pension_scheme_1998",
+      "name": "Coal Mines Pension Scheme-1998",
+      "description": "G.S.R. 123 (E)-In exercise of the powers conferred by section 3E of the Coal Mines Provident Fund and Miscellaneous Provisions Act, 1948 (46 of 1948) and in super session of the Coal Mines Family Pension Scheme, 1971, except as respects things done or omitted to be done before such super session, the Central Government hereby makes the following scheme, namely :-",
+      "ministry": "Ministry of Coal",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://cmpfo.gov.in/cmps_act1.html",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_merit_cum_means_based_scholarship_for_professional_and_techn",
+      "name": "Merit-cum- Means based Scholarship for professional and Technical course for minorities",
+      "description": "This program is managed by Ministry of Minority Affairs. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Minority Affairs",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_ayush_mission_medicines_under_ayush_services",
+      "name": "National AYUSH Mission - Medicines under AYUSH Services",
+      "description": "This program is managed by Ministry of AYUSH. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of AYUSH",
+      "category": "Health",
+      "benefitType": "welfare",
+      "applicationUrl": "https://namayush.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_aicte_swanath_scholarship_scheme_degree",
+      "name": "AICTE - Swanath Scholarship Scheme - Degree",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Higher Education",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_indian_space_research_organization_headquarters_scholarships",
+      "name": "Indian Space Research Organization Headquarters - Scholarships and Stipends",
+      "description": "This program is managed by Department of Space. Please visit the official portal for the latest details.",
+      "ministry": "Department of Space",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://portal.mhrdnats.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_scholarship_for_top_class_education_for_students_with_disabi",
+      "name": "Scholarship for Top Class Education for students with disabilities",
+      "description": "NPCI has launched Bharat Aadhaar Seeding Enabler (BASE) platform to facilitate Aadhaar Seeding and De-seeding\n                          activities in self-service mode for Direct Benefit Transfer(DBT)\n                          by enabling the citizens to carry out certain activities in digital mode. For more detailsclick here",
+      "ministry": "Department of Empowerment of Persons with Disabilities",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_handloom_development_programme",
+      "name": "National Handloom Development Programme",
+      "description": "This program is managed by Ministry of Textiles. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Textiles",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://dbtbharat.gov.in/central-scheme/list",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pension_to_meritorious_sportspersons",
+      "name": "Pension to meritorious sportspersons",
+      "description": "Copyright © 2024 Ministry Of Youth Affairs And Sports, Govt. of India",
+      "ministry": "Department of Sports",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://dbtyas-sports.gov.in/Registration",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_kisan_urja_suraksha_evam_utthaan_mahabhiyan_s",
+      "name": "Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan Scheme",
+      "description": "This program is managed by Ministry of New and Renewable Energy. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of New and Renewable Energy",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://pmkusum.mnre.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_scholarship_to_niper_students",
+      "name": "Scholarship to NIPER Students",
+      "description": "This program is managed by Department of Pharmaceuticals. Please visit the official portal for the latest details.",
+      "ministry": "Department of Pharmaceuticals",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "http://www.nipermis.pharmaceuticals.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Marksheet",
+        "School ID",
+        "Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_scheme_of_incentive_to_girls_for_secondary_educatio",
+      "name": "National Scheme of Incentive to Girls for Secondary Education",
+      "description": "This program is managed by Department of School Education and Literacy. Please visit the official portal for the latest details.",
+      "ministry": "Department of School Education and Literacy",
+      "category": "Education",
+      "benefitType": "welfare",
+      "applicationUrl": "https://scholarships.gov.in/fresh/newstdRegfrmInstruction",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_census_of_india_2021_and_updation_of_national_population_reg",
+      "name": "Census of India 2021 and Updation of National Population Register",
+      "description": "This program is managed by Department of Home. Please visit the official portal for the latest details.",
+      "ministry": "Department of Home",
+      "category": "Housing",
+      "benefitType": "welfare",
+      "applicationUrl": "https://censusindia.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_indira_gandhi_national_old_age_pension_scheme_ignoaps",
+      "name": "Indira Gandhi National Old Age Pension Scheme (IGNOAPS)",
+      "description": "This program is managed by Department of Rural Development. Please visit the official portal for the latest details.",
+      "ministry": "Department of Rural Development",
+      "category": "Insurance",
+      "benefitType": "insurance",
+      "applicationUrl": "https://nsap.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Age Proof Certificate",
+        "BPL Card / Verified Low-Income Certificate"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_national_mission_on_edible_oil_oilpalm",
+      "name": "National Mission on Edible Oil-Oilpalm",
+      "description": "The Ministry of Agriculture & Farmers Welfare etc",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Agriculture",
+      "benefitType": "welfare",
+      "applicationUrl": "https://nmeo.dac.gov.in",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_matru_vandana_yojana",
+      "name": "Pradhan Mantri Matru Vandana Yojana",
+      "description": "This program is managed by Ministry of Women and Child Development. Please visit the official portal for the latest details.",
+      "ministry": "Ministry of Women and Child Development",
+      "category": "Women",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmmvy-cas.nic.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_pradhan_mantri_ujjwala_yojana",
+      "name": "Pradhan Mantri Ujjwala Yojana (Ujjwala 2.0)",
+      "description": "Total Connections Released underPradhan Mantri Ujjwala Yojana*as on23 Feb 2026",
+      "ministry": "Ministry of Petroleum and Natural Gas",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://pmuy.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card of Adult Woman Applicant",
+        "Ration Card / Family Composition Document",
+        "Bank Account Details (Aadhaar linked)"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": "all",
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    },
+    {
+      "id": "dbtbharat_central_schemes_sub_mission_on_seeds_and_planting_material",
+      "name": "Sub-Mission on Seeds and Planting Material",
+      "description": "For Any Query and Suggestions Please Write to Helpdesksupport-seednet@gov.in",
+      "ministry": "Department of Agriculture and Farmers Welfare",
+      "category": "Welfare",
+      "benefitType": "welfare",
+      "applicationUrl": "https://seednet.gov.in/",
+      "documentsRequired": [
+        "Aadhaar Card",
+        "Identity Proof",
+        "Residence Proof"
+      ],
+      "eligibility": {
+        "minAge": null,
+        "maxAge": null,
+        "maxIncome": null,
+        "states": [
+          "ALL"
+        ],
+        "casteEligibility": [
+          "nan"
+        ],
+        "genderEligibility": "all",
+        "occupationEligibility": "all",
+        "disabilityRequired": false
+      }
+    }
+  ]
+}

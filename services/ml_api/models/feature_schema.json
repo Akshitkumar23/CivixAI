@@ -1,0 +1,270 @@
+{
+  "features": [
+    {
+      "name": "age",
+      "dtype": "int64"
+    },
+    {
+      "name": "annualIncome",
+      "dtype": "int64"
+    },
+    {
+      "name": "state",
+      "dtype": "str"
+    },
+    {
+      "name": "caste",
+      "dtype": "str"
+    },
+    {
+      "name": "occupation",
+      "dtype": "str"
+    },
+    {
+      "name": "gender",
+      "dtype": "str"
+    },
+    {
+      "name": "hasLand",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasDisability",
+      "dtype": "int64"
+    },
+    {
+      "name": "familyIncome",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasAvailedSimilarScheme",
+      "dtype": "int64"
+    },
+    {
+      "name": "landSize",
+      "dtype": "float64"
+    },
+    {
+      "name": "familySize",
+      "dtype": "int64"
+    },
+    {
+      "name": "isSingleGirlChild",
+      "dtype": "int64"
+    },
+    {
+      "name": "isWidowOrSenior",
+      "dtype": "int64"
+    },
+    {
+      "name": "isTaxPayer",
+      "dtype": "int64"
+    },
+    {
+      "name": "isBankLinked",
+      "dtype": "int64"
+    },
+    {
+      "name": "educationLevel",
+      "dtype": "str"
+    },
+    {
+      "name": "digitalLiteracy",
+      "dtype": "str"
+    },
+    {
+      "name": "urbanRural",
+      "dtype": "str"
+    },
+    {
+      "name": "maritalStatus",
+      "dtype": "str"
+    },
+    {
+      "name": "isBPL",
+      "dtype": "int64"
+    },
+    {
+      "name": "isMinority",
+      "dtype": "int64"
+    },
+    {
+      "name": "monthlyExpenses",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasSmartphone",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasInternet",
+      "dtype": "int64"
+    },
+    {
+      "name": "employmentType",
+      "dtype": "str"
+    },
+    {
+      "name": "skillCertification",
+      "dtype": "str"
+    },
+    {
+      "name": "loanRequirement",
+      "dtype": "str"
+    },
+    {
+      "name": "monthlySavings",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasInsurance",
+      "dtype": "int64"
+    },
+    {
+      "name": "hasPension",
+      "dtype": "int64"
+    },
+    {
+      "name": "prioritySchemes",
+      "dtype": "str"
+    },
+    {
+      "name": "scheme_id",
+      "dtype": "str"
+    },
+    {
+      "name": "scheme_type",
+      "dtype": "str"
+    },
+    {
+      "name": "scheme_category",
+      "dtype": "str"
+    },
+    {
+      "name": "min_age",
+      "dtype": "float64"
+    },
+    {
+      "name": "max_age",
+      "dtype": "float64"
+    },
+    {
+      "name": "income_limit",
+      "dtype": "float64"
+    },
+    {
+      "name": "applicable_states",
+      "dtype": "str"
+    },
+    {
+      "name": "special_conditions_required",
+      "dtype": "str"
+    },
+    {
+      "name": "gender_eligibility",
+      "dtype": "str"
+    },
+    {
+      "name": "caste_eligibility",
+      "dtype": "str"
+    },
+    {
+      "name": "disability_required",
+      "dtype": "str"
+    },
+    {
+      "name": "occupation_eligibility",
+      "dtype": "str"
+    },
+    {
+      "name": "education_level_required",
+      "dtype": "str"
+    },
+    {
+      "name": "urban_rural_eligibility",
+      "dtype": "str"
+    },
+    {
+      "name": "marital_status_required",
+      "dtype": "str"
+    },
+    {
+      "name": "employment_type_eligibility",
+      "dtype": "str"
+    },
+    {
+      "name": "is_bpl_only",
+      "dtype": "str"
+    },
+    {
+      "name": "popularity_score",
+      "dtype": "float64"
+    },
+    {
+      "name": "per_capita_income",
+      "dtype": "float64"
+    },
+    {
+      "name": "age_income_ratio",
+      "dtype": "float64"
+    }
+  ],
+  "categorical": [
+    "state",
+    "caste",
+    "occupation",
+    "gender",
+    "educationLevel",
+    "digitalLiteracy",
+    "urbanRural",
+    "maritalStatus",
+    "employmentType",
+    "skillCertification",
+    "loanRequirement",
+    "prioritySchemes",
+    "scheme_id",
+    "scheme_type",
+    "scheme_category",
+    "applicable_states",
+    "special_conditions_required",
+    "gender_eligibility",
+    "caste_eligibility",
+    "disability_required",
+    "occupation_eligibility",
+    "education_level_required",
+    "urban_rural_eligibility",
+    "marital_status_required",
+    "employment_type_eligibility",
+    "is_bpl_only"
+  ],
+  "best_model_benefit": "catboost",
+  "best_model_eligibility": "catboost",
+  "cat_features_eligibility": [
+    "state",
+    "caste",
+    "occupation",
+    "gender",
+    "educationLevel",
+    "digitalLiteracy",
+    "urbanRural",
+    "maritalStatus",
+    "employmentType",
+    "skillCertification",
+    "loanRequirement",
+    "prioritySchemes",
+    "scheme_id",
+    "scheme_type",
+    "scheme_category",
+    "applicable_states",
+    "special_conditions_required",
+    "gender_eligibility",
+    "caste_eligibility",
+    "disability_required",
+    "occupation_eligibility",
+    "education_level_required",
+    "urban_rural_eligibility",
+    "marital_status_required",
+    "employment_type_eligibility",
+    "is_bpl_only"
+  ]
+}

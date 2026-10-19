@@ -1,0 +1,228 @@
+{
+  "audit_metadata": {
+    "timestamp": "2026-09-18T16:34:27.032085+00:00",
+    "target": "MYSCHEME_CANDIDATE_IDENTITY_RESOLUTION",
+    "total_candidates_processed": 19,
+    "canonical_corpus_size": 135,
+    "summary_counts": {
+      "EXACT_EXISTING": 5,
+      "PROBABLE_ALIAS": 1,
+      "NEW_CANDIDATE": 10,
+      "HISTORICAL_OR_RENAMED": 0,
+      "COMPONENT_OR_SUBSCHEME": 0,
+      "IDENTITY_REVIEW_REQUIRED": 3
+    },
+    "policy": "NEVER_AUTO_MERGE_PROBABILISTIC_MATCHES"
+  },
+  "identity_mappings": [
+    {
+      "candidate_id": "myscheme_rtif",
+      "candidate_name": "Right To Information Fellowship",
+      "candidate_slug": "rtif",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_n-pdf",
+      "candidate_name": "National Post Doctoral Fellowship",
+      "candidate_slug": "n-pdf",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_mda-fert",
+      "candidate_name": "Market Development Assistance",
+      "candidate_slug": "mda-fert",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_igndps",
+      "candidate_name": "Indira Gandhi National Disability Pension Scheme",
+      "candidate_slug": "igndps",
+      "classification": "PROBABLE_ALIAS",
+      "matched_canonical_id": "dbtbharat_central_schemes_indira_gandhi_national_disability_pension_scheme_igndps",
+      "matched_canonical_name": "Indira Gandhi National Disability Pension Scheme (IGNDPS)",
+      "confidence": 0.86,
+      "resolution_notes": "High lexical similarity (0.86) with canonical scheme 'Indira Gandhi National Disability Pension Scheme (IGNDPS)'. Requires human review before alias merge.",
+      "review_action": "HUMAN_REVIEW_REQUIRED_NO_AUTO_MERGE"
+    },
+    {
+      "candidate_id": "myscheme_psw",
+      "candidate_name": "Pension Scheme to Widow- DNH & DD",
+      "candidate_slug": "psw",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel State/UT scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_pm-vikas",
+      "candidate_name": "Pradhan Mantri Virasat ka Samvardhan",
+      "candidate_slug": "pm-vikas",
+      "classification": "EXACT_EXISTING",
+      "matched_canonical_id": "dbtbharat_central_schemes_pradhan_mantri_virasat_ka_samvardhan",
+      "matched_canonical_name": "Pradhan Mantri Virasat Ka Samvardhan",
+      "confidence": 1.0,
+      "resolution_notes": "Exact normalized title and statutory identity match against CivixAI canonical scheme.",
+      "review_action": "RETAIN_EXISTING_CANONICAL"
+    },
+    {
+      "candidate_id": "myscheme_ay",
+      "candidate_name": "Agnipath Yojana",
+      "candidate_slug": "ay",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_sistpomms",
+      "candidate_name": "Special Incentive to ST (P)/OBC/MOBC Meritorious Students",
+      "candidate_slug": "sistpomms",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel State/UT scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_pcardbpt",
+      "candidate_name": "Primary Cooperative Agriculture and Rural Development Bank: For Power Tiller",
+      "candidate_slug": "pcardbpt",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel State/UT scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_faftcc",
+      "candidate_name": "Financial Assistance for Tagore Cultural Complexes (TCC)",
+      "candidate_slug": "faftcc",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_pm-kisan",
+      "candidate_name": "Pradhan Mantri Kisan Samman Nidhi",
+      "candidate_slug": "pm-kisan",
+      "classification": "EXACT_EXISTING",
+      "matched_canonical_id": "dbtbharat_central_schemes_pm_kisan",
+      "matched_canonical_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+      "confidence": 0.98,
+      "resolution_notes": "Known alias 'pm-kisan' links directly to canonical scheme 'dbtbharat_central_schemes_pm_kisan'.",
+      "review_action": "RETAIN_EXISTING_CANONICAL"
+    },
+    {
+      "candidate_id": "myscheme_pmjjby",
+      "candidate_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+      "candidate_slug": "pmjjby",
+      "classification": "EXACT_EXISTING",
+      "matched_canonical_id": "pm_jeevan_jyoti_bima_v2",
+      "matched_canonical_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY)",
+      "confidence": 0.98,
+      "resolution_notes": "Known alias 'pmjjby' links directly to canonical scheme 'pm_jeevan_jyoti_bima_v2'.",
+      "review_action": "RETAIN_EXISTING_CANONICAL"
+    },
+    {
+      "candidate_id": "myscheme_pmsby",
+      "candidate_name": "Pradhan Mantri Suraksha Bima Yojana",
+      "candidate_slug": "pmsby",
+      "classification": "IDENTITY_REVIEW_REQUIRED",
+      "matched_canonical_id": "pm_jeevan_jyoti_bima_v2",
+      "matched_canonical_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY)",
+      "confidence": 0.5,
+      "resolution_notes": "Ambiguous match with Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY) (0.50). Must NOT be auto-merged.",
+      "review_action": "QUEUE_FOR_MANUAL_DISAMBIGUATION"
+    },
+    {
+      "candidate_id": "myscheme_apy",
+      "candidate_name": "Atal Pension Yojana",
+      "candidate_slug": "apy",
+      "classification": "EXACT_EXISTING",
+      "matched_canonical_id": "dbtbharat_central_schemes_atal_pension_yojana",
+      "matched_canonical_name": "Atal Pension Yojana (APY)",
+      "confidence": 0.98,
+      "resolution_notes": "Known alias 'apy' links directly to canonical scheme 'dbtbharat_central_schemes_atal_pension_yojana'.",
+      "review_action": "RETAIN_EXISTING_CANONICAL"
+    },
+    {
+      "candidate_id": "myscheme_pmay-u",
+      "candidate_name": "Pradhan Mantri Awas Yojana - Urban",
+      "candidate_slug": "pmay-u",
+      "classification": "IDENTITY_REVIEW_REQUIRED",
+      "matched_canonical_id": "pmay_home_loan",
+      "matched_canonical_name": "Pradhan Mantri Awas Yojana - Urban (PMAY-U / CLSS)",
+      "confidence": 0.62,
+      "resolution_notes": "Ambiguous match with Pradhan Mantri Awas Yojana - Urban (PMAY-U / CLSS) (0.62). Must NOT be auto-merged.",
+      "review_action": "QUEUE_FOR_MANUAL_DISAMBIGUATION"
+    },
+    {
+      "candidate_id": "myscheme_pm-ayushman-bharat",
+      "candidate_name": "Ayushman Bharat - PMJAY",
+      "candidate_slug": "pm-ayushman-bharat",
+      "classification": "EXACT_EXISTING",
+      "matched_canonical_id": "ayushman_bharat_v2",
+      "matched_canonical_name": "Ayushman Bharat PM-JAY (Government Top-Tier Cover)",
+      "confidence": 0.98,
+      "resolution_notes": "Known alias 'pm-ayushman-bharat' links directly to canonical scheme 'ayushman_bharat_v2'.",
+      "review_action": "RETAIN_EXISTING_CANONICAL"
+    },
+    {
+      "candidate_id": "myscheme_mgnrega",
+      "candidate_name": "Mahatma Gandhi National Rural Employment Guarantee Act",
+      "candidate_slug": "mgnrega",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    },
+    {
+      "candidate_id": "myscheme_pmfby",
+      "candidate_name": "Pradhan Mantri Fasal Bima Yojana",
+      "candidate_slug": "pmfby",
+      "classification": "IDENTITY_REVIEW_REQUIRED",
+      "matched_canonical_id": "dbtbharat_central_schemes_pradhan_mantri_fasal_bima_yojna",
+      "matched_canonical_name": "Pradhan Mantri Fasal Bima Yojna",
+      "confidence": 0.67,
+      "resolution_notes": "Ambiguous match with Pradhan Mantri Fasal Bima Yojna (0.67). Must NOT be auto-merged.",
+      "review_action": "QUEUE_FOR_MANUAL_DISAMBIGUATION"
+    },
+    {
+      "candidate_id": "myscheme_sukanya-samriddhi-yojana",
+      "candidate_name": "Sukanya Samriddhi Yojana",
+      "candidate_slug": "sukanya-samriddhi-yojana",
+      "classification": "NEW_CANDIDATE",
+      "matched_canonical_id": null,
+      "matched_canonical_name": null,
+      "confidence": 1.0,
+      "resolution_notes": "Novel Central scheme not present in current 135 canonical schemes. Staged for future certification pipeline.",
+      "review_action": "STAGE_IN_DISCOVERY_POOL"
+    }
+  ]
+}

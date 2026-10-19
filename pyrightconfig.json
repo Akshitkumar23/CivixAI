@@ -1,0 +1,12 @@
+{
+  "venvPath": "d:\\Projects\\CivixAI",
+  "venv": ".venv",
+  "extraPaths": [
+    "d:\\Projects\\CivixAI",
+    "d:\\Projects\\CivixAI\\.venv\\Lib\\site-packages",
+    "./.venv/Lib/site-packages",
+    ".",
+    "services/ml",
+    "services/ml_api"
+  ]
+}

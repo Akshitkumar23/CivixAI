@@ -1,0 +1,54 @@
+﻿{
+  "name": "CivixAI - Citizen Welfare & Entitlements Navigator",
+  "short_name": "CivixAI",
+  "description": "Transparent, deterministic citizen entitlements discovery, multi-programme benefit pathways, and official application status tracking.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0B0F19",
+  "theme_color": "#2563EB",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/assets/hero-screenshot.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/hero-image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "government",
+    "social",
+    "productivity",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "Check Scheme Eligibility",
+      "short_name": "Eligibility",
+      "description": "Start questionnaire to find eligible schemes",
+      "url": "/questionnaire"
+    },
+    {
+      "name": "Benefit Pathways",
+      "short_name": "Pathways",
+      "description": "View multi-programme action roadmaps",
+      "url": "/pathways"
+    },
+    {
+      "name": "Track Applications",
+      "short_name": "Tracker",
+      "description": "Monitor official portal application progress",
+      "url": "/tracker"
+    }
+  ],
+  "lang": "en-IN",
+  "dir": "ltr"
+}

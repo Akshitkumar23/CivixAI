@@ -1,0 +1,12 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    "python.venvPath": "${workspaceFolder}",
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}",
+        "${workspaceFolder}\\.venv\\Lib\\site-packages",
+        "./.venv/Lib/site-packages",
+        "./services/ml",
+        "./services/ml_api"
+    ]
+}
