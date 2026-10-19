@@ -57,6 +57,9 @@ __pycache__/
 *.pyo
 .pytest_cache/
 .hypothesis/
+tests/
+scripts/test_*
+scripts/run_controlled_pilot_recertification.py
 
 # Build caches & local dumps
 *.tsbuildinfo

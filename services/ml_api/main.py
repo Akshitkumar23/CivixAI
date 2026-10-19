@@ -442,6 +442,19 @@ def scheme_details(scheme_id: str):
     }
 
 
+@app.get("/")
+def root():
+    """Service root endpoint."""
+    return {
+        "service":  "CivixAI Production ML Service",
+        "status":   "ok",
+        "docs_url": "/docs",
+        "health":   "/health",
+        "version":  "2.0.0",
+    }
+
+
+@app.get("/health")
 @app.get("/api/health")
 def health_check():
     """Pipeline health check endpoint."""

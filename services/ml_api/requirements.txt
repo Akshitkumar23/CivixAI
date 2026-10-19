@@ -13,6 +13,8 @@ python-dotenv
 prometheus-fastapi-instrumentator
 faiss-cpu
 sentence-transformers
+requests
+sqlalchemy>=2.0.0
 pytest
 httpx
 hypothesis>=6.100.0

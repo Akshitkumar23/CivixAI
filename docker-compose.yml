@@ -8,7 +8,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_ML_API_URL=http://ml-api:8001
+      - ML_API_URL=http://ml-api:8000
+      - NEXT_PUBLIC_ML_API_URL=http://localhost:8000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - ml-api
@@ -18,9 +19,9 @@ services:
       context: .
       dockerfile: services/ml_api/Dockerfile
     ports:
-      - "8001:8001"
+      - "8000:8000"
     volumes:
       - ./data:/app/data
-      - ./services/ml:/app/services/ml
+      - ./services:/app/services
     environment:
-      - PORT=8001
+      - PORT=8000

@@ -23,7 +23,7 @@
 
 | 🗣️ **Citizen Journeys & Voice** | 🛡️ **Trust & Quality** | 🚀 **Developer Guide** |
 | :--- | :--- | :--- |
-| 🔹 [College Student (Hindi Chat)](#journey-1-college-student-conversational-hindi)<br>🔹 [Rural Farmer Voice Session](#journey-2-rural-farmer-voice-assisted-consultation)<br>🔹 [Shop Owner (MSME Loan)](#journey-3-micro-entrepreneur-shop-owner) | 🔹 [8-Point Verification System](#-verification-trust--feedback-mechanism)<br>🔹 [Automated Test Invariants](#-testing--validation)<br>🔹 [Official `.gov.in` Sources](#-official-sources--citations) | 🔹 [Project Roadmap (4 Phases)](#-project-roadmap-4-phases)<br>🔹 [Quickstart Installation](#-quickstart--installation)<br>🔹 [Expected Social Impact](#-expected-social-impact--future-scope) |
+| 🔹 [College Student (Hindi Chat)](#journey-1-college-student-conversational-hindi)<br>🔹 [Rural Farmer Voice Session](#journey-2-rural-farmer-voice-assisted-consultation)<br>🔹 [Shop Owner (MSME Loan)](#journey-3-micro-entrepreneur-shop-owner) | 🔹 [8-Point Verification System](#-verification-trust--feedback-mechanism)<br>🔹 [Official `.gov.in` Sources](#-official-sources--citations) | 🔹 [Project Roadmap (4 Phases)](#-project-roadmap-4-phases)<br>🔹 [Quickstart Installation](#-quickstart--installation)<br>🔹 [Expected Social Impact](#-expected-social-impact--future-scope) |
 
 </div>
 
@@ -391,20 +391,11 @@ The services will be available at:
 
 ---
 
-## 🧪 Testing & Validation
-
-CivixAI includes an exhaustive automated test suite to ensure mathematical and statutory correctness:
-
+### Alternative: Docker Compose Launch
+Run both services fully containerized:
 ```bash
-# Run pytest across all core engine test suites
-pytest tests/ -v
+docker compose up --build
 ```
-
-### Key Invariants Tested:
-1. **Derivation Purity:** Fact derivations in `derivation.py` are 100% free of hardcoded statutory thresholds or scheme IDs.
-2. **Kleene Logic Correctness:** Missing facts strictly evaluate to `UNKNOWN` and never trigger false negative rejections.
-3. **Residency vs. Domicile:** Current geographical presence does not falsely fulfill legal state domicile.
-4. **Database Immutability:** Evaluation requests are side-effect free and cannot alter scheme records.
 
 ---
 
